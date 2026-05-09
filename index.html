@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -322,11 +322,19 @@ section { padding:90px 5%; }
 .acc-grid      { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:18px; }
 .reviews-grid  { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px; }
 
-.prod-card {
-  background:var(--card); border:1px solid var(--border);
-  border-radius:20px; padding:28px 20px 22px; text-align:center;
-  transition:transform .3s, box-shadow .3s, border-color .3s, background .35s;
-  position:relative; overflow:hidden; cursor:pointer;
+.prod-card{
+  background:linear-gradient(180deg,#1a1a1a,#141414);
+  border-radius:24px;
+  padding:20px;
+  position:relative;
+  transition:.3s;
+  height:auto !important;
+}
+.products-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:24px;
+  align-items:stretch;
 }
 .prod-card::before {
   content:''; position:absolute; inset:0;
@@ -346,18 +354,42 @@ section { padding:90px 5%; }
   padding:4px 10px; border-radius:100px; text-transform:uppercase;
 }
 .prod-icon { font-size:3.2rem; margin-bottom:12px; transition:transform .3s; }
-.prod-icon img{
+.product-image{
   width:140px;
-  height:auto;
+  height:140px;
   object-fit:contain;
+  display:block;
+  margin:0 auto 12px;
   transition:.3s;
+}
+
+.prod-card{
+  background:linear-gradient(180deg,#1a1a1a,#141414);
+  border-radius:24px;
+  padding:20px;
+  position:relative;
+  transition:.3s;
+  text-align:center;
+}
+
+.hidden-card{
+  display:none;
+}
+
+.hidden-card.show{
+  display:flex;
 }
 
 .prod-card:hover .prod-icon img{
   transform:scale(1.08);
 }
 .prod-card:hover .prod-icon { transform:scale(1.15) rotate(-3deg); }
-
+.prod-icon img{
+  width:140px;
+  height:auto;
+  object-fit:contain;
+  transition:.3s;
+}
 
 .prod-card h3 { font-size:1rem; font-weight:700; margin-bottom:4px; }
 .storage { font-size:.8rem; color:var(--gray); margin-bottom:12px; }
@@ -416,6 +448,31 @@ section { padding:90px 5%; }
 .acc-card:hover .ico { transform:scale(1.2) rotate(-5deg); }
 .acc-card h3 { font-size:.88rem; font-weight:600; margin-bottom:4px; }
 .acc-card p { font-size:.75rem; color:var(--gray); }
+
+.acc-card:hover {
+  border-color:var(--violet); 
+  transform:scale(1.05);
+}
+
+[data-theme="light"] .prod-card{
+  background:#ffffff !important;
+  color:#111 !important;
+  border:1px solid #e5e5e5 !important;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+[data-theme="light"] .storage{
+  color:#666 !important;
+}
+
+[data-theme="light"] .price-label{
+  color:#777 !important;
+}
+
+[data-theme="light"] .detail-btn{
+  border:1px solid #dcdcdc !important;
+  color:#333 !important;
+}
 
 /* reviews */
 .review-card {
@@ -620,6 +677,39 @@ footer p { font-size:.78rem; color:var(--gray); }
 .foot-links { display:flex; gap:20px; }
 .foot-links a { color:var(--gray); text-decoration:none; font-size:.8rem; transition:.2s; }
 .foot-links a:hover { color:var(--violet); }
+
+.more-container{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.hidden-group{
+  display:none;
+}
+
+.hidden-group.active{
+  display:contents;
+}
+
+.more-container{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100%;
+}
+
+.toggle-btn{
+  width:180px;
+  height:55px;
+  border:none;
+  border-radius:14px;
+  background:var(--violet);
+  color:#fff;
+  font-size:1rem;
+  font-weight:700;
+  cursor:pointer;
+}
 
 /* ══ RESPONSIVE ══ */
 @media(max-width:850px) {
@@ -877,90 +967,104 @@ footer p { font-size:.78rem; color:var(--gray); }
     <p>Equipos certificados en excelente estado</p>
   </div>
 
-  <div class="products-grid">
+<div class="products-grid">
 
-    <!-- iPhone 11 -->
-    <div class="prod-card" onclick="openDetail('iphone11used')">
-      <span class="prod-badge">Usado</span>
+ <!-- iPhone 11 -->
+<div class="prod-card" onclick="openDetail('iphone11used')">
+  <span class="prod-badge">Usado</span>
 
-      <img
-        src="https://i.postimg.cc/fTzdT8W6/iphone-11-ctalog-removebg-preview.png"
-        alt="iPhone 11"
-        class="product-image"
-      >
+  <img src="https://i.postimg.cc/fTzdT8W6/iphone-11-ctalog-removebg-preview.png"
+  alt="iPhone 11"
+  class="product-image">
 
-      <h3>iPhone 11</h3>
-      <div class="storage">64 GB · Buen estado</div>
+  <h3>iPhone 11</h3>
 
-      <div class="price-label">Precio</div>
-      <div class="price">$342.000</div>
+  <div class="storage">64 GB · Buen estado</div>
 
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone11used')">
-      Ver detalles
-      </button>
+  <div class="price-label">Precio</div>
+  <div class="price">$342.000</div>
 
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 11 Usado','📱',342000)">
-      🛒 Agregar
-      </button>
-    </div>
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone11used')">
+  Ver detalles
+  </button>
 
-    <!-- iPhone 11 -->
-    <div class="prod-card" onclick="openDetail('iphone11sused')">
-      <span class="prod-badge">Usado</span>
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 11 Usado','📱',342000)">
+  🛒 Agregar
+  </button>
 
-      <img
-        src="https://i.postimg.cc/fTzdT8W6/iphone-11-ctalog-removebg-preview.png"
-        alt="iPhone 11"
-        class="product-image"
-      >
+  <button class="toggle-btn"
+  onclick="event.stopPropagation();toggleCards('mas11')">
+  Ver más
+  </button>
 
-      <h3>iPhone 11</h3>
-      <div class="storage">128 GB · Buen estado</div>
+</div>
 
-      <div class="price-label">Precio</div>
-      <div class="price">$384.750</div>
+<!-- oculto -->
+<div class="prod-card hidden-card mas11" onclick="openDetail('iphone11sused')">
+  <span class="prod-badge">Usado</span>
 
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone11sused')">
-      Ver detalles
-      </button>
+  <img src="https://i.postimg.cc/fTzdT8W6/iphone-11-ctalog-removebg-preview.png"
+  alt="iPhone 11"
+  class="product-image">
 
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 11 Usado','📱',384750)">
-      🛒 Agregar
-      </button>
-    </div>
+  <h3>iPhone 11</h3>
 
-     <!-- iPhone 11 Pro -->
-    <div class="prod-card" onclick="openDetail('iphone11proused')">
-      <span class="prod-badge">Usado</span>
+  <div class="storage">128 GB · Buen estado</div>
 
-      <img
-        src="https://i.postimg.cc/nrDm5G76/0046-iphone-11-pro-gold-removebg-preview.png	"
-        alt="iPhone 11 Pro"
-        class="product-image"
-      >
+  <div class="price-label">Precio</div>
+  <div class="price">$384.750</div>
 
-      <h3>iPhone 11 Pro</h3>
-      <div class="storage">64 GB · Buen estado</div>
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone11sused')">
+  Ver detalles
+  </button>
 
-      <div class="price-label">Precio</div>
-      <div class="price">$456.000</div>
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 11 Usado','📱',384750)">
+  🛒 Agregar
+  </button>
 
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone11proused')">
-      Ver detalles
-      </button>
+</div>
 
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 11 Pro Usado','📱',456000)">
-      🛒 Agregar
-      </button>
-    </div>
+  <!-- iPhone 11 Pro -->
+  <div class="prod-card" onclick="openDetail('iphone11proused')">
+    <span class="prod-badge">Usado</span>
 
-     <!-- iPhone 11 Pro -->
+    <img
+      src="https://i.postimg.cc/nrDm5G76/0046-iphone-11-pro-gold-removebg-preview.png"
+      alt="iPhone 11 Pro"
+      class="product-image"
+    >
+
+    <h3>iPhone 11 Pro</h3>
+
+    <div class="storage">64 GB · Buen estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$456.000</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone11proused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 11 Pro Usado','📱',456000)">
+    🛒 Agregar
+    </button>
+
+    <button class="toggle-btn"
+    onclick="event.stopPropagation();toggleGroup('mas11pro')">
+    Ver más
+    </button>
+
+  </div>
+
+  <!-- oculto -->
+  <div id="mas11pro" class="hidden-group">
+
     <div class="prod-card" onclick="openDetail('iphone11prosused')">
       <span class="prod-badge">Usado</span>
 
@@ -971,13 +1075,14 @@ footer p { font-size:.78rem; color:var(--gray); }
       >
 
       <h3>iPhone 11 Pro</h3>
+
       <div class="storage">64 GB · Buen estado</div>
 
       <div class="price-label">Precio</div>
       <div class="price">$427.500</div>
 
       <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone11proused')">
+      onclick="event.stopPropagation();openDetail('iphone11prosused')">
       Ver detalles
       </button>
 
@@ -985,927 +1090,986 @@ footer p { font-size:.78rem; color:var(--gray); }
       onclick="event.stopPropagation();addToCart('iPhone 11 Pro Usado','📱',427500)">
       🛒 Agregar
       </button>
+
     </div>
+
+  </div>
+
 
     <!-- iPhone 11 Pro Max -->
-    <div class="prod-card" onclick="openDetail('iphone11promaxused')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/nrDm5G76/0046-iphone-11-pro-gold-removebg-preview.png"
-        alt="iPhone 11 Pro Max"
-        class="product-image"
-      >
-
-      <h3>iPhone 11 Pro Max</h3>
-      <div class="storage">64 GB · Buen estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$513.000</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone11promaxused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 11 Pro Max Usado','📱',513000)">
-      🛒 Agregar
-      </button>
-    </div>
-
-
-    <!-- iPhone 12 -->
-    <div class="prod-card" onclick="openDetail('iphone12used')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/8CtBNxM2/i-Phone-12-Mini-P-RED-PDP-Image-Position-2-LAEN-500x500-removebg-preview.png"
-        alt="iPhone 12"
-        class="product-image"
-      >
-
-      <h3>iPhone 12</h3>
-      <div class="storage">64 GB · Muy buen estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$427.500</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone12used')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 12 Usado','📱',427500)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 12 -->
-    <div class="prod-card" onclick="openDetail('iphone12sused')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/8CtBNxM2/i-Phone-12-Mini-P-RED-PDP-Image-Position-2-LAEN-500x500-removebg-preview.png"
-        alt="iPhone 12"
-        class="product-image"
-      >
-
-      <h3>iPhone 12</h3>
-      <div class="storage">128 GB · Muy buen estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$456.000</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone12used')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 12 Usado','📱',456000)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 12 -->
-    <div class="prod-card" onclick="openDetail('iphone12prossused')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/8CtBNxM2/i-Phone-12-Mini-P-RED2-LAEN-500x500-removebg-preview.png"
-        alt="iPhone 12 Pro"
-        class="product-image"
-      >
-
-      <h3>iPhone 12 Pro</h3>
-      <div class="storage">128 GB · Muy buen estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$441.500</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone12proused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 12 Pro Usado','📱',541500)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 12 -->
-    <div class="prod-card" onclick="openDetail('iphone12prosssused')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/8CtBNxM2/i-Phone-12-Mini-P-RED-PDP-Image-Position-2-LAEN-500x500-removebg-preview.png"
-        alt="iPhone 12 Pro"
-        class="product-image"
-      >
-
-      <h3>iPhone 12 Pro</h3>
-      <div class="storage">256 GB · Muy buen estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$570.000</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone12proused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 12 Pro Usado','📱',570000)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 12 -->
-    <div class="prod-card" onclick="openDetail('iphone12promaxused')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/VLwdKQf2/i-Phone-12-Pro-Max-4.png"
-        alt="iPhone 12 Pro Max"
-        class="product-image"
-      >
-
-      <h3>iPhone 12 Pro Max</h3>
-      <div class="storage">128 GB · Muy buen estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$598.500</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone12promaxused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 12 Pro Max Usado','📱',598500)">
-      🛒 Agregar
-      </button>
-    </div>
-
-     <!-- iPhone 12 -->
-    <div class="prod-card" onclick="openDetail('iphone12promaxsused')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/VLwdKQf2/i-Phone-12-Pro-Max-4.png"
-        alt="iPhone 12 Pro Max"
-        class="product-image"
-      >
-
-      <h3>iPhone 12 Pro Max</h3>
-      <div class="storage">256 GB · Muy buen estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$669.750</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone12promaxsused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 12 Pro Max Usado','📱',669750)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 13 -->
-    <div class="prod-card" onclick="openDetail('iphone13miniused')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/2jQZdPXQ/IPHONE-13-4-removebg-preview.png"
-        alt="iPhone 13"
-        class="product-image"
-      >
-
-      <h3>iPhone 13 Mini</h3>
-      <div class="storage">128 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$441.750</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone13miniused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 13 Mini Usado','📱',441750)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 13 -->
-    <div class="prod-card" onclick="openDetail('iphone13used')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/2jQZdPXQ/IPHONE-13-4-removebg-preview.png"
-        alt="iPhone 13"
-        class="product-image"
-      >
-
-      <h3>iPhone 13</h3>
-      <div class="storage">128 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$527.250</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone13used')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 13 Usado','📱',527250)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 13 -->
-    <div class="prod-card" onclick="openDetail('iphone13used')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/2jQZdPXQ/IPHONE-13-4-removebg-preview.png"
-        alt="iPhone 13"
-        class="product-image"
-      >
-
-      <h3>iPhone 13</h3>
-      <div class="storage">128 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$555.750</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone13used')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 13 Usado','📱',555750)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 13 -->
-    <div class="prod-card" onclick="openDetail('iphone13used')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/2jQZdPXQ/IPHONE-13-4-removebg-preview.png"
-        alt="iPhone 13"
-        class="product-image"
-      >
-
-      <h3>iPhone 13</h3>
-      <div class="storage">256 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$655.500</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone13used')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 13 Usado','📱',555500)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 13 Pro -->
-    <div class="prod-card" onclick="openDetail('iphone13proused')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/q7jX4WyW/b4373060f94f414220f0518e6f17472e5be211ddfaf59f44775b486a9d9f14f1155135-edfa6d09a5b556b6a617430119105.png"
-        alt="iPhone 13 Pro"
-        class="product-image"
-      >
-
-      <h3>iPhone 13 Pro</h3>
-      <div class="storage">128 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$726.750</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone13proused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 13 Pro Usado','📱',726750)">
-      🛒 Agregar
-      </button>
-    </div>
-
-
-      <!-- iPhone 13 Pro -->
-<div class="prod-card" onclick="openDetail('iphone13proused256')">
-  <span class="prod-badge">Usado</span>
-
-  <img
-    src="https://i.postimg.cc/q7jX4WyW/b4373060f94f414220f0518e6f17472e5be211ddfaf59f44775b486a9d9f14f1155135-edfa6d09a5b556b6a617430119105.png"
-    alt="iPhone 13 Pro"
-    class="product-image"
-  >
-
-  <h3>iPhone 13 Pro</h3>
-  <div class="storage">256 GB · Excelente estado</div>
-
-  <div class="price-label">Precio</div>
-  <div class="price">$769.500</div>
-
-  <button class="detail-btn"
-  onclick="event.stopPropagation();openDetail('iphone13proused256')">
-  Ver detalles
-  </button>
-
-  <button class="add-cart-btn"
-  onclick="event.stopPropagation();addToCart('iPhone 13 Pro Usado','📱',769500)">
-  🛒 Agregar
-  </button>
-</div>
-
-    <!-- iPhone 13 Pro Max -->
-    <div class="prod-card" onclick="openDetail('iphone13proused')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/vT0F7V8P/8e5721b713844bc22dabf69098b4-removebg-preview.png"
-        alt="iPhone 13 Pro Max"
-        class="product-image"
-      >
-
-      <h3>iPhone 13 Pro Max</h3>
-      <div class="storage">128 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$826.500</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone13promaxused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 13 Pro Max Usado','📱',826500)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 13 Pro Max -->
-    <div class="prod-card" onclick="openDetail('iphone13proused')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/vT0F7V8P/8e5721b713844bc22dabf69098b4-removebg-preview.png"
-        alt="iPhone 13 Pro Max"
-        class="product-image"
-      >
-
-      <h3>iPhone 13 Pro Max</h3>
-      <div class="storage">128 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$755.000</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone13promaxused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 13 Pro Max Usado','📱',855000)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 14 -->
-    <div class="prod-card" onclick="openDetail('iphone14used')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/xdtynBMp/iphone-14-black-d61713d18bdf31d02417016951877100-1024-1024-removebg-preview.png"
-        alt="iPhone 14"
-        class="product-image"
-      >
-
-      <h3>iPhone 14</h3>
-      <div class="storage">128 GB · Muy buen estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$612.750</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone14used')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 14 Usado','📱',612750)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 14 -->
-    <div class="prod-card" onclick="openDetail('iphone14used')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/xdtynBMp/iphone-14-black-d61713d18bdf31d02417016951877100-1024-1024-removebg-preview.png"
-        alt="iPhone 14"
-        class="product-image"
-      >
-
-      <h3>iPhone 14</h3>
-      <div class="storage">128 GB · Muy buen estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$655.500</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone14used')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 14 Usado','📱',655500)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 14 Pro -->
-    <div class="prod-card" onclick="openDetail('iphone14proused')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/mrbyxTzn/1703105172-removebg-preview.png"
-        alt="iPhone 14 Pro"
-        class="product-image"
-      >
-
-      <h3>iPhone 14 Pro</h3>
-      <div class="storage">128 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$826.500</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone14proused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 14 Pro Usado','📱',826500)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 14 Pro -->
-    <div class="prod-card" onclick="openDetail('iphone14proused')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/mrbyxTzn/1703105172-removebg-preview.png"
-        alt="iPhone 14 Pro"
-        class="product-image"
-      >
-
-      <h3>iPhone 14 Pro</h3>
-      <div class="storage">256 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$855.000</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone14proused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 14 Pro Usado','📱',855000)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 14 Pro Max -->
-    <div class="prod-card" onclick="openDetail('iphone14promaxused')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/1zJcsbwj/celular-apple-iphone-14-pro-128gb-recondicionado-155300-550x550-1-removebg-preview.png"
-        alt="iPhone 14 Pro Max"
-        class="product-image"
-      >
-
-      <h3>iPhone 14 Pro Max</h3>
-      <div class="storage">256 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$997.500</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone14promaxused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 14 Pro Max Usado','📱',997500)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 14 Pro Max -->
-    <div class="prod-card" onclick="openDetail('iphone14promaxused')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/1zJcsbwj/celular-apple-iphone-14-pro-128gb-recondicionado-155300-550x550-1-removebg-preview.png"
-        alt="iPhone 14 Pro Max"
-        class="product-image"
-      >
-
-      <h3>iPhone 14 Pro Max</h3>
-      <div class="storage">128 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$969.000</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone14promaxused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 14 Pro Max Usado','📱',969000)">
-      🛒 Agregar
-      </button>
-    </div>
-
-   <!-- iPhone 15 -->
-    <div class="prod-card" onclick="openDetail('iphone15used')">
-      <span class="prod-badge">Usado</span>
-
-      <img src="https://i.postimg.cc/m2627jRQ/i-PH-15-2-1-removebg-preview.png"
-      alt="iPhone 15"
-      class="product-image">
-
-      <h3>iPhone 15</h3>
-      <div class="storage">128 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$812.250</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone15used')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 15 Usado','📱',812250)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 15 -->
-    <div class="prod-card" onclick="openDetail('iphone15used')">
-      <span class="prod-badge">Usado</span>
-
-      <img src="https://i.postimg.cc/m2627jRQ/i-PH-15-2-1-removebg-preview.png"
-      alt="iPhone 15"
-      class="product-image">
-
-      <h3>iPhone 15</h3>
-      <div class="storage">128 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$812.250</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone15used')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 15 Usado','📱',812250)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 15 Plus -->
-    <div class="prod-card" onclick="openDetail('iphone15plusused')">
-      <span class="prod-badge">Usado</span>
-
-      <img src="https://i.postimg.cc/m2627jRQ/i-PH-15-2-1-removebg-preview.png"
-      alt="iPhone 15 Plus"
-      class="product-image">
-
-      <h3>iPhone 15 Plus</h3>
-      <div class="storage">128 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$855.000</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone15plusused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 15 Plus Usado','📱',855000)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 15 Pro -->
-    <div class="prod-card" onclick="openDetail('iphone15proused')">
-      <span class="prod-badge">Usado</span>
-
-      <img src="https://i.postimg.cc/MGWmkzMj/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024.webp"
-      alt="iPhone 15 Pro"
-      class="product-image">
-
-      <h3>iPhone 15 Pro</h3>
-      <div class="storage">128 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$954.750</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone15proused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 15 Pro Usado','📱',954750)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 15 Pro -->
-    <div class="prod-card" onclick="openDetail('iphone15proused')">
-      <span class="prod-badge">Usado</span>
-
-      <img src="https://i.postimg.cc/MGWmkzMj/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024.webp"
-      alt="iPhone 15 Pro"
-      class="product-image">
-
-      <h3>iPhone 15 Pro</h3>
-      <div class="storage">256 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$1.011.750</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone15proused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 15 Pro Usado','📱',1011750)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 15 Pro Max -->
-    <div class="prod-card" onclick="openDetail('iphone15promaxused')">
-      <span class="prod-badge">Usado</span>
-
-      <img src="https://i.postimg.cc/rp8N6q05/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024-removebg-preview.png"
-      alt="iPhone 15 Pro Max"
-      class="product-image">
-
-      <h3>iPhone 15 Pro Max</h3>
-      <div class="storage">256 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$1.068.750</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone15promaxused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 15 Pro Max Usado','📱',1068750)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 15 Pro Max -->
-    <div class="prod-card" onclick="openDetail('iphone15promaxused')">
-      <span class="prod-badge">Usado</span>
-
-      <img src="https://i.postimg.cc/rp8N6q05/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024-removebg-preview.png"
-      alt="iPhone 15 Pro Max"
-      class="product-image">
-
-      <h3>iPhone 15 Pro Max</h3>
-      <div class="storage">256 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$1.111.500</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone15promaxused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 15 Pro Max Usado','📱',1111500)">
-      🛒 Agregar
-      </button>
-    </div>
-
-<!-- iPhone 16 -->
-    <div class="prod-card" onclick="openDetail('iphone16used')">
-      <span class="prod-badge">Usado</span>
-
-      <img src="https://i.postimg.cc/Kjj4yHx8/IPH-16-1-1-2-removebg-preview.png"
-      alt="iPhone 16"
-      class="product-image">
-
-      <h3>iPhone 16</h3>
-      <div class="storage">128 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$1.018.875</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone16used')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 16 Usado','📱',1018875)">
-      🛒 Agregar
-      </button>
-    </div>
-
-
-    <!-- iPhone 16 Pro -->
-    <div class="prod-card" onclick="openDetail('iphone16proused')">
-      <span class="prod-badge">Usado</span>
-
-      <img src="https://i.postimg.cc/ZqTxkJBN/iphone-16-pro-max-256gb-natural-titanium-2-removebg-preview.png"
-      alt="iPhone 16 Pro"
-      class="product-image">
-
-      <h3>iPhone 16 Pro</h3>
-      <div class="storage">256 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$1.211.250</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone16proused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 16 Pro Usado','📱',1211250)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 16 Pro -->
-    <div class="prod-card" onclick="openDetail('iphone16proused')">
-      <span class="prod-badge">Usado</span>
-
-      <img src="https://i.postimg.cc/ZqTxkJBN/iphone-16-pro-max-256gb-natural-titanium-2-removebg-preview.png"
-      alt="iPhone 16 Pro"
-      class="product-image">
-
-      <h3>iPhone 16 Pro</h3>
-      <div class="storage">256 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$1.268.250</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone16proused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 16 Pro Usado','📱',1268250)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 16 Pro Max -->
-    <div class="prod-card" onclick="openDetail('iphone16promaxused')">
-      <span class="prod-badge">Usado</span>
-
-      <img src="https://i.postimg.cc/SKyf0m28/iphone-16-pro-max-256gb-natural-titanium-1-removebg-preview.png"
-      alt="iPhone 16 Pro Max"
-      class="product-image">
-
-      <h3>iPhone 16 Pro Max</h3>
-      <div class="storage">256 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$1.425.000</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone16promaxused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 16 Pro Max Usado','📱',1425000)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 16 Pro Max -->
-    <div class="prod-card" onclick="openDetail('iphone16promaxused')">
-      <span class="prod-badge">Usado</span>
-
-      <img src="https://i.postimg.cc/SKyf0m28/iphone-16-pro-max-256gb-natural-titanium-1-removebg-preview.png"
-      alt="iPhone 16 Pro Max"
-      class="product-image">
-
-      <h3>iPhone 16 Pro Max</h3>
-      <div class="storage">256 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$1.482.000</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone16promaxused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 16 Pro Max Usado','📱',1482000)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 17 -->
-    <div class="prod-card" onclick="openDetail('iphone17used')">
-      <span class="prod-badge">Usado</span>
-
-      <img src="https://i.postimg.cc/V6CmBPfJ/8750048b-7228-4ddc-9591-2285716541a6-removebg-preview.png"
-      alt="iPhone 17"
-      class="product-image">
-
-      <h3>iPhone 17</h3>
-      <div class="storage">256 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$1.268.250</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone16promaxused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 16 Pro Max Usado','📱',1268250)">
-      🛒 Agregar
-      </button>
-    </div>
-
-    <!-- iPhone 17 Pro -->
-    <div class="prod-card" onclick="openDetail('iphone17proused')">
-      <span class="prod-badge">Usado</span>
-
-      <img src="https://i.postimg.cc/282RWSQF/Iphone-17-Pro-Silver-01-removebg-preview.png"
-      alt="iPhone 17 Pro"
-      class="product-image">
-
-      <h3>iPhone 17 Pro</h3>
-      <div class="storage">256 GB · Excelente estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$1.795.500</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone16promaxused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 17 Pro Usado','📱',1795250)">
-      🛒 Agregar
-      </button>
-    </div>
+  <div class="prod-card" onclick="openDetail('iphone11promaxused')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/nrDm5G76/0046-iphone-11-pro-gold-removebg-preview.png"
+      alt="iPhone 11 Pro Max"
+      class="product-image"
+    >
+
+    <h3>iPhone 11 Pro Max</h3>
+
+    <div class="storage">64 GB · Buen estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$513.000</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone11promaxused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 11 Pro Max Usado','📱',513000)">
+    🛒 Agregar
+    </button>
+
+  </div>
+
+
+
+  <!-- iPhone 12 -->
+  <div class="prod-card" onclick="openDetail('iphone12used')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/8CtBNxM2/i-Phone-12-Mini-P-RED-PDP-Image-Position-2-LAEN-500x500-removebg-preview.png"
+      alt="iPhone 12"
+      class="product-image"
+    >
+
+    <h3>iPhone 12</h3>
+    <div class="storage">64 GB · Muy buen estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$427.500</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone12used')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 12 Usado','📱',427500)">
+    🛒 Agregar
+    </button>
+  </div>
+
+  <!-- iPhone 12 -->
+  <div class="prod-card" onclick="openDetail('iphone12sused')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/8CtBNxM2/i-Phone-12-Mini-P-RED-PDP-Image-Position-2-LAEN-500x500-removebg-preview.png"
+      alt="iPhone 12"
+      class="product-image"
+    >
+
+    <h3>iPhone 12</h3>
+    <div class="storage">128 GB · Muy buen estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$456.000</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone12sused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 12 Usado','📱',456000)">
+    🛒 Agregar
+    </button>
+  </div>
+
+
+
+
+  <!-- iPhone 12 Pro -->
+  <div class="prod-card" onclick="openDetail('iphone12prossused')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/8CtBNxM2/i-Phone-12-Mini-P-RED2-LAEN-500x500-removebg-preview.png"
+      alt="iPhone 12 Pro"
+      class="product-image"
+    >
+
+    <h3>iPhone 12 Pro</h3>
+    <div class="storage">128 GB · Muy buen estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$441.500</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone12prossused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 12 Pro Usado','📱',541500)">
+    🛒 Agregar
+    </button>
+  </div>
+
+  <!-- iPhone 12 Pro -->
+  <div class="prod-card" onclick="openDetail('iphone12prosssused')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/8CtBNxM2/i-Phone-12-Mini-P-RED-PDP-Image-Position-2-LAEN-500x500-removebg-preview.png"
+      alt="iPhone 12 Pro"
+      class="product-image"
+    >
+
+    <h3>iPhone 12 Pro</h3>
+    <div class="storage">256 GB · Muy buen estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$570.000</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone12prosssused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 12 Pro Usado','📱',570000)">
+    🛒 Agregar
+    </button>
+  </div>
+
+
+
+    
+
+  <!-- iPhone 12 Pro Max -->
+  <div class="prod-card" onclick="openDetail('iphone12promaxused')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/VLwdKQf2/i-Phone-12-Pro-Max-4.png"
+      alt="iPhone 12 Pro Max"
+      class="product-image"
+    >
+
+    <h3>iPhone 12 Pro Max</h3>
+    <div class="storage">128 GB · Muy buen estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$598.500</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone12promaxused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 12 Pro Max Usado','📱',598500)">
+    🛒 Agregar
+    </button>
+  </div>
+
+  <!-- iPhone 12 Pro Max -->
+  <div class="prod-card" onclick="openDetail('iphone12promaxsused')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/VLwdKQf2/i-Phone-12-Pro-Max-4.png"
+      alt="iPhone 12 Pro Max"
+      class="product-image"
+    >
+
+    <h3>iPhone 12 Pro Max</h3>
+    <div class="storage">256 GB · Muy buen estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$669.750</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone12promaxsused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 12 Pro Max Usado','📱',669750)">
+    🛒 Agregar
+    </button>
+  </div>
+
+
+
+    
+
+  <!-- iPhone 13 Mini -->
+  <div class="prod-card" onclick="openDetail('iphone13miniused')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/2jQZdPXQ/IPHONE-13-4-removebg-preview.png"
+      alt="iPhone 13 Mini"
+      class="product-image"
+    >
+
+    <h3>iPhone 13 Mini</h3>
+    <div class="storage">128 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$441.750</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone13miniused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 13 Mini Usado','📱',441750)">
+    🛒 Agregar
+    </button>
+  </div>
+
+  <!-- iPhone 13 -->
+  <div class="prod-card" onclick="openDetail('iphone13used')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/2jQZdPXQ/IPHONE-13-4-removebg-preview.png"
+      alt="iPhone 13"
+      class="product-image"
+    >
+
+    <h3>iPhone 13</h3>
+    <div class="storage">128 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$527.250</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone13used')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 13 Usado','📱',527250)">
+    🛒 Agregar
+    </button>
+  </div>
+
+
+
+    
+
+  <!-- iPhone 13 -->
+  <div class="prod-card" onclick="openDetail('iphone13sused')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/2jQZdPXQ/IPHONE-13-4-removebg-preview.png"
+      alt="iPhone 13"
+      class="product-image"
+    >
+
+    <h3>iPhone 13</h3>
+    <div class="storage">128 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$555.750</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone13sused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 13 Usado','📱',555750)">
+    🛒 Agregar
+    </button>
+  </div>
+
+  <!-- iPhone 13 -->
+  <div class="prod-card" onclick="openDetail('iphone13ssused')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/2jQZdPXQ/IPHONE-13-4-removebg-preview.png"
+      alt="iPhone 13"
+      class="product-image"
+    >
+
+    <h3>iPhone 13</h3>
+    <div class="storage">256 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$655.500</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone13ssused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 13 Usado','📱',655500)">
+    🛒 Agregar
+    </button>
+  </div>
+
+
+    
+
+  <!-- iPhone 13 Pro -->
+  <div class="prod-card" onclick="openDetail('iphone13proused')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/q7jX4WyW/b4373060f94f414220f0518e6f17472e5be211ddfaf59f44775b486a9d9f14f1155135-edfa6d09a5b556b6a617430119105.png"
+      alt="iPhone 13 Pro"
+      class="product-image"
+    >
+
+    <h3>iPhone 13 Pro</h3>
+    <div class="storage">128 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$726.750</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone13proused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 13 Pro Usado','📱',726750)">
+    🛒 Agregar
+    </button>
+  </div>
+
+  <!-- iPhone 13 Pro -->
+  <div class="prod-card" onclick="openDetail('iphone13proused256')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/q7jX4WyW/b4373060f94f414220f0518e6f17472e5be211ddfaf59f44775b486a9d9f14f1155135-edfa6d09a5b556b6a617430119105.png"
+      alt="iPhone 13 Pro"
+      class="product-image"
+    >
+
+    <h3>iPhone 13 Pro</h3>
+    <div class="storage">256 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$769.500</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone13proused256')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 13 Pro Usado','📱',769500)">
+    🛒 Agregar
+    </button>
+  </div>
+
+
+    
+
+  <!-- iPhone 13 Pro Max -->
+  <div class="prod-card" onclick="openDetail('iphone13promaxused')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/vT0F7V8P/8e5721b713844bc22dabf69098b4-removebg-preview.png"
+      alt="iPhone 13 Pro Max"
+      class="product-image"
+    >
+
+    <h3>iPhone 13 Pro Max</h3>
+    <div class="storage">128 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$826.500</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone13promaxused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 13 Pro Max Usado','📱',826500)">
+    🛒 Agregar
+    </button>
+  </div>
+
+  <!-- iPhone 13 Pro Max -->
+  <div class="prod-card" onclick="openDetail('iphone13promaxsused')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/vT0F7V8P/8e5721b713844bc22dabf69098b4-removebg-preview.png"
+      alt="iPhone 13 Pro Max"
+      class="product-image"
+    >
+
+    <h3>iPhone 13 Pro Max</h3>
+    <div class="storage">128 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$755.000</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone13promaxsused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 13 Pro Max Usado','📱',855000)">
+    🛒 Agregar
+    </button>
+  </div>
+
+
+
+    
+
+  <!-- iPhone 14 -->
+  <div class="prod-card" onclick="openDetail('iphone14used')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/xdtynBMp/iphone-14-black-d61713d18bdf31d02417016951877100-1024-1024-removebg-preview.png"
+      alt="iPhone 14"
+      class="product-image"
+    >
+
+    <h3>iPhone 14</h3>
+    <div class="storage">128 GB · Muy buen estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$612.750</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone14used')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 14 Usado','📱',612750)">
+    🛒 Agregar
+    </button>
+  </div>
+
+  <!-- iPhone 14 -->
+  <div class="prod-card" onclick="openDetail('iphone14sused')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/xdtynBMp/iphone-14-black-d61713d18bdf31d02417016951877100-1024-1024-removebg-preview.png"
+      alt="iPhone 14"
+      class="product-image"
+    >
+
+    <h3>iPhone 14</h3>
+    <div class="storage">128 GB · Muy buen estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$655.500</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone14sused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 14 Usado','📱',655500)">
+    🛒 Agregar
+    </button>
+  </div>
+
+
+
+  <!-- iPhone 14 Pro -->
+  <div class="prod-card" onclick="openDetail('iphone14proused')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/mrbyxTzn/1703105172-removebg-preview.png"
+      alt="iPhone 14 Pro"
+      class="product-image"
+    >
+
+    <h3>iPhone 14 Pro</h3>
+    <div class="storage">128 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$826.500</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone14proused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 14 Pro Usado','📱',826500)">
+    🛒 Agregar
+    </button>
+  </div>
+
+  <!-- iPhone 14 Pro -->
+  <div class="prod-card" onclick="openDetail('iphone14prosused')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/mrbyxTzn/1703105172-removebg-preview.png"
+      alt="iPhone 14 Pro"
+      class="product-image"
+    >
+
+    <h3>iPhone 14 Pro</h3>
+    <div class="storage">256 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$855.000</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone14prosused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 14 Pro Usado','📱',855000)">
+    🛒 Agregar
+    </button>
+  </div>
+
+
+
+  <!-- iPhone 14 Pro Max -->
+  <div class="prod-card" onclick="openDetail('iphone14promaxused')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/1zJcsbwj/celular-apple-iphone-14-pro-128gb-recondicionado-155300-550x550-1-removebg-preview.png"
+      alt="iPhone 14 Pro Max"
+      class="product-image"
+    >
+
+    <h3>iPhone 14 Pro Max</h3>
+    <div class="storage">256 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$997.500</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone14promaxused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 14 Pro Max Usado','📱',997500)">
+    🛒 Agregar
+    </button>
+  </div>
+
+  <!-- iPhone 14 Pro Max -->
+  <div class="prod-card" onclick="openDetail('iphone14promaxsused')">
+    <span class="prod-badge">Usado</span>
+
+    <img
+      src="https://i.postimg.cc/1zJcsbwj/celular-apple-iphone-14-pro-128gb-recondicionado-155300-550x550-1-removebg-preview.png"
+      alt="iPhone 14 Pro Max"
+      class="product-image"
+    >
+
+    <h3>iPhone 14 Pro Max</h3>
+    <div class="storage">128 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$969.000</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone14promaxsused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 14 Pro Max Usado','📱',969000)">
+    🛒 Agregar
+    </button>
+  </div>
+
+
+
+   
+
+  <!-- iPhone 15 -->
+  <div class="prod-card" onclick="openDetail('iphone15used')">
+    <span class="prod-badge">Usado</span>
+
+    <img src="https://i.postimg.cc/m2627jRQ/i-PH-15-2-1-removebg-preview.png"
+    alt="iPhone 15"
+    class="product-image">
+
+    <h3>iPhone 15</h3>
+    <div class="storage">128 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$812.250</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone15used')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 15 Usado','📱',812250)">
+    🛒 Agregar
+    </button>
+  </div>
+
+  <!-- iPhone 15 -->
+  <div class="prod-card" onclick="openDetail('iphone15sused')">
+    <span class="prod-badge">Usado</span>
+
+    <img src="https://i.postimg.cc/m2627jRQ/i-PH-15-2-1-removebg-preview.png"
+    alt="iPhone 15"
+    class="product-image">
+
+    <h3>iPhone 15</h3>
+    <div class="storage">128 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$812.250</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone15sused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 15 Usado','📱',812250)">
+    🛒 Agregar
+    </button>
+  </div>
+
+
+
+    
+
+  <!-- iPhone 15 Plus -->
+  <div class="prod-card" onclick="openDetail('iphone15plusused')">
+    <span class="prod-badge">Usado</span>
+
+    <img src="https://i.postimg.cc/m2627jRQ/i-PH-15-2-1-removebg-preview.png"
+    alt="iPhone 15 Plus"
+    class="product-image">
+
+    <h3>iPhone 15 Plus</h3>
+    <div class="storage">128 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$855.000</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone15plusused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 15 Plus Usado','📱',855000)">
+    🛒 Agregar
+    </button>
+  </div>
+
+  <!-- iPhone 15 Pro -->
+  <div class="prod-card" onclick="openDetail('iphone15proused')">
+    <span class="prod-badge">Usado</span>
+
+    <img src="https://i.postimg.cc/MGWmkzMj/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024.webp"
+    alt="iPhone 15 Pro"
+    class="product-image">
+
+    <h3>iPhone 15 Pro</h3>
+    <div class="storage">128 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$954.750</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone15proused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 15 Pro Usado','📱',954750)">
+    🛒 Agregar
+    </button>
+  </div>
+
+
+
+
+  <!-- iPhone 15 Pro -->
+  <div class="prod-card" onclick="openDetail('iphone15prosused')">
+    <span class="prod-badge">Usado</span>
+
+    <img src="https://i.postimg.cc/MGWmkzMj/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024.webp"
+    alt="iPhone 15 Pro"
+    class="product-image">
+
+    <h3>iPhone 15 Pro</h3>
+    <div class="storage">256 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$1.011.750</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone15prosused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 15 Pro Usado','📱',1011750)">
+    🛒 Agregar
+    </button>
+  </div>
+
+  <!-- iPhone 15 Pro Max -->
+  <div class="prod-card" onclick="openDetail('iphone15promaxused')">
+    <span class="prod-badge">Usado</span>
+
+    <img src="https://i.postimg.cc/rp8N6q05/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024-removebg-preview.png"
+    alt="iPhone 15 Pro Max"
+    class="product-image">
+
+    <h3>iPhone 15 Pro Max</h3>
+    <div class="storage">256 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$1.068.750</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone15promaxused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 15 Pro Max Usado','📱',1068750)">
+    🛒 Agregar
+    </button>
+  </div>
+
+
+
+    
+
+  <!-- iPhone 15 Pro Max -->
+  <div class="prod-card" onclick="openDetail('iphone15promaxsused')">
+    <span class="prod-badge">Usado</span>
+
+    <img src="https://i.postimg.cc/rp8N6q05/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024-removebg-preview.png"
+    alt="iPhone 15 Pro Max"
+    class="product-image">
+
+    <h3>iPhone 15 Pro Max</h3>
+    <div class="storage">256 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$1.111.500</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone15promaxsused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 15 Pro Max Usado','📱',1111500)">
+    🛒 Agregar
+    </button>
+  </div>
+
+  <!-- iPhone 16 -->
+  <div class="prod-card" onclick="openDetail('iphone16used')">
+    <span class="prod-badge">Usado</span>
+
+    <img src="https://i.postimg.cc/Kjj4yHx8/IPH-16-1-1-2-removebg-preview.png"
+    alt="iPhone 16"
+    class="product-image">
+
+    <h3>iPhone 16</h3>
+    <div class="storage">128 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$1.018.875</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone16used')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 16 Usado','📱',1018875)">
+    🛒 Agregar
+    </button>
+  </div>
+
+
+
+
+
+  <!-- iPhone 16 Pro -->
+  <div class="prod-card" onclick="openDetail('iphone16proused')">
+    <span class="prod-badge">Usado</span>
+
+    <img src="https://i.postimg.cc/ZqTxkJBN/iphone-16-pro-max-256gb-natural-titanium-2-removebg-preview.png"
+    alt="iPhone 16 Pro"
+    class="product-image">
+
+    <h3>iPhone 16 Pro</h3>
+    <div class="storage">256 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$1.211.250</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone16proused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 16 Pro Usado','📱',1211250)">
+    🛒 Agregar
+    </button>
+  </div>
+
+  <!-- iPhone 16 Pro -->
+  <div class="prod-card" onclick="openDetail('iphone16prosused')">
+    <span class="prod-badge">Usado</span>
+
+    <img src="https://i.postimg.cc/ZqTxkJBN/iphone-16-pro-max-256gb-natural-titanium-2-removebg-preview.png"
+    alt="iPhone 16 Pro"
+    class="product-image">
+
+    <h3>iPhone 16 Pro</h3>
+    <div class="storage">256 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$1.268.250</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone16prosused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 16 Pro Usado','📱',1268250)">
+    🛒 Agregar
+    </button>
+  </div>
+
+
+
+
+  <!-- iPhone 16 Pro Max -->
+  <div class="prod-card" onclick="openDetail('iphone16promaxused')">
+    <span class="prod-badge">Usado</span>
+
+    <img src="https://i.postimg.cc/SKyf0m28/iphone-16-pro-max-256gb-natural-titanium-1-removebg-preview.png"
+    alt="iPhone 16 Pro Max"
+    class="product-image">
+
+    <h3>iPhone 16 Pro Max</h3>
+    <div class="storage">256 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$1.425.000</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone16promaxused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 16 Pro Max Usado','📱',1425000)">
+    🛒 Agregar
+    </button>
+  </div>
+
+  <!-- iPhone 16 Pro Max -->
+  <div class="prod-card" onclick="openDetail('iphone16promaxsused')">
+    <span class="prod-badge">Usado</span>
+
+    <img src="https://i.postimg.cc/SKyf0m28/iphone-16-pro-max-256gb-natural-titanium-1-removebg-preview.png"
+    alt="iPhone 16 Pro Max"
+    class="product-image">
+
+    <h3>iPhone 16 Pro Max</h3>
+    <div class="storage">256 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$1.482.000</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone16promaxsused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 16 Pro Max Usado','📱',1482000)">
+    🛒 Agregar
+    </button>
+  </div>
+
+
+
+  <!-- iPhone 17 -->
+  <div class="prod-card" onclick="openDetail('iphone17used')">
+    <span class="prod-badge">Usado</span>
+
+    <img src="https://i.postimg.cc/V6CmBPfJ/8750048b-7228-4ddc-9591-2285716541a6-removebg-preview.png"
+    alt="iPhone 17"
+    class="product-image">
+
+    <h3>iPhone 17</h3>
+    <div class="storage">256 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$1.268.250</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone17used')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 17','📱',1268250)">
+    🛒 Agregar
+    </button>
+  </div>
+
+  <!-- iPhone 17 Pro -->
+  <div class="prod-card" onclick="openDetail('iphone17proused')">
+    <span class="prod-badge">Usado</span>
+
+    <img src="https://i.postimg.cc/282RWSQF/Iphone-17-Pro-Silver-01-removebg-preview.png"
+    alt="iPhone 17 Pro"
+    class="product-image">
+
+    <h3>iPhone 17 Pro</h3>
+    <div class="storage">256 GB · Excelente estado</div>
+
+    <div class="price-label">Precio</div>
+    <div class="price">$1.795.500</div>
+
+    <button class="detail-btn"
+    onclick="event.stopPropagation();openDetail('iphone17proused')">
+    Ver detalles
+    </button>
+
+    <button class="add-cart-btn"
+    onclick="event.stopPropagation();addToCart('iPhone 17 Pro Usado','📱',1795250)">
+    🛒 Agregar
+    </button>
+  </div>
+
 
 
 
@@ -2470,6 +2634,582 @@ iphone13proused:{
     'Excelente rendimiento'
   ]
 },
+
+iphone13proused256:{
+  name:'iPhone 13 Pro',
+  icon:'📱',
+  image:'https://i.postimg.cc/q7jX4WyW/b4373060f94f414220f0518e6f17472e5be211ddfaf59f44775b486a9d9f14f1155135-edfa6d09a5b556b6a617430119105.png',
+  price:769500,
+
+  storage:'256 GB · Excelente estado',
+
+  description:'iPhone 13 Pro usado en excelente estado, con gran rendimiento, pantalla ProMotion y cámaras profesionales.',
+
+  specs:{
+    Pantalla:'6.1"',
+    Chip:'A15 Bionic',
+    Batería:'100%',
+    Estado:'Usado'
+  },
+
+iphone13promaxused:{
+  name:'iPhone 13 Pro Max',
+  icon:'📱',
+  image:'https://i.postimg.cc/vT0F7V8P/8e5721b713844bc22dabf69098b4-removebg-preview.png',
+  price:826500,
+
+  storage:'128 GB · Excelente estado',
+
+  description:'iPhone 13 Pro Max usado en excelente estado, con gran batería y cámaras profesionales.',
+
+  specs:{
+    Pantalla:'6.7"',
+    Chip:'A15 Bionic',
+    Batería:'+85%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Excelente rendimiento',
+    'Pantalla grande',
+    'Ideal para contenido'
+  ]
+},
+
+iphone13promaxsused:{
+  name:'iPhone 13 Pro Max',
+  icon:'📱',
+  image:'https://i.postimg.cc/vT0F7V8P/8e5721b713844bc22dabf69098b4-removebg-preview.png',
+  price:755000,
+
+  storage:'128 GB · Excelente estado',
+
+  description:'iPhone 13 Pro Max usado en excelente estado y funcionamiento.',
+
+  specs:{
+    Pantalla:'6.7"',
+    Chip:'A15 Bionic',
+    Batería:'100%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Muy buena batería',
+    'Excelente rendimiento',
+    'Cámaras profesionales'
+  ]
+},
+
+  benefits:[
+    'Equipo probado y certificado',
+    'Pantalla ProMotion 120Hz',
+    'Excelente rendimiento',
+    'Cámaras profesionales',
+    'Ideal para fotos y redes'
+  ]
+},
+
+iphone14used:{
+  name:'iPhone 14',
+  icon:'📱',
+  image:'https://i.postimg.cc/xdtynBMp/iphone-14-black-d61713d18bdf31d02417016951877100-1024-1024-removebg-preview.png',
+  price:612750,
+
+  storage:'128 GB · Muy buen estado',
+
+  description:'iPhone 14 usado en muy buen estado y excelente funcionamiento.',
+
+  specs:{
+    Pantalla:'6.1"',
+    Chip:'A15 Bionic',
+    Batería:'+85%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Muy buen rendimiento',
+    'Excelente cámara',
+    'Entrega inmediata'
+  ]
+},
+
+iphone14sused:{
+  name:'iPhone 14',
+  icon:'📱',
+  image:'https://i.postimg.cc/xdtynBMp/iphone-14-black-d61713d18bdf31d02417016951877100-1024-1024-removebg-preview.png',
+  price:655500,
+
+  storage:'128 GB · Muy buen estado',
+
+  description:'iPhone 14 usado en excelente estado con batería al 100%.',
+
+  specs:{
+    Pantalla:'6.1"',
+    Chip:'A15 Bionic',
+    Batería:'100%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Batería excelente',
+    'Muy buen rendimiento',
+    'Ideal para uso diario'
+  ]
+},
+
+iphone14proused:{
+  name:'iPhone 14 Pro',
+  icon:'📱',
+  image:'https://i.postimg.cc/mrbyxTzn/1703105172-removebg-preview.png',
+  price:826500,
+
+  storage:'128 GB · Excelente estado',
+
+  description:'iPhone 14 Pro usado en excelente estado y funcionamiento.',
+
+  specs:{
+    Pantalla:'6.1"',
+    Chip:'A16 Bionic',
+    Batería:'100%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Excelente rendimiento',
+    'Cámaras profesionales',
+    'Entrega inmediata'
+  ]
+},
+
+iphone14prosused:{
+  name:'iPhone 14 Pro',
+  icon:'📱',
+  image:'https://i.postimg.cc/mrbyxTzn/1703105172-removebg-preview.png',
+  price:855000,
+
+  storage:'256 GB · Excelente estado',
+
+  description:'iPhone 14 Pro usado en excelente estado con batería al 100%.',
+
+  specs:{
+    Pantalla:'6.1"',
+    Chip:'A16 Bionic',
+    Batería:'100%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Muy buena batería',
+    'Excelente rendimiento',
+    'Ideal para contenido'
+  ]
+},
+
+iphone14promaxused:{
+  name:'iPhone 14 Pro Max',
+  icon:'📱',
+  image:'https://i.postimg.cc/1zJcsbwj/celular-apple-iphone-14-pro-128gb-recondicionado-155300-550x550-1-removebg-preview.png',
+  price:997500,
+
+  storage:'256 GB · Excelente estado',
+
+  description:'iPhone 14 Pro Max usado en excelente estado y funcionamiento.',
+
+  specs:{
+    Pantalla:'6.7"',
+    Chip:'A16 Bionic',
+    Batería:'90%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Excelente rendimiento',
+    'Pantalla premium',
+    'Ideal para contenido'
+  ]
+},
+
+iphone14promaxsused:{
+  name:'iPhone 14 Pro Max',
+  icon:'📱',
+  image:'https://i.postimg.cc/1zJcsbwj/celular-apple-iphone-14-pro-128gb-recondicionado-155300-550x550-1-removebg-preview.png',
+  price:969000,
+
+  storage:'128 GB · Excelente estado',
+
+  description:'iPhone 14 Pro Max usado en excelente estado y funcionamiento.',
+
+  specs:{
+    Pantalla:'6.7"',
+    Chip:'A16 Bionic',
+    Batería:'100%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Muy buena batería',
+    'Excelente rendimiento',
+    'Entrega inmediata'
+  ]
+},
+
+iphone15used:{
+  name:'iPhone 15',
+  icon:'📱',
+  image:'https://i.postimg.cc/m2627jRQ/i-PH-15-2-1-removebg-preview.png',
+  price:812250,
+
+  storage:'128 GB · Excelente estado',
+
+  description:'iPhone 15 usado en excelente estado y funcionamiento.',
+
+  specs:{
+    Pantalla:'6.1"',
+    Chip:'A16 Bionic',
+    Batería:'89%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Excelente rendimiento',
+    'Muy buena cámara',
+    'Entrega inmediata'
+  ]
+},
+
+iphone15sused:{
+  name:'iPhone 15',
+  icon:'📱',
+  image:'https://i.postimg.cc/m2627jRQ/i-PH-15-2-1-removebg-preview.png',
+  price:812250,
+
+  storage:'128 GB · Excelente estado',
+
+  description:'iPhone 15 usado en excelente estado con batería al 100%.',
+
+  specs:{
+    Pantalla:'6.1"',
+    Chip:'A16 Bionic',
+    Batería:'100%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Batería excelente',
+    'Muy buen rendimiento',
+    'Ideal para uso diario'
+  ]
+},
+
+iphone15plusused:{
+  name:'iPhone 15 Plus',
+  icon:'📱',
+  image:'https://i.postimg.cc/m2627jRQ/i-PH-15-2-1-removebg-preview.png',
+  price:855000,
+
+  storage:'128 GB · Excelente estado',
+
+  description:'iPhone 15 Plus usado en excelente estado con batería al 100%.',
+
+  specs:{
+    Pantalla:'6.7"',
+    Chip:'A16 Bionic',
+    Batería:'100%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Batería excelente',
+    'Pantalla grande',
+    'Entrega inmediata'
+  ]
+},
+
+iphone15proused:{
+  name:'iPhone 15 Pro',
+  icon:'📱',
+  image:'https://i.postimg.cc/MGWmkzMj/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024.webp',
+  price:954750,
+
+  storage:'128 GB · Excelente estado',
+
+  description:'iPhone 15 Pro usado en excelente estado con batería al 100%.',
+
+  specs:{
+    Pantalla:'6.1"',
+    Chip:'A17 Pro',
+    Batería:'100%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Excelente rendimiento',
+    'Cámaras profesionales',
+    'Entrega inmediata'
+  ]
+},
+
+iphone15prosused:{
+  name:'iPhone 15 Pro',
+  icon:'📱',
+  image:'https://i.postimg.cc/MGWmkzMj/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024.webp',
+  price:1011750,
+
+  storage:'256 GB · Excelente estado',
+
+  description:'iPhone 15 Pro usado en excelente estado con batería al 100%.',
+
+  specs:{
+    Pantalla:'6.1"',
+    Chip:'A17 Pro',
+    Batería:'100%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Muy buena batería',
+    'Excelente rendimiento',
+    'Ideal para contenido'
+  ]
+},
+
+iphone15promaxused:{
+  name:'iPhone 15 Pro Max',
+  icon:'📱',
+  image:'https://i.postimg.cc/rp8N6q05/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024-removebg-preview.png',
+  price:1068750,
+
+  storage:'256 GB · Excelente estado',
+
+  description:'iPhone 15 Pro Max usado en excelente estado y funcionamiento.',
+
+  specs:{
+    Pantalla:'6.7"',
+    Chip:'A17 Pro',
+    Batería:'+85%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Excelente rendimiento',
+    'Pantalla premium',
+    'Ideal para contenido'
+  ]
+},
+
+iphone15promaxsused:{
+  name:'iPhone 15 Pro Max',
+  icon:'📱',
+  image:'https://i.postimg.cc/rp8N6q05/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024-removebg-preview.png',
+  price:1111500,
+
+  storage:'256 GB · Excelente estado',
+
+  description:'iPhone 15 Pro Max usado en excelente estado y funcionamiento.',
+
+  specs:{
+    Pantalla:'6.7"',
+    Chip:'A17 Pro',
+    Batería:'95/100%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Muy buena batería',
+    'Excelente rendimiento',
+    'Entrega inmediata'
+  ]
+},
+
+iphone16used:{
+  name:'iPhone 16',
+  icon:'📱',
+  image:'https://i.postimg.cc/Kjj4yHx8/IPH-16-1-1-2-removebg-preview.png',
+  price:1018875,
+
+  storage:'128 GB · Excelente estado',
+
+  description:'iPhone 16 usado en excelente estado y funcionamiento.',
+
+  specs:{
+    Pantalla:'6.1"',
+    Chip:'A18',
+    Batería:'+90%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Excelente rendimiento',
+    'Muy buena batería',
+    'Entrega inmediata'
+  ]
+},
+
+iphone16proused:{
+  name:'iPhone 16 Pro',
+  icon:'📱',
+  image:'https://i.postimg.cc/ZqTxkJBN/iphone-16-pro-max-256gb-natural-titanium-2-removebg-preview.png',
+  price:1211250,
+
+  storage:'256 GB · Excelente estado',
+
+  description:'iPhone 16 Pro usado en excelente estado y funcionamiento.',
+
+  specs:{
+    Pantalla:'6.3"',
+    Chip:'A18 Pro',
+    Batería:'+90%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Excelente rendimiento',
+    'Muy buena batería',
+    'Entrega inmediata'
+  ]
+},
+
+iphone16prosused:{
+  name:'iPhone 16 Pro',
+  icon:'📱',
+  image:'https://i.postimg.cc/ZqTxkJBN/iphone-16-pro-max-256gb-natural-titanium-2-removebg-preview.png',
+  price:1268250,
+
+  storage:'256 GB · Excelente estado',
+
+  description:'iPhone 16 Pro usado en excelente estado y funcionamiento.',
+
+  specs:{
+    Pantalla:'6.3"',
+    Chip:'A18 Pro',
+    Batería:'+90%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Excelente rendimiento',
+    'Muy buena batería',
+    'Ideal para contenido'
+  ]
+},
+
+iphone16promaxused:{
+  name:'iPhone 16 Pro Max',
+  icon:'📱',
+  image:'https://i.postimg.cc/SKyf0m28/iphone-16-pro-max-256gb-natural-titanium-1-removebg-preview.png',
+  price:1425000,
+
+  storage:'256 GB · Excelente estado',
+
+  description:'iPhone 16 Pro Max usado en excelente estado y funcionamiento.',
+
+  specs:{
+    Pantalla:'6.9"',
+    Chip:'A18 Pro',
+    Batería:'+90%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Excelente rendimiento',
+    'Pantalla premium',
+    'Ideal para contenido'
+  ]
+},
+
+iphone16promaxsused:{
+  name:'iPhone 16 Pro Max',
+  icon:'📱',
+  image:'https://i.postimg.cc/SKyf0m28/iphone-16-pro-max-256gb-natural-titanium-1-removebg-preview.png',
+  price:1482000,
+
+  storage:'256 GB · Excelente estado',
+
+  description:'iPhone 16 Pro Max usado en excelente estado con batería al 100%.',
+
+  specs:{
+    Pantalla:'6.9"',
+    Chip:'A18 Pro',
+    Batería:'100%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Muy buena batería',
+    'Excelente rendimiento',
+    'Entrega inmediata'
+  ]
+},
+
+iphone17used:{
+  name:'iPhone 17',
+  icon:'📱',
+  image:'https://i.postimg.cc/V6CmBPfJ/8750048b-7228-4ddc-9591-2285716541a6-removebg-preview.png',
+  price:1268250,
+
+  storage:'256 GB · Excelente estado',
+
+  description:'iPhone 17 usado en excelente estado con batería al 100%.',
+
+  specs:{
+    Pantalla:'6.3"',
+    Chip:'A19',
+    Batería:'100%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Muy buena batería',
+    'Excelente rendimiento',
+    'Entrega inmediata'
+  ]
+},
+
+iphone17proused:{
+  name:'iPhone 17 Pro',
+  icon:'📱',
+  image:'https://i.postimg.cc/282RWSQF/Iphone-17-Pro-Silver-01-removebg-preview.png',
+  price:1795500,
+
+  storage:'256 GB · Excelente estado',
+
+  description:'iPhone 17 Pro usado en excelente estado con batería al 100%.',
+
+  specs:{
+    Pantalla:'6.3"',
+    Chip:'A19 Pro',
+    Batería:'100%',
+    Estado:'Usado'
+  },
+
+  benefits:[
+    'Equipo probado',
+    'Muy buena batería',
+    'Excelente rendimiento',
+    'Ideal para contenido'
+  ]
+},
   iphone16promax:{name:'iPhone 16 Pro Max',icon:'📱',price:2299999,storage:'256 GB · Titanio Natural',description:'El iPhone más potente de la línea, ideal para quienes buscan la mejor cámara, máxima batería y rendimiento premium.',specs:{Pantalla:'6.9" Super Retina XDR',Cámara:'Sistema Pro',Chip:'A18 Pro',Batería:'Alto rendimiento',Estado:'Nuevo sellado',Garantía:'Incluida'},benefits:['Equipo nuevo en caja sellada','Ideal para fotos, video y redes sociales','Excelente rendimiento para uso intensivo','Compatible con accesorios MagSafe','Entrega en Rosario o envío a coordinar']},
   iphone16pro:{name:'iPhone 16 Pro',icon:'📱',price:1999999,storage:'128 GB · Titanio Negro',description:'Modelo Pro compacto, potente y elegante. Perfecto para quienes quieren rendimiento profesional sin ir al tamaño Max.',specs:{Pantalla:'6.3" Super Retina XDR',Cámara:'Sistema Pro',Chip:'A18 Pro',Almacenamiento:'128 GB',Estado:'Nuevo sellado',Color:'Titanio Negro'},benefits:['Diseño premium en titanio','Excelente cámara para contenido','Muy buen equilibrio entre tamaño y potencia','Nuevo en caja','Financiación a consultar']},
   iphone16:{name:'iPhone 16',icon:'📱',price:1599999,storage:'128 GB · Negro',description:'iPhone moderno, rápido y con excelente cámara. Una gran opción para uso diario, redes, trabajo y entretenimiento.',specs:{Pantalla:'6.1"',Cámara:'Doble cámara',Chip:'Nueva generación',Almacenamiento:'128 GB',Estado:'Nuevo sellado',Color:'Negro'},benefits:['Equipo nuevo','Muy buena autonomía','Cámara ideal para redes sociales','Excelente relación precio/calidad','Envíos a todo el país']},
@@ -2502,6 +3242,7 @@ function showPage(id){
   if(id==='checkoutPage') renderCheckoutPage();
 }
 
+
 function updateBadge(){
   const qty = cart.reduce((s,i)=>s+i.qty,0);
   const badge = document.getElementById('cartBadge');
@@ -2521,6 +3262,11 @@ function addToCart(name,icon,price){
 function addSelectedToCart(){
   if(!selectedProduct) return;
   addToCart(selectedProduct.name, selectedProduct.icon, selectedProduct.price);
+}
+
+function toggleGroup(id){
+  const group = document.getElementById(id);
+  group.classList.toggle('active');
 }
 
 function openDetail(id){
@@ -2626,11 +3372,12 @@ function toggleTheme(){
 
 // restore saved theme
 (function(){
-  const saved = localStorage.getItem('theme_isr');
-  if(saved){
-    document.documentElement.setAttribute('data-theme', saved);
-    document.getElementById('themeBtn').textContent = saved==='light' ? '🌙' : '☀️';
-  }
+  const saved = localStorage.getItem('theme_isr') || 'light';
+
+  document.documentElement.setAttribute('data-theme', saved);
+
+  document.getElementById('themeBtn').textContent =
+    saved === 'light' ? '🌙' : '☀️';
 })();
 
 updateBadge();
