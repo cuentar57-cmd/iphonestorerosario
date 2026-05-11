@@ -871,7 +871,7 @@ footer p { font-size:.78rem; color:var(--gray); }
   <div class="hero-content">
     <div class="hero-tag anim-fade-in"><span class="dot"></span>Tienda Oficial Rosario</div>
     <h1 class="anim-fade-up delay-1"><span class="vio">iPhone</span><br>Seminuevos &<br>Sellados</h1>
-    <p class="anim-fade-up delay-2">Los mejores celulares con garantía, financiación y envíos a todo el país. Al mejor precio de Rosario.</p>
+    <p class="anim-fade-up delay-2">La mejor opción para tu cambio.Todos los celulares cuenta con garantía, financiación y envío a todo el país.</p>
     <div class="hero-btns anim-fade-up delay-3">
       <a href="#sellados" class="btn-primary">Ver Productos</a>
       <a href="https://wa.me/5493412345678" target="_blank" class="btn-ghost">Consultar por WhatsApp</a>
@@ -3972,41 +3972,38 @@ function money(n){
   });
 }
 
-let dolarBlueActual = 0;
+
+let dolarBlueActual = 1425;
+
+function money(n){
+  return n.toLocaleString('es-AR', {
+    style:'currency',
+    currency:'ARS',
+    maximumFractionDigits:0
+  });
+}
 
 async function actualizarPreciosDolarBlue(){
-
   try{
-
-    const res = await fetch('https://api.bluelytics.com.ar/v2/latest');
-
+    const res = await fetch('https://dolarapi.com/v1/dolares/blue');
     const data = await res.json();
 
-    // ajuste Rosario
     const AJUSTE_ROSARIO = 25;
 
-    dolarBlueActual = data.blue.value_sell + AJUSTE_ROSARIO;
-
-    document.querySelectorAll('.price[data-usd]').forEach(price => {
-
-      const usd = Number(price.dataset.usd);
-
-      const precioPesos = usd * dolarBlueActual;
-
-      price.textContent = money(precioPesos);
-
-    });
+    dolarBlueActual = data.venta + AJUSTE_ROSARIO;
 
   }catch(error){
-
-    console.log('No se pudo actualizar el dólar blue', error);
-
+    console.log('No se pudo actualizar DolarAPI, uso dólar fijo Rosario', error);
+    dolarBlueActual = 1425;
   }
 
+  document.querySelectorAll('.price[data-usd]').forEach(price => {
+    const usd = Number(price.dataset.usd);
+    price.textContent = money(usd * dolarBlueActual);
+  });
 }
 
 actualizarPreciosDolarBlue();
-
 setInterval(actualizarPreciosDolarBlue, 300000);
 
 function changeQty(name, delta){
