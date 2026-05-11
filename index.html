@@ -3972,30 +3972,41 @@ function money(n){
   });
 }
 
+let dolarBlueActual = 0;
+
 async function actualizarPreciosDolarBlue(){
+
   try{
-    const res = await fetchconst res = await fetch('https://www.infodolar.com/cotizacion-dolar-localidad-rosario-provincia-santa-fe.aspx');
+
+    const res = await fetch('https://api.bluelytics.com.ar/v2/latest');
+
     const data = await res.json();
 
-    const dolarBlue = data.venta;
+    // ajuste Rosario
+    const AJUSTE_ROSARIO = 25;
+
+    dolarBlueActual = data.blue.value_sell + AJUSTE_ROSARIO;
 
     document.querySelectorAll('.price[data-usd]').forEach(price => {
-      const usd = Number(price.dataset.usd);
-      const precioPesos = usd * dolarBlue;
 
-      price.textContent = precioPesos.toLocaleString('es-AR', {
-        style:'currency',
-        currency:'ARS',
-        maximumFractionDigits:0
-      });
+      const usd = Number(price.dataset.usd);
+
+      const precioPesos = usd * dolarBlueActual;
+
+      price.textContent = money(precioPesos);
+
     });
 
   }catch(error){
+
     console.log('No se pudo actualizar el dólar blue', error);
+
   }
+
 }
 
 actualizarPreciosDolarBlue();
+
 setInterval(actualizarPreciosDolarBlue, 300000);
 
 function changeQty(name, delta){
