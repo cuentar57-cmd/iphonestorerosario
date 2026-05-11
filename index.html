@@ -2837,6 +2837,226 @@ let selectedProduct = null;
 let selectedProductId = null;
 
 const products = {
+  iphone13new:{
+  name:'iPhone 13',
+  price:783750,
+  image:'https://i.postimg.cc/2jQZdPXQ/IPHONE-13-4-removebg-preview.png',
+  storage:'128 GB · Sellado',
+  description:'iPhone 13 sellado de fábrica, ideal para quienes buscan excelente rendimiento, cámaras de gran calidad y batería duradera. Equipo nuevo, listo para usar.',
+  specs:{
+    Pantalla:'6.1" Super Retina XDR',
+    Chip:'A15 Bionic',
+    Camara:'Dual 12 MP',
+    Bateria:'Hasta 19 hs de video',
+    FaceID:'Sí'
+  },
+  benefits:[
+    'Equipo nuevo y sellado',
+    'Excelente rendimiento',
+    'Cámaras de alta calidad',
+    'Batería duradera',
+    'Garantía de funcionamiento'
+  ]
+},
+
+iphone15new:{
+  name:'iPhone 15',
+  price:1011750,
+  image:'https://i.postimg.cc/m2627jRQ/i-PH-15-2-1-removebg-preview.png',
+  storage:'128 GB · Sellado',
+  description:'iPhone 15 sellado con Dynamic Island, cámara mejorada de 48 MP y excelente autonomía. Diseño moderno y rendimiento premium.',
+  specs:{
+    Pantalla:'6.1" Super Retina XDR',
+    Chip:'A16 Bionic',
+    Camara:'48 MP',
+    Puerto:'USB-C',
+    DynamicIsland:'Sí'
+  },
+  benefits:[
+    'Equipo nuevo sellado',
+    'USB-C de carga rápida',
+    'Fotos de gran calidad',
+    'Dynamic Island',
+    'Excelente batería'
+  ]
+},
+
+iphone16new128:{
+  name:'iPhone 16',
+  price:1182750,
+  image:'https://i.postimg.cc/28Xh3nKc/7f3185fb-23ed-4c53-9017-739fa050e5a8-removebg-preview.png',
+  storage:'128 GB · Sellado',
+  description:'iPhone 16 sellado con nuevo diseño, mayor potencia y mejoras en cámara y batería. Ideal para quienes buscan lo último de Apple.',
+  specs:{
+    Pantalla:'6.1" OLED',
+    Chip:'A18',
+    Camara:'48 MP',
+    Bateria:'Mayor autonomía',
+    FaceID:'Sí'
+  },
+  benefits:[
+    'Equipo totalmente nuevo',
+    'Procesador de última generación',
+    'Excelente rendimiento',
+    'Mayor duración de batería',
+    'Diseño moderno'
+  ]
+},
+
+iphone16new256:{
+  name:'iPhone 16',
+  price:1311000,
+  image:'https://i.postimg.cc/Kjj4yHx8/IPH-16-1-1-2-removebg-preview.png',
+  storage:'256 GB · Sellado',
+  description:'iPhone 16 de 256 GB sellado, ideal para quienes necesitan más almacenamiento y máximo rendimiento diario.',
+  specs:{
+    Pantalla:'6.1" OLED',
+    Chip:'A18',
+    Almacenamiento:'256 GB',
+    Camara:'48 MP',
+    FaceID:'Sí'
+  },
+  benefits:[
+    'Más espacio para fotos y videos',
+    'Equipo sellado',
+    'Excelente batería',
+    'Gran rendimiento',
+    'Tecnología Apple nueva'
+  ]
+},
+
+iphone17new:{
+  name:'iPhone 17',
+  price:1396500,
+  image:'https://i.postimg.cc/V6CmBPfJ/8750048b-7228-4ddc-9591-2285716541a6-removebg-preview.png',
+  storage:'256 GB · Sellado',
+  description:'iPhone 17 sellado con mejoras en rendimiento, autonomía y cámaras. Diseño premium y experiencia Apple de última generación.',
+  specs:{
+    Pantalla:'6.3" OLED',
+    Chip:'A19',
+    Almacenamiento:'256 GB',
+    Camara:'Sistema avanzado',
+    FaceID:'Sí'
+  },
+  benefits:[
+    'Equipo nuevo sellado',
+    'Máximo rendimiento',
+    'Excelente autonomía',
+    'Gran capacidad',
+    'Última tecnología Apple'
+  ]
+},
+
+iphone17pro256:{
+  name:'iPhone 17 Pro',
+  price:0,
+  image:'https://i.postimg.cc/282RWSQF/Iphone-17-Pro-Silver-01-removebg-preview.png',
+  storage:'256 GB · Sellado',
+  description:'iPhone 17 Pro sellado con terminación premium y potencia extrema. Consultar disponibilidad y precio actualizado.',
+  specs:{
+    Pantalla:'6.3" ProMotion',
+    Chip:'A19 Pro',
+    Camara:'Sistema Pro',
+    Material:'Titanio',
+    Color:'Silver'
+  },
+  benefits:[
+    'Equipo premium',
+    'Color Silver',
+    'Máximo rendimiento',
+    'Tecnología Pro',
+    'Sellado de fábrica'
+  ]
+},
+
+iphone17pro512:{
+  name:'iPhone 17 Pro',
+  price:2280000,
+  image:'https://i.postimg.cc/282RWSQF/Iphone-17-Pro-Silver-01-removebg-preview.png',
+  storage:'512 GB · Sellado · Silver',
+  description:'iPhone 17 Pro Silver de 512 GB sellado, ideal para usuarios exigentes que buscan máxima potencia y almacenamiento.',
+  specs:{
+    Pantalla:'6.3" ProMotion',
+    Chip:'A19 Pro',
+    Almacenamiento:'512 GB',
+    Material:'Titanio',
+    Color:'Silver'
+  },
+  benefits:[
+    'Color Silver',
+    'Gran capacidad',
+    'Rendimiento extremo',
+    'Equipo nuevo sellado',
+    'Experiencia Pro'
+  ]
+},
+
+iphone17promax256a:{
+  name:'iPhone 17 Pro Max',
+  price:2180250,
+  image:'https://i.postimg.cc/RZK78Ngj/Diseno-sin-titulo-2-450x450.png',
+  storage:'256 GB · Sellado',
+  description:'iPhone 17 Pro Max sellado con pantalla grande, batería superior y rendimiento premium.',
+  specs:{
+    Pantalla:'6.9" ProMotion',
+    Chip:'A19 Pro',
+    Almacenamiento:'256 GB',
+    Material:'Titanio',
+    FaceID:'Sí'
+  },
+  benefits:[
+    'Pantalla premium',
+    'Excelente batería',
+    'Equipo nuevo',
+    'Rendimiento extremo',
+    'Cámaras avanzadas'
+  ]
+},
+
+iphone17promax256b:{
+  name:'iPhone 17 Pro Max',
+  price:2208750,
+  image:'https://i.postimg.cc/RZK78Ngj/Diseno-sin-titulo-2-450x450.png',
+  storage:'256 GB · Sellado · Silver',
+  description:'iPhone 17 Pro Max Silver sellado con terminación premium y máxima potencia Apple.',
+  specs:{
+    Pantalla:'6.9" ProMotion',
+    Chip:'A19 Pro',
+    Almacenamiento:'256 GB',
+    Material:'Titanio',
+    Color:'Silver'
+  },
+  benefits:[
+    'Color Silver',
+    'Equipo premium',
+    'Gran batería',
+    'Máximo rendimiento',
+    'Sellado de fábrica'
+  ]
+},
+
+iphone17promax512:{
+  name:'iPhone 17 Pro Max',
+  price:2493750,
+  image:'https://i.postimg.cc/RZK78Ngj/Diseno-sin-titulo-2-450x450.png',
+  storage:'512 GB · Sellado · Silver',
+  description:'iPhone 17 Pro Max Silver de 512 GB sellado, pensado para quienes buscan lo mejor de Apple sin límites.',
+  specs:{
+    Pantalla:'6.9" ProMotion',
+    Chip:'A19 Pro',
+    Almacenamiento:'512 GB',
+    Material:'Titanio',
+    Color:'Silver'
+  },
+  benefits:[
+    'Color Silver',
+    '512 GB de almacenamiento',
+    'Experiencia Pro Max',
+    'Equipo nuevo sellado',
+    'Máxima potencia Apple'
+  ]
+},
+  
 iphone11used:{
   name:'iPhone 11',
   icon:'📱',
