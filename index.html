@@ -374,10 +374,18 @@ section { padding:90px 5%; }
 
 .hidden-card{
   display:none;
+
+  opacity:0;
+  transform:translateY(20px);
+
+  transition:
+    opacity .45s ease,
+    transform .45s ease;
 }
 
 .hidden-card.show{
-  display:flex;
+  opacity:1;
+  transform:translateY(0);
 }
 
 .prod-card:hover .prod-icon img{
@@ -700,15 +708,74 @@ footer p { font-size:.78rem; color:var(--gray); }
 }
 
 .toggle-btn{
-  width:180px;
-  height:55px;
+  width:100%;
+  margin-top:12px;
+  padding:12px 16px;
   border:none;
   border-radius:14px;
   background:var(--violet);
   color:#fff;
-  font-size:1rem;
+  font-size:.95rem;
   font-weight:700;
   cursor:pointer;
+  transition:.3s;
+}
+
+.toggle-btn:hover{
+  transform:translateY(-2px);
+  opacity:.92;
+}
+
+.filter-bar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:24px;
+}
+
+.filter-bar button{
+  border:none;
+  background:#1f1f1f;
+  color:#fff;
+  padding:10px 18px;
+  border-radius:12px;
+  cursor:pointer;
+  transition:.3s;
+  font-weight:600;
+}
+
+.filter-bar button:hover{
+  background:var(--violet);
+  transform:translateY(-2px);
+}
+
+[data-theme="light"] .filter-bar button{
+  background:#fff;
+  color:#111;
+  border:1px solid #ddd;
+}
+
+.usd-price{
+  font-size:.85rem;
+  color:var(--gray);
+  margin-top:4px;
+  font-weight:600;
+}
+
+.installments{
+  margin-top:14px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.installment-item{
+  background:rgba(98,0,255,.08);
+  border:1px solid rgba(98,0,255,.15);
+  padding:10px 14px;
+  border-radius:14px;
+  font-size:.9rem;
+  font-weight:600;
 }
 
 /* ══ RESPONSIVE ══ */
@@ -967,10 +1034,21 @@ footer p { font-size:.78rem; color:var(--gray); }
     <p>Equipos certificados en excelente estado</p>
   </div>
 
+<div class="filter-bar">
+  <button onclick="filterProducts('all')">Todos</button>
+  <button onclick="filterProducts('iphone11')">iPhone 11</button>
+  <button onclick="filterProducts('iphone12')">iPhone 12</button>
+  <button onclick="filterProducts('iphone13')">iPhone 13</button>
+  <button onclick="filterProducts('iphone14')">iPhone 14</button>
+  <button onclick="filterProducts('iphone15')">iPhone 15</button>
+  <button onclick="filterProducts('iphone16')">iPhone 16</button>
+  <button onclick="filterProducts('iphone17')">iPhone 17</button>
+</div>
+
 <div class="products-grid">
 
- <!-- iPhone 11 -->
-<div class="prod-card" onclick="openDetail('iphone11used')">
+<!-- iPhone 11 -->
+<div class="prod-card iphone11" onclick="openDetail('iphone11used')">
   <span class="prod-badge">Usado</span>
 
   <img src="https://i.postimg.cc/fTzdT8W6/iphone-11-ctalog-removebg-preview.png"
@@ -982,7 +1060,12 @@ footer p { font-size:.78rem; color:var(--gray); }
   <div class="storage">64 GB · Buen estado</div>
 
   <div class="price-label">Precio</div>
-  <div class="price">$342.000</div>
+
+  <div class="price" data-usd="240">$0</div>
+
+  <div class="usd-price">
+    USD 240
+  </div>
 
   <button class="detail-btn"
   onclick="event.stopPropagation();openDetail('iphone11used')">
@@ -1002,7 +1085,9 @@ footer p { font-size:.78rem; color:var(--gray); }
 </div>
 
 <!-- oculto -->
-<div class="prod-card hidden-card mas11" onclick="openDetail('iphone11sused')">
+<div class="prod-card hidden-card mas11 iphone11"
+onclick="openDetail('iphone11sused')">
+
   <span class="prod-badge">Usado</span>
 
   <img src="https://i.postimg.cc/fTzdT8W6/iphone-11-ctalog-removebg-preview.png"
@@ -1014,7 +1099,12 @@ footer p { font-size:.78rem; color:var(--gray); }
   <div class="storage">128 GB · Buen estado</div>
 
   <div class="price-label">Precio</div>
-  <div class="price">$384.750</div>
+
+  <div class="price" data-usd="270">$0</div>
+
+  <div class="usd-price">
+    USD 270
+  </div>
 
   <button class="detail-btn"
   onclick="event.stopPropagation();openDetail('iphone11sused')">
@@ -1028,8 +1118,53 @@ footer p { font-size:.78rem; color:var(--gray); }
 
 </div>
 
-  <!-- iPhone 11 Pro -->
-  <div class="prod-card" onclick="openDetail('iphone11proused')">
+<!-- iPhone 11 Pro -->
+<div class="prod-card iphone11 iphone11pro"
+onclick="openDetail('iphone11proused')">
+
+  <span class="prod-badge">Usado</span>
+
+  <img
+    src="https://i.postimg.cc/nrDm5G76/0046-iphone-11-pro-gold-removebg-preview.png"
+    alt="iPhone 11 Pro"
+    class="product-image"
+  >
+
+  <h3>iPhone 11 Pro</h3>
+
+  <div class="storage">64 GB · Buen estado</div>
+
+  <div class="price-label">Precio</div>
+
+  <div class="price" data-usd="320">$0</div>
+
+  <div class="usd-price">
+    USD 320
+  </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone11proused')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 11 Pro Usado','📱',456000)">
+  🛒 Agregar
+  </button>
+
+  <button class="toggle-btn"
+  onclick="event.stopPropagation();toggleGroup('mas11pro')">
+  Ver más
+  </button>
+
+</div>
+
+<!-- oculto -->
+<div id="mas11pro" class="hidden-group">
+
+  <div class="prod-card iphone11 iphone11pro"
+  onclick="openDetail('iphone11prosused')">
+
     <span class="prod-badge">Usado</span>
 
     <img
@@ -1043,195 +1178,205 @@ footer p { font-size:.78rem; color:var(--gray); }
     <div class="storage">64 GB · Buen estado</div>
 
     <div class="price-label">Precio</div>
-    <div class="price">$456.000</div>
+
+    <div class="price" data-usd="300">$0</div>
+
+    <div class="usd-price">
+      USD 300
+    </div>
 
     <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone11proused')">
+    onclick="event.stopPropagation();openDetail('iphone11prosused')">
     Ver detalles
     </button>
 
     <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 11 Pro Usado','📱',456000)">
+    onclick="event.stopPropagation();addToCart('iPhone 11 Pro Usado','📱',427500)">
     🛒 Agregar
     </button>
 
-    <button class="toggle-btn"
-    onclick="event.stopPropagation();toggleGroup('mas11pro')">
-    Ver más
-    </button>
-
   </div>
 
-  <!-- oculto -->
-  <div id="mas11pro" class="hidden-group">
-
-    <div class="prod-card" onclick="openDetail('iphone11prosused')">
-      <span class="prod-badge">Usado</span>
-
-      <img
-        src="https://i.postimg.cc/nrDm5G76/0046-iphone-11-pro-gold-removebg-preview.png"
-        alt="iPhone 11 Pro"
-        class="product-image"
-      >
-
-      <h3>iPhone 11 Pro</h3>
-
-      <div class="storage">64 GB · Buen estado</div>
-
-      <div class="price-label">Precio</div>
-      <div class="price">$427.500</div>
-
-      <button class="detail-btn"
-      onclick="event.stopPropagation();openDetail('iphone11prosused')">
-      Ver detalles
-      </button>
-
-      <button class="add-cart-btn"
-      onclick="event.stopPropagation();addToCart('iPhone 11 Pro Usado','📱',427500)">
-      🛒 Agregar
-      </button>
-
-    </div>
-
-  </div>
+</div>
 
 
     <!-- iPhone 11 Pro Max -->
-  <div class="prod-card" onclick="openDetail('iphone11promaxused')">
-    <span class="prod-badge">Usado</span>
+<div class="prod-card iphone11 iphone11promax"
+onclick="openDetail('iphone11promaxused')">
 
-    <img
-      src="https://i.postimg.cc/nrDm5G76/0046-iphone-11-pro-gold-removebg-preview.png"
-      alt="iPhone 11 Pro Max"
-      class="product-image"
-    >
+  <span class="prod-badge">Usado</span>
 
-    <h3>iPhone 11 Pro Max</h3>
+  <img
+    src="https://i.postimg.cc/nrDm5G76/0046-iphone-11-pro-gold-removebg-preview.png"
+    alt="iPhone 11 Pro Max"
+    class="product-image"
+  >
 
-    <div class="storage">64 GB · Buen estado</div>
+  <h3>iPhone 11 Pro Max</h3>
 
-    <div class="price-label">Precio</div>
-    <div class="price">$513.000</div>
+  <div class="storage">64 GB · Buen estado</div>
 
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone11promaxused')">
-    Ver detalles
-    </button>
+  <div class="price-label">Precio</div>
 
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 11 Pro Max Usado','📱',513000)">
-    🛒 Agregar
-    </button>
+  <div class="price" data-usd="360">$0</div>
 
+  <div class="usd-price">
+    USD 360
   </div>
 
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone11promaxused')">
+  Ver detalles
+  </button>
 
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 11 Pro Max Usado','📱',513000)">
+  🛒 Agregar
+  </button>
 
-  <!-- iPhone 12 -->
-  <div class="prod-card" onclick="openDetail('iphone12used')">
-    <span class="prod-badge">Usado</span>
+</div>
 
-    <img
-      src="https://i.postimg.cc/8CtBNxM2/i-Phone-12-Mini-P-RED-PDP-Image-Position-2-LAEN-500x500-removebg-preview.png"
-      alt="iPhone 12"
-      class="product-image"
-    >
+<!-- iPhone 12 -->
+<div class="prod-card iphone12"
+onclick="openDetail('iphone12used')">
 
-    <h3>iPhone 12</h3>
-    <div class="storage">64 GB · Muy buen estado</div>
+  <span class="prod-badge">Usado</span>
 
-    <div class="price-label">Precio</div>
-    <div class="price">$427.500</div>
+  <img
+    src="https://i.postimg.cc/8CtBNxM2/i-Phone-12-Mini-P-RED-PDP-Image-Position-2-LAEN-500x500-removebg-preview.png"
+    alt="iPhone 12"
+    class="product-image"
+  >
 
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone12used')">
-    Ver detalles
-    </button>
+  <h3>iPhone 12</h3>
 
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 12 Usado','📱',427500)">
-    🛒 Agregar
-    </button>
-  
+  <div class="storage">
+    64 GB · Muy buen estado
+  </div>
+
+  <div class="price-label">
+    Precio
+  </div>
+
+  <div class="price" data-usd="300">$0</div>
+
+  <div class="usd-price">
+    USD 300
+  </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone12used')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 12 Usado','📱',427500)">
+  🛒 Agregar
+  </button>
+
   <button class="toggle-btn"
-    onclick="event.stopPropagation();toggleGroup('mas12')">
-    Ver más
-    </button>
+  onclick="event.stopPropagation();toggleGroup('mas12')">
+  Ver más
+  </button>
 
+</div>
+
+<!-- oculto -->
+<div class="prod-card iphone12"
+onclick="openDetail('iphone12sused')">
+
+  <span class="prod-badge">Usado</span>
+
+  <img
+    src="https://i.postimg.cc/8CtBNxM2/i-Phone-12-Mini-P-RED-PDP-Image-Position-2-LAEN-500x500-removebg-preview.png"
+    alt="iPhone 12"
+    class="product-image"
+  >
+
+  <h3>iPhone 12</h3>
+
+  <div class="storage">
+    128 GB · Muy buen estado
   </div>
 
-  <!-- oculto -->
-  <div id="mas12" class="hidden-group">
-
-  <!-- iPhone 12 -->
-  <div class="prod-card" onclick="openDetail('iphone12sused')">
-    <span class="prod-badge">Usado</span>
-
-    <img
-      src="https://i.postimg.cc/8CtBNxM2/i-Phone-12-Mini-P-RED-PDP-Image-Position-2-LAEN-500x500-removebg-preview.png"
-      alt="iPhone 12"
-      class="product-image"
-    >
-
-    <h3>iPhone 12</h3>
-    <div class="storage">128 GB · Muy buen estado</div>
-
-    <div class="price-label">Precio</div>
-    <div class="price">$456.000</div>
-
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone12sused')">
-    Ver detalles
-    </button>
-
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 12 Usado','📱',456000)">
-    🛒 Agregar
-    </button>
+  <div class="price-label">
+    Precio
   </div>
+
+  <div class="price" data-usd="320">$0</div>
+
+  <div class="usd-price">
+    USD 320
   </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone12sused')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 12 Usado','📱',456000)">
+  🛒 Agregar
+  </button>
+
+</div>
+
 
 
 
 
   <!-- iPhone 12 Pro -->
-  <div class="prod-card" onclick="openDetail('iphone12prossused')">
-    <span class="prod-badge">Usado</span>
+<div class="prod-card iphone12 iphone12pro"
+onclick="openDetail('iphone12prossused')">
 
-    <img
-      src="https://i.postimg.cc/8CtBNxM2/i-Phone-12-Mini-P-RED2-LAEN-500x500-removebg-preview.png"
-      alt="iPhone 12 Pro"
-      class="product-image"
-    >
+  <span class="prod-badge">Usado</span>
 
-    <h3>iPhone 12 Pro</h3>
-    <div class="storage">128 GB · Muy buen estado</div>
+  <img
+    src="https://i.postimg.cc/8CtBNxM2/i-Phone-12-Mini-P-RED2-LAEN-500x500-removebg-preview.png"
+    alt="iPhone 12 Pro"
+    class="product-image"
+  >
 
-    <div class="price-label">Precio</div>
-    <div class="price">$441.500</div>
+  <h3>iPhone 12 Pro</h3>
 
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone12prossused')">
-    Ver detalles
-    </button>
-
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 12 Pro Usado','📱',541500)">
-    🛒 Agregar
-    </button>
-  
-  <button class="toggle-btn"
-    onclick="event.stopPropagation();toggleGroup('mas12pro')">
-    Ver más
-    </button>
-
+  <div class="storage">
+    128 GB · Muy buen estado
   </div>
 
-  <!-- oculto -->
-  <div id="mas12pro" class="hidden-group">
+  <div class="price-label">
+    Precio
+  </div>
+
+  <div class="price" data-usd="380">$0</div>
+
+  <div class="usd-price">
+    USD 380
+  </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone12prossused')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 12 Pro Usado','📱',541500)">
+  🛒 Agregar
+  </button>
+
+  <button class="toggle-btn"
+  onclick="event.stopPropagation();toggleGroup('mas12pro')">
+  Ver más
+  </button>
+
+</div>
+
+<!-- oculto -->
+<div id="mas12pro" class="hidden-group">
 
   <!-- iPhone 12 Pro -->
-  <div class="prod-card" onclick="openDetail('iphone12prosssused')">
+  <div class="prod-card iphone12 iphone12pro"
+  onclick="openDetail('iphone12prosssused')">
+
     <span class="prod-badge">Usado</span>
 
     <img
@@ -1241,10 +1386,20 @@ footer p { font-size:.78rem; color:var(--gray); }
     >
 
     <h3>iPhone 12 Pro</h3>
-    <div class="storage">256 GB · Muy buen estado</div>
 
-    <div class="price-label">Precio</div>
-    <div class="price">$570.000</div>
+    <div class="storage">
+      256 GB · Muy buen estado
+    </div>
+
+    <div class="price-label">
+      Precio
+    </div>
+
+    <div class="price" data-usd="400">$0</div>
+
+    <div class="usd-price">
+      USD 400
+    </div>
 
     <button class="detail-btn"
     onclick="event.stopPropagation();openDetail('iphone12prosssused')">
@@ -1255,111 +1410,193 @@ footer p { font-size:.78rem; color:var(--gray); }
     onclick="event.stopPropagation();addToCart('iPhone 12 Pro Usado','📱',570000)">
     🛒 Agregar
     </button>
+
   </div>
+
+</div>
+
+<!-- iPhone 12 Pro Max -->
+<div class="prod-card iphone12 iphone12promax"
+onclick="openDetail('iphone12promaxused')">
+
+  <span class="prod-badge">Usado</span>
+
+  <img
+    src="https://i.postimg.cc/VLwdKQf2/i-Phone-12-Pro-Max-4.png"
+    alt="iPhone 12 Pro Max"
+    class="product-image"
+  >
+
+  <h3>iPhone 12 Pro Max</h3>
+
+  <div class="storage">
+    128 GB · Muy buen estado
   </div>
+
+  <div class="price-label">
+    Precio
+  </div>
+
+  <div class="price" data-usd="420">$0</div>
+
+  <div class="usd-price">
+    USD 420
+  </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone12promaxused')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 12 Pro Max Usado','📱',598500)">
+  🛒 Agregar
+  </button>
+
+  <button class="toggle-btn"
+  onclick="event.stopPropagation();toggleGroup('mas12promax')">
+  Ver más
+  </button>
+
+</div>
+
+<!-- oculto -->
+<div class="prod-card iphone12 iphone12promax"
+onclick="openDetail('iphone12promaxsused')">
+
+  <span class="prod-badge">Usado</span>
+
+  <img
+    src="https://i.postimg.cc/VLwdKQf2/i-Phone-12-Pro-Max-4.png"
+    alt="iPhone 12 Pro Max"
+    class="product-image"
+  >
+
+  <h3>iPhone 12 Pro Max</h3>
+
+  <div class="storage">
+    256 GB · Muy buen estado
+  </div>
+
+  <div class="price-label">
+    Precio
+  </div>
+
+  <div class="price" data-usd="470">$0</div>
+
+  <div class="usd-price">
+    USD 470
+  </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone12promaxsused')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 12 Pro Max Usado','📱',669750)">
+  🛒 Agregar
+  </button>
+
+</div>
+
 
 
 
     
 
-  <!-- iPhone 12 Pro Max -->
-  <div class="prod-card" onclick="openDetail('iphone12promaxused')">
-    <span class="prod-badge">Usado</span>
+ <!-- iPhone 13 Mini -->
+<div class="prod-card iphone13 iphone13mini"
+onclick="openDetail('iphone13miniused')">
 
-    <img
-      src="https://i.postimg.cc/VLwdKQf2/i-Phone-12-Pro-Max-4.png"
-      alt="iPhone 12 Pro Max"
-      class="product-image"
-    >
+  <span class="prod-badge">Usado</span>
 
-    <h3>iPhone 12 Pro Max</h3>
-    <div class="storage">128 GB · Muy buen estado</div>
+  <img
+    src="https://i.postimg.cc/2jQZdPXQ/IPHONE-13-4-removebg-preview.png"
+    alt="iPhone 13 Mini"
+    class="product-image"
+  >
 
-    <div class="price-label">Precio</div>
-    <div class="price">$598.500</div>
+  <h3>iPhone 13 Mini</h3>
 
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone12promaxused')">
-    Ver detalles
-    </button>
-
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 12 Pro Max Usado','📱',598500)">
-    🛒 Agregar
-    </button>
-  
-   <button class="toggle-btn"
-    onclick="event.stopPropagation();toggleGroup('mas12promax')">
-    Ver más
-    </button>
-
+  <div class="storage">
+    128 GB · Excelente estado
   </div>
 
-  <!-- oculto -->
-  <div id="mas12promax" class="hidden-group">
-
-  <!-- iPhone 12 Pro Max -->
-  <div class="prod-card" onclick="openDetail('iphone12promaxsused')">
-    <span class="prod-badge">Usado</span>
-
-    <img
-      src="https://i.postimg.cc/VLwdKQf2/i-Phone-12-Pro-Max-4.png"
-      alt="iPhone 12 Pro Max"
-      class="product-image"
-    >
-
-    <h3>iPhone 12 Pro Max</h3>
-    <div class="storage">256 GB · Muy buen estado</div>
-
-    <div class="price-label">Precio</div>
-    <div class="price">$669.750</div>
-
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone12promaxsused')">
-    Ver detalles
-    </button>
-
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 12 Pro Max Usado','📱',669750)">
-    🛒 Agregar
-    </button>
-  </div>
+  <div class="price-label">
+    Precio
   </div>
 
+  <div class="price" data-usd="310">$0</div>
 
-
-    
-
-  <!-- iPhone 13 Mini -->
-  <div class="prod-card" onclick="openDetail('iphone13miniused')">
-    <span class="prod-badge">Usado</span>
-
-    <img
-      src="https://i.postimg.cc/2jQZdPXQ/IPHONE-13-4-removebg-preview.png"
-      alt="iPhone 13 Mini"
-      class="product-image"
-    >
-
-    <h3>iPhone 13 Mini</h3>
-    <div class="storage">128 GB · Excelente estado</div>
-
-    <div class="price-label">Precio</div>
-    <div class="price">$441.750</div>
-
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone13miniused')">
-    Ver detalles
-    </button>
-
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 13 Mini Usado','📱',441750)">
-    🛒 Agregar
-    </button>
+  <div class="usd-price">
+    USD 310
   </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone13miniused')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 13 Mini Usado','📱',441750)">
+  🛒 Agregar
+  </button>
+
+</div>
+
+<!-- iPhone 13 -->
+<div class="prod-card iphone13"
+onclick="openDetail('iphone13used')">
+
+  <span class="prod-badge">Usado</span>
+
+  <img
+    src="https://i.postimg.cc/2jQZdPXQ/IPHONE-13-4-removebg-preview.png"
+    alt="iPhone 13"
+    class="product-image"
+  >
+
+  <h3>iPhone 13</h3>
+
+  <div class="storage">
+    128 GB · Excelente estado
   </div>
+
+  <div class="price-label">
+    Precio
+  </div>
+
+  <div class="price" data-usd="370">$0</div>
+
+  <div class="usd-price">
+    USD 370
+  </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone13used')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 13 Usado','📱',527250)">
+  🛒 Agregar
+  </button>
+
+  <button class="toggle-btn"
+  onclick="event.stopPropagation();toggleGroup('mas13')">
+  Ver más
+  </button>
+
+</div>
+
+<!-- oculto -->
+<div id="mas13" class="hidden-group">
 
   <!-- iPhone 13 -->
-  <div class="prod-card" onclick="openDetail('iphone13used')">
+  <div class="prod-card iphone13"
+  onclick="openDetail('iphone13sused')">
+
     <span class="prod-badge">Usado</span>
 
     <img
@@ -1369,50 +1606,20 @@ footer p { font-size:.78rem; color:var(--gray); }
     >
 
     <h3>iPhone 13</h3>
-    <div class="storage">128 GB · Excelente estado</div>
 
-    <div class="price-label">Precio</div>
-    <div class="price">$527.250</div>
+    <div class="storage">
+      128 GB · Excelente estado
+    </div>
 
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone13used')">
-    Ver detalles
-    </button>
+    <div class="price-label">
+      Precio
+    </div>
 
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 13 Usado','📱',527250)">
-    🛒 Agregar
-    </button>
-  
-   <button class="toggle-btn"
-    onclick="event.stopPropagation();toggleGroup('mas13')">
-    Ver más
-    </button>
+    <div class="price" data-usd="390">$0</div>
 
-  </div>
-
-  <!-- oculto -->
-  <div id="mas13" class="hidden-group">
-
-
-
-    
-
-  <!-- iPhone 13 -->
-  <div class="prod-card" onclick="openDetail('iphone13sused')">
-    <span class="prod-badge">Usado</span>
-
-    <img
-      src="https://i.postimg.cc/2jQZdPXQ/IPHONE-13-4-removebg-preview.png"
-      alt="iPhone 13"
-      class="product-image"
-    >
-
-    <h3>iPhone 13</h3>
-    <div class="storage">128 GB · Excelente estado</div>
-
-    <div class="price-label">Precio</div>
-    <div class="price">$555.750</div>
+    <div class="usd-price">
+      USD 390
+    </div>
 
     <button class="detail-btn"
     onclick="event.stopPropagation();openDetail('iphone13sused')">
@@ -1423,10 +1630,13 @@ footer p { font-size:.78rem; color:var(--gray); }
     onclick="event.stopPropagation();addToCart('iPhone 13 Usado','📱',555750)">
     🛒 Agregar
     </button>
+
   </div>
 
   <!-- iPhone 13 -->
-  <div class="prod-card" onclick="openDetail('iphone13ssused')">
+  <div class="prod-card iphone13"
+  onclick="openDetail('iphone13ssused')">
+
     <span class="prod-badge">Usado</span>
 
     <img
@@ -1436,10 +1646,20 @@ footer p { font-size:.78rem; color:var(--gray); }
     >
 
     <h3>iPhone 13</h3>
-    <div class="storage">256 GB · Excelente estado</div>
 
-    <div class="price-label">Precio</div>
-    <div class="price">$655.500</div>
+    <div class="storage">
+      256 GB · Excelente estado
+    </div>
+
+    <div class="price-label">
+      Precio
+    </div>
+
+    <div class="price" data-usd="460">$0</div>
+
+    <div class="usd-price">
+      USD 460
+    </div>
 
     <button class="detail-btn"
     onclick="event.stopPropagation();openDetail('iphone13ssused')">
@@ -1450,14 +1670,63 @@ footer p { font-size:.78rem; color:var(--gray); }
     onclick="event.stopPropagation();addToCart('iPhone 13 Usado','📱',655500)">
     🛒 Agregar
     </button>
-  </div>
+
   </div>
 
+</div>
 
-    
+<!-- iPhone 13 Pro -->
+<div class="prod-card iphone13 iphone13pro"
+onclick="openDetail('iphone13proused')">
+
+  <span class="prod-badge">Usado</span>
+
+  <img
+    src="https://i.postimg.cc/q7jX4WyW/b4373060f94f414220f0518e6f17472e5be211ddfaf59f44775b486a9d9f14f1155135-edfa6d09a5b556b6a617430119105.png"
+    alt="iPhone 13 Pro"
+    class="product-image"
+  >
+
+  <h3>iPhone 13 Pro</h3>
+
+  <div class="storage">
+    128 GB · Excelente estado
+  </div>
+
+  <div class="price-label">
+    Precio
+  </div>
+
+  <div class="price" data-usd="510">$0</div>
+
+  <div class="usd-price">
+    USD 510
+  </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone13proused')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 13 Pro Usado','📱',726750)">
+  🛒 Agregar
+  </button>
+
+  <button class="toggle-btn"
+  onclick="event.stopPropagation();toggleGroup('mas13pro')">
+  Ver más
+  </button>
+
+</div>
+
+<!-- oculto -->
+<div id="mas13pro" class="hidden-group">
 
   <!-- iPhone 13 Pro -->
-  <div class="prod-card" onclick="openDetail('iphone13proused')">
+  <div class="prod-card iphone13 iphone13pro"
+  onclick="openDetail('iphone13prosused256')">
+
     <span class="prod-badge">Usado</span>
 
     <img
@@ -1467,46 +1736,20 @@ footer p { font-size:.78rem; color:var(--gray); }
     >
 
     <h3>iPhone 13 Pro</h3>
-    <div class="storage">128 GB · Excelente estado</div>
 
-    <div class="price-label">Precio</div>
-    <div class="price">$726.750</div>
+    <div class="storage">
+      256 GB · Excelente estado
+    </div>
 
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone13proused')">
-    Ver detalles
-    </button>
+    <div class="price-label">
+      Precio
+    </div>
 
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 13 Pro Usado','📱',726750)">
-    🛒 Agregar
-    </button>
-  
-   <button class="toggle-btn"
-    onclick="event.stopPropagation();toggleGroup('mas13pro')">
-    Ver más
-    </button>
+    <div class="price" data-usd="540">$0</div>
 
-  </div>
-
-  <!-- oculto -->
-  <div id="mas13pro" class="hidden-group">
-
-  <!-- iPhone 13 Pro -->
-  <div class="prod-card" onclick="openDetail('iphone13proused256')">
-    <span class="prod-badge">Usado</span>
-
-    <img
-      src="https://i.postimg.cc/q7jX4WyW/b4373060f94f414220f0518e6f17472e5be211ddfaf59f44775b486a9d9f14f1155135-edfa6d09a5b556b6a617430119105.png"
-      alt="iPhone 13 Pro"
-      class="product-image"
-    >
-
-    <h3>iPhone 13 Pro</h3>
-    <div class="storage">256 GB · Excelente estado</div>
-
-    <div class="price-label">Precio</div>
-    <div class="price">$769.500</div>
+    <div class="usd-price">
+      USD 540
+    </div>
 
     <button class="detail-btn"
     onclick="event.stopPropagation();openDetail('iphone13proused256')">
@@ -1517,50 +1760,66 @@ footer p { font-size:.78rem; color:var(--gray); }
     onclick="event.stopPropagation();addToCart('iPhone 13 Pro Usado','📱',769500)">
     🛒 Agregar
     </button>
+
   </div>
-  </div>
+
+</div>
 
 
     
 
   <!-- iPhone 13 Pro Max -->
-  <div class="prod-card" onclick="openDetail('iphone13promaxused')">
-    <span class="prod-badge">Usado</span>
+<div class="prod-card iphone13 iphone13promax"
+onclick="openDetail('iphone13promaxused')">
 
-    <img
-      src="https://i.postimg.cc/vT0F7V8P/8e5721b713844bc22dabf69098b4-removebg-preview.png"
-      alt="iPhone 13 Pro Max"
-      class="product-image"
-    >
+  <span class="prod-badge">Usado</span>
 
-    <h3>iPhone 13 Pro Max</h3>
-    <div class="storage">128 GB · Excelente estado</div>
+  <img
+    src="https://i.postimg.cc/vT0F7V8P/8e5721b713844bc22dabf69098b4-removebg-preview.png"
+    alt="iPhone 13 Pro Max"
+    class="product-image"
+  >
 
-    <div class="price-label">Precio</div>
-    <div class="price">$826.500</div>
+  <h3>iPhone 13 Pro Max</h3>
 
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone13promaxused')">
-    Ver detalles
-    </button>
-
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 13 Pro Max Usado','📱',826500)">
-    🛒 Agregar
-    </button>
-  
-   <button class="toggle-btn"
-    onclick="event.stopPropagation();toggleGroup('mas13promax')">
-    Ver más
-    </button>
-
+  <div class="storage">
+    128 GB · Excelente estado
   </div>
 
-  <!-- oculto -->
-  <div id="mas13promax" class="hidden-group">
+  <div class="price-label">
+    Precio
+  </div>
+
+  <div class="price" data-usd="580">$0</div>
+
+  <div class="usd-price">
+    USD 580
+  </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone13promaxused')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 13 Pro Max Usado','📱',826500)">
+  🛒 Agregar
+  </button>
+
+  <button class="toggle-btn"
+  onclick="event.stopPropagation();toggleGroup('mas13promax')">
+  Ver más
+  </button>
+
+</div>
+
+<!-- oculto -->
+<div id="mas13promax" class="hidden-group">
 
   <!-- iPhone 13 Pro Max -->
-  <div class="prod-card" onclick="openDetail('iphone13promaxsused')">
+  <div class="prod-card iphone13 iphone13promax"
+  onclick="openDetail('iphone13promaxsused')">
+
     <span class="prod-badge">Usado</span>
 
     <img
@@ -1570,10 +1829,20 @@ footer p { font-size:.78rem; color:var(--gray); }
     >
 
     <h3>iPhone 13 Pro Max</h3>
-    <div class="storage">128 GB · Excelente estado</div>
 
-    <div class="price-label">Precio</div>
-    <div class="price">$755.000</div>
+    <div class="storage">
+      128 GB · Excelente estado
+    </div>
+
+    <div class="price-label">
+      Precio
+    </div>
+
+    <div class="price" data-usd="600">$0</div>
+
+    <div class="usd-price">
+      USD 600
+    </div>
 
     <button class="detail-btn"
     onclick="event.stopPropagation();openDetail('iphone13promaxsused')">
@@ -1584,15 +1853,63 @@ footer p { font-size:.78rem; color:var(--gray); }
     onclick="event.stopPropagation();addToCart('iPhone 13 Pro Max Usado','📱',855000)">
     🛒 Agregar
     </button>
+
   </div>
+
+</div>
+
+<!-- iPhone 14 -->
+<div class="prod-card iphone14"
+onclick="openDetail('iphone14used')">
+
+  <span class="prod-badge">Usado</span>
+
+  <img
+    src="https://i.postimg.cc/xdtynBMp/iphone-14-black-d61713d18bdf31d02417016951877100-1024-1024-removebg-preview.png"
+    alt="iPhone 14"
+    class="product-image"
+  >
+
+  <h3>iPhone 14</h3>
+
+  <div class="storage">
+    128 GB · Muy buen estado
   </div>
 
+  <div class="price-label">
+    Precio
+  </div>
 
+  <div class="price" data-usd="430">$0</div>
 
-    
+  <div class="usd-price">
+    USD 430
+  </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone14used')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 14 Usado','📱',612750)">
+  🛒 Agregar
+  </button>
+
+  <button class="toggle-btn"
+  onclick="event.stopPropagation();toggleGroup('mas14')">
+  Ver más
+  </button>
+
+</div>
+
+<!-- oculto -->
+<div id="mas14" class="hidden-group">
 
   <!-- iPhone 14 -->
-  <div class="prod-card" onclick="openDetail('iphone14used')">
+  <div class="prod-card iphone14"
+  onclick="openDetail('iphone14sused')">
+
     <span class="prod-badge">Usado</span>
 
     <img
@@ -1602,46 +1919,20 @@ footer p { font-size:.78rem; color:var(--gray); }
     >
 
     <h3>iPhone 14</h3>
-    <div class="storage">128 GB · Muy buen estado</div>
 
-    <div class="price-label">Precio</div>
-    <div class="price">$612.750</div>
+    <div class="storage">
+      128 GB · Muy buen estado
+    </div>
 
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone14used')">
-    Ver detalles
-    </button>
+    <div class="price-label">
+      Precio
+    </div>
 
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 14 Usado','📱',612750)">
-    🛒 Agregar
-    </button>
-  
-   <button class="toggle-btn"
-    onclick="event.stopPropagation();toggleGroup('mas14')">
-    Ver más
-    </button>
+    <div class="price" data-usd="460">$0</div>
 
-  </div>
-
-  <!-- oculto -->
-  <div id="mas14" class="hidden-group">
-
-  <!-- iPhone 14 -->
-  <div class="prod-card" onclick="openDetail('iphone14sused')">
-    <span class="prod-badge">Usado</span>
-
-    <img
-      src="https://i.postimg.cc/xdtynBMp/iphone-14-black-d61713d18bdf31d02417016951877100-1024-1024-removebg-preview.png"
-      alt="iPhone 14"
-      class="product-image"
-    >
-
-    <h3>iPhone 14</h3>
-    <div class="storage">128 GB · Muy buen estado</div>
-
-    <div class="price-label">Precio</div>
-    <div class="price">$655.500</div>
+    <div class="usd-price">
+      USD 460
+    </div>
 
     <button class="detail-btn"
     onclick="event.stopPropagation();openDetail('iphone14sused')">
@@ -1652,13 +1943,63 @@ footer p { font-size:.78rem; color:var(--gray); }
     onclick="event.stopPropagation();addToCart('iPhone 14 Usado','📱',655500)">
     🛒 Agregar
     </button>
-  </div>
+
   </div>
 
+</div>
 
+<!-- iPhone 14 Pro -->
+<div class="prod-card iphone14 iphone14pro"
+onclick="openDetail('iphone14proused')">
+
+  <span class="prod-badge">Usado</span>
+
+  <img
+    src="https://i.postimg.cc/mrbyxTzn/1703105172-removebg-preview.png"
+    alt="iPhone 14 Pro"
+    class="product-image"
+  >
+
+  <h3>iPhone 14 Pro</h3>
+
+  <div class="storage">
+    128 GB · Excelente estado
+  </div>
+
+  <div class="price-label">
+    Precio
+  </div>
+
+  <div class="price" data-usd="580">$0</div>
+
+  <div class="usd-price">
+    USD 580
+  </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone14proused')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 14 Pro Usado','📱',826500)">
+  🛒 Agregar
+  </button>
+
+  <button class="toggle-btn"
+  onclick="event.stopPropagation();toggleGroup('mas14pro')">
+  Ver más
+  </button>
+
+</div>
+
+<!-- oculto -->
+<div id="mas14pro" class="hidden-group">
 
   <!-- iPhone 14 Pro -->
-  <div class="prod-card" onclick="openDetail('iphone14proused')">
+  <div class="prod-card iphone14 iphone14pro"
+  onclick="openDetail('iphone14prosused')">
+
     <span class="prod-badge">Usado</span>
 
     <img
@@ -1668,46 +2009,20 @@ footer p { font-size:.78rem; color:var(--gray); }
     >
 
     <h3>iPhone 14 Pro</h3>
-    <div class="storage">128 GB · Excelente estado</div>
 
-    <div class="price-label">Precio</div>
-    <div class="price">$826.500</div>
+    <div class="storage">
+      256 GB · Excelente estado
+    </div>
 
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone14proused')">
-    Ver detalles
-    </button>
+    <div class="price-label">
+      Precio
+    </div>
 
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 14 Pro Usado','📱',826500)">
-    🛒 Agregar
-    </button>
-  
-   <button class="toggle-btn"
-    onclick="event.stopPropagation();toggleGroup('mas14pro')">
-    Ver más
-    </button>
+    <div class="price" data-usd="600">$0</div>
 
-  </div>
-
-  <!-- oculto -->
-  <div id="mas14pro" class="hidden-group">
-
-  <!-- iPhone 14 Pro -->
-  <div class="prod-card" onclick="openDetail('iphone14prosused')">
-    <span class="prod-badge">Usado</span>
-
-    <img
-      src="https://i.postimg.cc/mrbyxTzn/1703105172-removebg-preview.png"
-      alt="iPhone 14 Pro"
-      class="product-image"
-    >
-
-    <h3>iPhone 14 Pro</h3>
-    <div class="storage">256 GB · Excelente estado</div>
-
-    <div class="price-label">Precio</div>
-    <div class="price">$855.000</div>
+    <div class="usd-price">
+      USD 600
+    </div>
 
     <button class="detail-btn"
     onclick="event.stopPropagation();openDetail('iphone14prosused')">
@@ -1718,13 +2033,58 @@ footer p { font-size:.78rem; color:var(--gray); }
     onclick="event.stopPropagation();addToCart('iPhone 14 Pro Usado','📱',855000)">
     🛒 Agregar
     </button>
+
   </div>
-  </div>
+
+</div>
 
 
 
   <!-- iPhone 14 Pro Max -->
-  <div class="prod-card" onclick="openDetail('iphone14promaxused')">
+<div class="prod-card iphone14 iphone14promax" onclick="openDetail('iphone14promaxused')">
+  <span class="prod-badge">Usado</span>
+
+  <img
+    src="https://i.postimg.cc/1zJcsbwj/celular-apple-iphone-14-pro-128gb-recondicionado-155300-550x550-1-removebg-preview.png"
+    alt="iPhone 14 Pro Max"
+    class="product-image"
+  >
+
+  <h3>iPhone 14 Pro Max</h3>
+
+  <div class="storage">256 GB · Excelente estado</div>
+
+  <div class="price-label">Precio</div>
+
+  <div class="price" data-usd="700">$0</div>
+
+  <div class="usd-price">
+    USD 700
+  </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone14promaxused')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 14 Pro Max Usado','📱',997500)">
+  🛒 Agregar
+  </button>
+
+  <button class="toggle-btn"
+  onclick="event.stopPropagation();toggleGroup('mas14promax')">
+  Ver más
+  </button>
+
+</div>
+
+<!-- oculto -->
+<div id="mas14promax" class="hidden-group">
+
+  <div class="prod-card iphone14 iphone14promax"
+  onclick="openDetail('iphone14promaxsused')">
+
     <span class="prod-badge">Usado</span>
 
     <img
@@ -1734,37 +2094,16 @@ footer p { font-size:.78rem; color:var(--gray); }
     >
 
     <h3>iPhone 14 Pro Max</h3>
-    <div class="storage">256 GB · Excelente estado</div>
 
-    <div class="price-label">Precio</div>
-    <div class="price">$997.500</div>
-
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone14promaxused')">
-    Ver detalles
-    </button>
-
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 14 Pro Max Usado','📱',997500)">
-    🛒 Agregar
-    </button>
-  </div>
-
-  <!-- iPhone 14 Pro Max -->
-  <div class="prod-card" onclick="openDetail('iphone14promaxsused')">
-    <span class="prod-badge">Usado</span>
-
-    <img
-      src="https://i.postimg.cc/1zJcsbwj/celular-apple-iphone-14-pro-128gb-recondicionado-155300-550x550-1-removebg-preview.png"
-      alt="iPhone 14 Pro Max"
-      class="product-image"
-    >
-
-    <h3>iPhone 14 Pro Max</h3>
     <div class="storage">128 GB · Excelente estado</div>
 
     <div class="price-label">Precio</div>
-    <div class="price">$969.000</div>
+
+    <div class="price" data-usd="680">$0</div>
+
+    <div class="usd-price">
+      USD 680
+    </div>
 
     <button class="detail-btn"
     onclick="event.stopPropagation();openDetail('iphone14promaxsused')">
@@ -1775,14 +2114,55 @@ footer p { font-size:.78rem; color:var(--gray); }
     onclick="event.stopPropagation();addToCart('iPhone 14 Pro Max Usado','📱',969000)">
     🛒 Agregar
     </button>
+
   </div>
 
+</div>
 
+<!-- iPhone 15 -->
+<div class="prod-card iphone15" onclick="openDetail('iphone15used')">
 
-   
+  <span class="prod-badge">Usado</span>
 
-  <!-- iPhone 15 -->
-  <div class="prod-card" onclick="openDetail('iphone15used')">
+  <img src="https://i.postimg.cc/m2627jRQ/i-PH-15-2-1-removebg-preview.png"
+  alt="iPhone 15"
+  class="product-image">
+
+  <h3>iPhone 15</h3>
+
+  <div class="storage">128 GB · Excelente estado</div>
+
+  <div class="price-label">Precio</div>
+
+  <div class="price" data-usd="570">$0</div>
+
+  <div class="usd-price">
+    USD 570
+  </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone15used')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 15 Usado','📱',812250)">
+  🛒 Agregar
+  </button>
+
+  <button class="toggle-btn"
+  onclick="event.stopPropagation();toggleGroup('mas15')">
+  Ver más
+  </button>
+
+</div>
+
+<!-- oculto -->
+<div id="mas15" class="hidden-group">
+
+  <div class="prod-card iphone15"
+  onclick="openDetail('iphone15sused')">
+
     <span class="prod-badge">Usado</span>
 
     <img src="https://i.postimg.cc/m2627jRQ/i-PH-15-2-1-removebg-preview.png"
@@ -1790,35 +2170,16 @@ footer p { font-size:.78rem; color:var(--gray); }
     class="product-image">
 
     <h3>iPhone 15</h3>
+
     <div class="storage">128 GB · Excelente estado</div>
 
     <div class="price-label">Precio</div>
-    <div class="price">$812.250</div>
 
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone15used')">
-    Ver detalles
-    </button>
+    <div class="price" data-usd="570">$0</div>
 
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 15 Usado','📱',812250)">
-    🛒 Agregar
-    </button>
-  </div>
-
-  <!-- iPhone 15 -->
-  <div class="prod-card" onclick="openDetail('iphone15sused')">
-    <span class="prod-badge">Usado</span>
-
-    <img src="https://i.postimg.cc/m2627jRQ/i-PH-15-2-1-removebg-preview.png"
-    alt="iPhone 15"
-    class="product-image">
-
-    <h3>iPhone 15</h3>
-    <div class="storage">128 GB · Excelente estado</div>
-
-    <div class="price-label">Precio</div>
-    <div class="price">$812.250</div>
+    <div class="usd-price">
+      USD 570
+    </div>
 
     <button class="detail-btn"
     onclick="event.stopPropagation();openDetail('iphone15sused')">
@@ -1829,39 +2190,90 @@ footer p { font-size:.78rem; color:var(--gray); }
     onclick="event.stopPropagation();addToCart('iPhone 15 Usado','📱',812250)">
     🛒 Agregar
     </button>
+
   </div>
 
+</div>
 
+<!-- iPhone 15 Plus -->
+<div class="prod-card iphone15 iphone15plus"
+onclick="openDetail('iphone15plusused')">
 
-    
+  <span class="prod-badge">Usado</span>
 
-  <!-- iPhone 15 Plus -->
-  <div class="prod-card" onclick="openDetail('iphone15plusused')">
-    <span class="prod-badge">Usado</span>
+  <img src="https://i.postimg.cc/m2627jRQ/i-PH-15-2-1-removebg-preview.png"
+  alt="iPhone 15 Plus"
+  class="product-image">
 
-    <img src="https://i.postimg.cc/m2627jRQ/i-PH-15-2-1-removebg-preview.png"
-    alt="iPhone 15 Plus"
-    class="product-image">
+  <h3>iPhone 15 Plus</h3>
 
-    <h3>iPhone 15 Plus</h3>
-    <div class="storage">128 GB · Excelente estado</div>
+  <div class="storage">128 GB · Excelente estado</div>
 
-    <div class="price-label">Precio</div>
-    <div class="price">$855.000</div>
+  <div class="price-label">Precio</div>
 
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone15plusused')">
-    Ver detalles
-    </button>
+  <div class="price" data-usd="600">$0</div>
 
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 15 Plus Usado','📱',855000)">
-    🛒 Agregar
-    </button>
+  <div class="usd-price">
+    USD 600
   </div>
 
-  <!-- iPhone 15 Pro -->
-  <div class="prod-card" onclick="openDetail('iphone15proused')">
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone15plusused')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 15 Plus Usado','📱',855000)">
+  🛒 Agregar
+  </button>
+
+</div>
+
+<!-- iPhone 15 Pro -->
+<div class="prod-card iphone15 iphone15pro"
+onclick="openDetail('iphone15proused')">
+
+  <span class="prod-badge">Usado</span>
+
+  <img src="https://i.postimg.cc/MGWmkzMj/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024.webp"
+  alt="iPhone 15 Pro"
+  class="product-image">
+
+  <h3>iPhone 15 Pro</h3>
+
+  <div class="storage">128 GB · Excelente estado</div>
+
+  <div class="price-label">Precio</div>
+
+  <div class="price" data-usd="670">$0</div>
+
+  <div class="usd-price">
+    USD 670
+  </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone15proused')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 15 Pro Usado','📱',954750)">
+  🛒 Agregar
+  </button>
+
+  <button class="toggle-btn"
+  onclick="event.stopPropagation();toggleGroup('mas15pro')">
+  Ver más
+  </button>
+
+</div>
+
+<!-- oculto -->
+<div id="mas15pro" class="hidden-group">
+
+  <div class="prod-card iphone15 iphone15pro"
+  onclick="openDetail('iphone15prosused')">
+
     <span class="prod-badge">Usado</span>
 
     <img src="https://i.postimg.cc/MGWmkzMj/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024.webp"
@@ -1869,38 +2281,16 @@ footer p { font-size:.78rem; color:var(--gray); }
     class="product-image">
 
     <h3>iPhone 15 Pro</h3>
-    <div class="storage">128 GB · Excelente estado</div>
 
-    <div class="price-label">Precio</div>
-    <div class="price">$954.750</div>
-
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone15proused')">
-    Ver detalles
-    </button>
-
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 15 Pro Usado','📱',954750)">
-    🛒 Agregar
-    </button>
-  </div>
-
-
-
-
-  <!-- iPhone 15 Pro -->
-  <div class="prod-card" onclick="openDetail('iphone15prosused')">
-    <span class="prod-badge">Usado</span>
-
-    <img src="https://i.postimg.cc/MGWmkzMj/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024.webp"
-    alt="iPhone 15 Pro"
-    class="product-image">
-
-    <h3>iPhone 15 Pro</h3>
     <div class="storage">256 GB · Excelente estado</div>
 
     <div class="price-label">Precio</div>
-    <div class="price">$1.011.750</div>
+
+    <div class="price" data-usd="710">$0</div>
+
+    <div class="usd-price">
+      USD 710
+    </div>
 
     <button class="detail-btn"
     onclick="event.stopPropagation();openDetail('iphone15prosused')">
@@ -1911,10 +2301,56 @@ footer p { font-size:.78rem; color:var(--gray); }
     onclick="event.stopPropagation();addToCart('iPhone 15 Pro Usado','📱',1011750)">
     🛒 Agregar
     </button>
+
   </div>
 
-  <!-- iPhone 15 Pro Max -->
-  <div class="prod-card" onclick="openDetail('iphone15promaxused')">
+</div>
+
+<!-- iPhone 15 Pro Max -->
+<div class="prod-card iphone15 iphone15promax"
+onclick="openDetail('iphone15promaxused')">
+
+  <span class="prod-badge">Usado</span>
+
+  <img src="https://i.postimg.cc/rp8N6q05/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024-removebg-preview.png"
+  alt="iPhone 15 Pro Max"
+  class="product-image">
+
+  <h3>iPhone 15 Pro Max</h3>
+
+  <div class="storage">256 GB · Excelente estado</div>
+
+  <div class="price-label">Precio</div>
+
+  <div class="price" data-usd="750">$0</div>
+
+  <div class="usd-price">
+    USD 750
+  </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone15promaxused')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 15 Pro Max Usado','📱',1068750)">
+  🛒 Agregar
+  </button>
+
+  <button class="toggle-btn"
+  onclick="event.stopPropagation();toggleGroup('mas15promax')">
+  Ver más
+  </button>
+
+</div>
+
+<!-- oculto -->
+<div id="mas15promax" class="hidden-group">
+
+  <div class="prod-card iphone15 iphone15promax"
+  onclick="openDetail('iphone15promaxsused')">
+
     <span class="prod-badge">Usado</span>
 
     <img src="https://i.postimg.cc/rp8N6q05/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024-removebg-preview.png"
@@ -1922,39 +2358,16 @@ footer p { font-size:.78rem; color:var(--gray); }
     class="product-image">
 
     <h3>iPhone 15 Pro Max</h3>
+
     <div class="storage">256 GB · Excelente estado</div>
 
     <div class="price-label">Precio</div>
-    <div class="price">$1.068.750</div>
 
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone15promaxused')">
-    Ver detalles
-    </button>
+    <div class="price" data-usd="780">$0</div>
 
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 15 Pro Max Usado','📱',1068750)">
-    🛒 Agregar
-    </button>
-  </div>
-
-
-
-    
-
-  <!-- iPhone 15 Pro Max -->
-  <div class="prod-card" onclick="openDetail('iphone15promaxsused')">
-    <span class="prod-badge">Usado</span>
-
-    <img src="https://i.postimg.cc/rp8N6q05/15promaxqw-5673c7228b1d4c7efb17245976970936-1024-1024-removebg-preview.png"
-    alt="iPhone 15 Pro Max"
-    class="product-image">
-
-    <h3>iPhone 15 Pro Max</h3>
-    <div class="storage">256 GB · Excelente estado</div>
-
-    <div class="price-label">Precio</div>
-    <div class="price">$1.111.500</div>
+    <div class="usd-price">
+      USD 780
+    </div>
 
     <button class="detail-btn"
     onclick="event.stopPropagation();openDetail('iphone15promaxsused')">
@@ -1965,39 +2378,89 @@ footer p { font-size:.78rem; color:var(--gray); }
     onclick="event.stopPropagation();addToCart('iPhone 15 Pro Max Usado','📱',1111500)">
     🛒 Agregar
     </button>
+
   </div>
 
-  <!-- iPhone 16 -->
-  <div class="prod-card" onclick="openDetail('iphone16used')">
-    <span class="prod-badge">Usado</span>
+</div>
 
-    <img src="https://i.postimg.cc/Kjj4yHx8/IPH-16-1-1-2-removebg-preview.png"
-    alt="iPhone 16"
-    class="product-image">
+ <!-- iPhone 16 -->
+<div class="prod-card iphone16" onclick="openDetail('iphone16used')">
 
-    <h3>iPhone 16</h3>
-    <div class="storage">128 GB · Excelente estado</div>
+  <span class="prod-badge">Usado</span>
 
-    <div class="price-label">Precio</div>
-    <div class="price">$1.018.875</div>
+  <img src="https://i.postimg.cc/Kjj4yHx8/IPH-16-1-1-2-removebg-preview.png"
+  alt="iPhone 16"
+  class="product-image">
 
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone16used')">
-    Ver detalles
-    </button>
+  <h3>iPhone 16</h3>
 
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 16 Usado','📱',1018875)">
-    🛒 Agregar
-    </button>
+  <div class="storage">128 GB · Excelente estado</div>
+
+  <div class="price-label">Precio</div>
+
+  <div class="price" data-usd="715">$0</div>
+
+  <div class="usd-price">
+    USD 715
   </div>
 
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone16used')">
+  Ver detalles
+  </button>
 
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 16 Usado','📱',1018875)">
+  🛒 Agregar
+  </button>
 
+</div>
 
+<!-- iPhone 16 Pro -->
+<div class="prod-card iphone16 iphone16pro"
+onclick="openDetail('iphone16proused')">
 
-  <!-- iPhone 16 Pro -->
-  <div class="prod-card" onclick="openDetail('iphone16proused')">
+  <span class="prod-badge">Usado</span>
+
+  <img src="https://i.postimg.cc/ZqTxkJBN/iphone-16-pro-max-256gb-natural-titanium-2-removebg-preview.png"
+  alt="iPhone 16 Pro"
+  class="product-image">
+
+  <h3>iPhone 16 Pro</h3>
+
+  <div class="storage">256 GB · Excelente estado</div>
+
+  <div class="price-label">Precio</div>
+
+  <div class="price" data-usd="850">$0</div>
+
+  <div class="usd-price">
+    USD 850
+  </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone16proused')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 16 Pro Usado','📱',1211250)">
+  🛒 Agregar
+  </button>
+
+  <button class="toggle-btn"
+  onclick="event.stopPropagation();toggleGroup('mas16pro')">
+  Ver más
+  </button>
+
+</div>
+
+<!-- oculto -->
+<div id="mas16pro" class="hidden-group">
+
+  <div class="prod-card iphone16 iphone16pro"
+  onclick="openDetail('iphone16prosused')">
+
     <span class="prod-badge">Usado</span>
 
     <img src="https://i.postimg.cc/ZqTxkJBN/iphone-16-pro-max-256gb-natural-titanium-2-removebg-preview.png"
@@ -2005,35 +2468,16 @@ footer p { font-size:.78rem; color:var(--gray); }
     class="product-image">
 
     <h3>iPhone 16 Pro</h3>
+
     <div class="storage">256 GB · Excelente estado</div>
 
     <div class="price-label">Precio</div>
-    <div class="price">$1.211.250</div>
 
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone16proused')">
-    Ver detalles
-    </button>
+    <div class="price" data-usd="890">$0</div>
 
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 16 Pro Usado','📱',1211250)">
-    🛒 Agregar
-    </button>
-  </div>
-
-  <!-- iPhone 16 Pro -->
-  <div class="prod-card" onclick="openDetail('iphone16prosused')">
-    <span class="prod-badge">Usado</span>
-
-    <img src="https://i.postimg.cc/ZqTxkJBN/iphone-16-pro-max-256gb-natural-titanium-2-removebg-preview.png"
-    alt="iPhone 16 Pro"
-    class="product-image">
-
-    <h3>iPhone 16 Pro</h3>
-    <div class="storage">256 GB · Excelente estado</div>
-
-    <div class="price-label">Precio</div>
-    <div class="price">$1.268.250</div>
+    <div class="usd-price">
+      USD 890
+    </div>
 
     <button class="detail-btn"
     onclick="event.stopPropagation();openDetail('iphone16prosused')">
@@ -2044,13 +2488,56 @@ footer p { font-size:.78rem; color:var(--gray); }
     onclick="event.stopPropagation();addToCart('iPhone 16 Pro Usado','📱',1268250)">
     🛒 Agregar
     </button>
+
   </div>
 
+</div>
 
+<!-- iPhone 16 Pro Max -->
+<div class="prod-card iphone16 iphone16promax"
+onclick="openDetail('iphone16promaxused')">
 
+  <span class="prod-badge">Usado</span>
 
-  <!-- iPhone 16 Pro Max -->
-  <div class="prod-card" onclick="openDetail('iphone16promaxused')">
+  <img src="https://i.postimg.cc/SKyf0m28/iphone-16-pro-max-256gb-natural-titanium-1-removebg-preview.png"
+  alt="iPhone 16 Pro Max"
+  class="product-image">
+
+  <h3>iPhone 16 Pro Max</h3>
+
+  <div class="storage">256 GB · Excelente estado</div>
+
+  <div class="price-label">Precio</div>
+
+  <div class="price" data-usd="1000">$0</div>
+
+  <div class="usd-price">
+    USD 1000
+  </div>
+
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone16promaxused')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 16 Pro Max Usado','📱',1425000)">
+  🛒 Agregar
+  </button>
+
+  <button class="toggle-btn"
+  onclick="event.stopPropagation();toggleGroup('mas16promax')">
+  Ver más
+  </button>
+
+</div>
+
+<!-- oculto -->
+<div id="mas16promax" class="hidden-group">
+
+  <div class="prod-card iphone16 iphone16promax"
+  onclick="openDetail('iphone16promaxsused')">
+
     <span class="prod-badge">Usado</span>
 
     <img src="https://i.postimg.cc/SKyf0m28/iphone-16-pro-max-256gb-natural-titanium-1-removebg-preview.png"
@@ -2058,35 +2545,16 @@ footer p { font-size:.78rem; color:var(--gray); }
     class="product-image">
 
     <h3>iPhone 16 Pro Max</h3>
+
     <div class="storage">256 GB · Excelente estado</div>
 
     <div class="price-label">Precio</div>
-    <div class="price">$1.425.000</div>
 
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone16promaxused')">
-    Ver detalles
-    </button>
+    <div class="price" data-usd="1040">$0</div>
 
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 16 Pro Max Usado','📱',1425000)">
-    🛒 Agregar
-    </button>
-  </div>
-
-  <!-- iPhone 16 Pro Max -->
-  <div class="prod-card" onclick="openDetail('iphone16promaxsused')">
-    <span class="prod-badge">Usado</span>
-
-    <img src="https://i.postimg.cc/SKyf0m28/iphone-16-pro-max-256gb-natural-titanium-1-removebg-preview.png"
-    alt="iPhone 16 Pro Max"
-    class="product-image">
-
-    <h3>iPhone 16 Pro Max</h3>
-    <div class="storage">256 GB · Excelente estado</div>
-
-    <div class="price-label">Precio</div>
-    <div class="price">$1.482.000</div>
+    <div class="usd-price">
+      USD 1040
+    </div>
 
     <button class="detail-btn"
     onclick="event.stopPropagation();openDetail('iphone16promaxsused')">
@@ -2097,60 +2565,78 @@ footer p { font-size:.78rem; color:var(--gray); }
     onclick="event.stopPropagation();addToCart('iPhone 16 Pro Max Usado','📱',1482000)">
     🛒 Agregar
     </button>
+
   </div>
 
+</div>
 
+<!-- iPhone 17 -->
+<div class="prod-card iphone17"
+onclick="openDetail('iphone17used')">
 
-  <!-- iPhone 17 -->
-  <div class="prod-card" onclick="openDetail('iphone17used')">
-    <span class="prod-badge">Usado</span>
+  <span class="prod-badge">Usado</span>
 
-    <img src="https://i.postimg.cc/V6CmBPfJ/8750048b-7228-4ddc-9591-2285716541a6-removebg-preview.png"
-    alt="iPhone 17"
-    class="product-image">
+  <img src="https://i.postimg.cc/V6CmBPfJ/8750048b-7228-4ddc-9591-2285716541a6-removebg-preview.png"
+  alt="iPhone 17"
+  class="product-image">
 
-    <h3>iPhone 17</h3>
-    <div class="storage">256 GB · Excelente estado</div>
+  <h3>iPhone 17</h3>
 
-    <div class="price-label">Precio</div>
-    <div class="price">$1.268.250</div>
+  <div class="storage">256 GB · Excelente estado</div>
 
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone17used')">
-    Ver detalles
-    </button>
+  <div class="price-label">Precio</div>
 
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 17','📱',1268250)">
-    🛒 Agregar
-    </button>
+  <div class="price" data-usd="890">$0</div>
+
+  <div class="usd-price">
+    USD 890
   </div>
 
-  <!-- iPhone 17 Pro -->
-  <div class="prod-card" onclick="openDetail('iphone17proused')">
-    <span class="prod-badge">Usado</span>
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone17used')">
+  Ver detalles
+  </button>
 
-    <img src="https://i.postimg.cc/282RWSQF/Iphone-17-Pro-Silver-01-removebg-preview.png"
-    alt="iPhone 17 Pro"
-    class="product-image">
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 17','📱',1268250)">
+  🛒 Agregar
+  </button>
 
-    <h3>iPhone 17 Pro</h3>
-    <div class="storage">256 GB · Excelente estado</div>
+</div>
 
-    <div class="price-label">Precio</div>
-    <div class="price">$1.795.500</div>
+<!-- iPhone 17 Pro -->
+<div class="prod-card iphone17 iphone17pro"
+onclick="openDetail('iphone17proused')">
 
-    <button class="detail-btn"
-    onclick="event.stopPropagation();openDetail('iphone17proused')">
-    Ver detalles
-    </button>
+  <span class="prod-badge">Usado</span>
 
-    <button class="add-cart-btn"
-    onclick="event.stopPropagation();addToCart('iPhone 17 Pro Usado','📱',1795250)">
-    🛒 Agregar
-    </button>
+  <img src="https://i.postimg.cc/282RWSQF/Iphone-17-Pro-Silver-01-removebg-preview.png"
+  alt="iPhone 17 Pro"
+  class="product-image">
+
+  <h3>iPhone 17 Pro</h3>
+
+  <div class="storage">256 GB · Excelente estado</div>
+
+  <div class="price-label">Precio</div>
+
+  <div class="price" data-usd="1260">$0</div>
+
+  <div class="usd-price">
+    USD 1260
   </div>
 
+  <button class="detail-btn"
+  onclick="event.stopPropagation();openDetail('iphone17proused')">
+  Ver detalles
+  </button>
+
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 17 Pro Usado','📱',1795250)">
+  🛒 Agregar
+  </button>
+
+</div>
 
 
 
@@ -2261,6 +2747,7 @@ footer p { font-size:.78rem; color:var(--gray); }
       <div class="detail-side">
         <h2>Comprar ahora</h2>
         <div class="side-price" id="detailSidePrice">$0</div>
+        <div class="installments" id="installmentsBox"></div>
         <p>Agregalo al carrito y finalizá la compra por WhatsApp. El total es estimado y puede coordinarse financiación, envío o retiro.</p>
         <button class="btn-checkout" id="detailAddBtn">Agregar al carrito</button>
         <button class="btn-back" onclick="showPage('storePage')">Volver a la tienda</button>
@@ -2347,6 +2834,7 @@ footer p { font-size:.78rem; color:var(--gray); }
 <script>
 let cart = JSON.parse(localStorage.getItem('cart_isr')) || [];
 let selectedProduct = null;
+let selectedProductId = null;
 
 const products = {
 iphone11used:{
@@ -3351,26 +3839,102 @@ function toggleGroup(id){
 }
 
 function openDetail(id){
-  const p = products[id]; if(!p) return;
+  const p = products[id];
+  if(!p) return;
+
   selectedProduct = p;
+  selectedProductId = id;
+
   document.getElementById('detailImage').src = p.image;
-document.getElementById('detailImage').alt = p.name;
+  document.getElementById('detailImage').alt = p.name;
+
   const nameParts = p.name.split(' ');
   const firstWord = nameParts[0];
   const rest = nameParts.slice(1).join(' ');
-  document.getElementById('detailName').innerHTML = `<span>${firstWord}</span> ${rest}`;
+
+  document.getElementById('detailName').innerHTML =
+  `<span>${firstWord}</span> ${rest}`;
+
   document.getElementById('detailStorage').textContent = p.storage;
-  document.getElementById('detailPrice').textContent = money(p.price);
-  document.getElementById('detailSidePrice').textContent = money(p.price);
+
+  let precioFinal = p.price;
+
+  const card = document.querySelector(`.prod-card[onclick*="${id}"]`);
+  const priceUsd = card ? card.querySelector('.price[data-usd]') : null;
+  const usd = priceUsd ? Number(priceUsd.dataset.usd) : null;
+
+  if(usd && typeof dolarBlueActual !== 'undefined' && dolarBlueActual){
+    precioFinal = usd * dolarBlueActual;
+  }
+
+  document.getElementById('detailPrice').textContent = money(precioFinal);
+  document.getElementById('detailSidePrice').textContent = money(precioFinal);
+
+  let usdInfo = document.getElementById('detailUsdPrice');
+
+  if(usd){
+    if(!usdInfo){
+      usdInfo = document.createElement('div');
+      usdInfo.id = 'detailUsdPrice';
+      usdInfo.className = 'usd-price';
+      document.getElementById('detailPrice').after(usdInfo);
+    }
+
+    usdInfo.textContent = 'USD ' + usd;
+  } else if(usdInfo){
+    usdInfo.textContent = '';
+  }
+
+  const box = document.getElementById('installmentsBox');
+
+  if(box){
+    const basePosnet = precioFinal * 1.10;
+
+    const cuotas3 = (basePosnet * 1.21) / 3;
+    const cuotas6 = (basePosnet * 1.35) / 6;
+    const cuotas12 = (basePosnet * 1.70) / 12;
+
+    box.innerHTML = `
+      <div class="installment-item">3 cuotas de ${money(cuotas3)}</div>
+      <div class="installment-item">6 cuotas de ${money(cuotas6)}</div>
+      <div class="installment-item">12 cuotas de ${money(cuotas12)}</div>
+    `;
+  }
+
   document.getElementById('detailDescription').textContent = p.description;
+
   document.getElementById('detailSpecs').innerHTML =
-Object.entries(p.specs).map(([k,v])=>
-`<div class="spec-card"><span>${k}</span><strong>${v}</strong></div>`
-).join('');
-document.getElementById('detailBenefits').innerHTML =
-p.benefits.map(b=>`<li>${b}</li>`).join('');
+  Object.entries(p.specs).map(([k,v]) =>
+  `<div class="spec-card"><span>${k}</span><strong>${v}</strong></div>`
+  ).join('');
+
+  document.getElementById('detailBenefits').innerHTML =
+  p.benefits.map(b => `<li>${b}</li>`).join('');
+
   document.getElementById('detailAddBtn').onclick = addSelectedToCart;
+
   showPage('detailPage');
+}
+
+function filterProducts(category){
+
+  const cards = document.querySelectorAll('.prod-card');
+
+  cards.forEach(card => {
+
+    if(category === 'all'){
+      card.style.display = 'block';
+      return;
+    }
+
+    if(card.classList.contains(category)){
+      card.style.display = 'block';
+    } else {
+      card.style.display = 'none';
+    }
+
+  });
+
 }
 
 function openCartPage(){ saveCart(); renderCartPage(); showPage('cartPage'); }
@@ -3399,6 +3963,40 @@ function renderCartPage(){
     </div>
   `).join('');
 }
+
+function money(n){
+  return n.toLocaleString('es-AR', {
+    style:'currency',
+    currency:'ARS',
+    maximumFractionDigits:0
+  });
+}
+
+async function actualizarPreciosDolarBlue(){
+  try{
+    const res = await fetch('https://dolarapi.com/v1/dolares/blue');
+    const data = await res.json();
+
+    const dolarBlue = data.venta;
+
+    document.querySelectorAll('.price[data-usd]').forEach(price => {
+      const usd = Number(price.dataset.usd);
+      const precioPesos = usd * dolarBlue;
+
+      price.textContent = precioPesos.toLocaleString('es-AR', {
+        style:'currency',
+        currency:'ARS',
+        maximumFractionDigits:0
+      });
+    });
+
+  }catch(error){
+    console.log('No se pudo actualizar el dólar blue', error);
+  }
+}
+
+actualizarPreciosDolarBlue();
+setInterval(actualizarPreciosDolarBlue, 300000);
 
 function changeQty(name, delta){
   const item = cart.find(i=>i.name===name); if(!item) return;
@@ -3441,6 +4039,124 @@ function sendOrder(){
   const msg=`Hola! Quiero finalizar mi compra:%0A%0A${lines}%0A%0ATotal estimado: $${total.toLocaleString('es-AR')}%0A%0ADatos del cliente:%0ANombre: ${name}%0ATelefono: ${phone}%0ADireccion: ${address}%0APago: ${payment}%0AComentario: ${notes||'Sin comentarios'}`;
   window.open(`https://wa.me/5493412345678?text=${msg}`,'_blank');
 }
+
+function toggleCards(group){
+
+  document.querySelectorAll('.' + group).forEach(card => {
+
+    if(card.classList.contains('show')){
+
+      card.classList.remove('show');
+
+      setTimeout(() => {
+        card.style.display = 'none';
+      }, 450);
+
+    } else {
+
+      card.style.display = 'block';
+
+      setTimeout(() => {
+        card.classList.add('show');
+      }, 10);
+
+    }
+
+  });
+
+}
+
+let dolarBlueActual = 0;
+
+async function actualizarPreciosDolarBlue(){
+  try{
+    const res = await fetch('https://dolarapi.com/v1/dolares/blue');
+    const data = await res.json();
+
+    dolarBlueActual = data.venta;
+
+    document.querySelectorAll('.price[data-usd]').forEach(price => {
+      const usd = Number(price.dataset.usd);
+      price.textContent = formatoPesos(usd * dolarBlueActual);
+    });
+
+    if(selectedProduct){
+      actualizarPrecioDetalle(selectedProduct);
+    }
+
+  }catch(error){
+    console.log('Error dólar blue:', error);
+  }
+}
+
+function formatoPesos(valor){
+function calcularCuotas(precio){
+
+  // +10% posnet
+  const basePosnet = precio * 1.10;
+
+  // cuotas
+  const cuotas3 = (basePosnet * 1.21) / 3;
+  const cuotas6 = (basePosnet * 1.35) / 6;
+  const cuotas12 = (basePosnet * 1.70) / 12;
+
+  document.getElementById('installmentsBox').innerHTML = `
+
+    <div class="installment-item">
+      3 cuotas de ${formatoPesos(cuotas3)}
+    </div>
+
+    <div class="installment-item">
+      6 cuotas de ${formatoPesos(cuotas6)}
+    </div>
+
+    <div class="installment-item">
+      12 cuotas de ${formatoPesos(cuotas12)}
+    </div>
+
+  `;
+}
+  return valor.toLocaleString('es-AR', {
+    style:'currency',
+    currency:'ARS',
+    maximumFractionDigits:0
+  });
+}
+
+function obtenerUsdDelProducto(productId){
+  const card = [...document.querySelectorAll('.prod-card')]
+    .find(card => card.getAttribute('onclick')?.includes(productId));
+
+  if(!card) return null;
+
+  const price = card.querySelector('.price[data-usd]');
+  return price ? Number(price.dataset.usd) : null;
+}
+
+function actualizarPrecioDetalle(productId){
+  const usd = obtenerUsdDelProducto(productId);
+  if(!usd || !dolarBlueActual) return;
+
+  const precioPesos = usd * dolarBlueActual;
+
+  document.getElementById('detailPrice').textContent = formatoPesos(precioPesos);
+  document.getElementById('detailSidePrice').textContent = formatoPesos(precioPesos);
+
+  let usdInfo = document.getElementById('detailUsdPrice');
+
+  if(!usdInfo){
+    usdInfo = document.createElement('div');
+    usdInfo.id = 'detailUsdPrice';
+    usdInfo.className = 'usd-price';
+
+    document.getElementById('detailPrice').insertAdjacentElement('afterend', usdInfo);
+  }
+
+  usdInfo.textContent = 'USD ' + usd;
+}
+
+actualizarPreciosDolarBlue();
+setInterval(actualizarPreciosDolarBlue, 300000);
 
 // ── THEME TOGGLE ──
 function toggleTheme(){
