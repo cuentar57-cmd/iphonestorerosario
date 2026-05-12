@@ -778,6 +778,39 @@ footer p { font-size:.78rem; color:var(--gray); }
   font-weight:600;
 }
 
+/* ══ DEV BADGE ══ */
+.dev-credit {
+  display:flex; align-items:center; gap:8px;
+  font-size:.75rem; color:var(--gray);
+  width:100%; margin-top:4px;
+}
+.dev-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:linear-gradient(90deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888,#9b59b6);
+  background-size:200% 100%;
+  color:#fff; font-weight:700; font-size:.72rem;
+  padding:5px 13px 5px 10px; border-radius:100px;
+  text-decoration:none; letter-spacing:.3px;
+  animation:badgeShimmer 3s linear infinite, badgePulse 2.5s ease-in-out infinite;
+  box-shadow:0 0 14px rgba(188,24,136,.45);
+  transition:transform .2s, box-shadow .2s;
+}
+.dev-badge:hover {
+  transform:scale(1.07);
+  box-shadow:0 0 24px rgba(188,24,136,.7);
+  animation-play-state:paused;
+}
+.dev-badge svg { width:14px; height:14px; fill:#fff; flex-shrink:0; }
+@keyframes badgeShimmer {
+  0%   { background-position:0% 0; }
+  100% { background-position:200% 0; }
+}
+@keyframes badgePulse {
+  0%,100% { box-shadow:0 0 14px rgba(188,24,136,.45); }
+  50%      { box-shadow:0 0 26px rgba(240,148,51,.7); }
+}
+
+
 /* ══ RESPONSIVE ══ */
 @media(max-width:850px) {
   nav ul { display:none; }
@@ -2885,13 +2918,18 @@ onclick="openDetail('iphone17proused')">
   <div class="ubicacion-grid">
     <div class="ubi-info">
       <h3>Encontranos en <span>Rosario</span></h3>
-      <div class="ubi-detail"><div class="ubi-icon">📍</div><p><strong>Dirección</strong><br>Córdoba 1234, Rosario, Santa Fe</p></div>
+      <div class="ubi-detail"><div class="ubi-icon">📍</div><p><strong>Dirección</strong><br>Junin 191, Rosario, Santa Fe</p></div>
       <div class="ubi-detail"><div class="ubi-icon">🕐</div><p><strong>Horario</strong><br>Lun a Vie: 10:00 – 20:00<br>Sáb: 10:00 – 18:00</p></div>
       <div class="ubi-detail"><div class="ubi-icon">📞</div><p><strong>WhatsApp</strong><br>+54 9 341 234 5678</p></div>
-      <div class="ubi-detail"><div class="ubi-icon">📦</div><p><strong>Envíos</strong><br>A todo el país por correo y moto</p></div>
+      <div class="ubi-detail"><div class="ubi-icon">📦</div><p><strong>Envíos</strong><br>A todo el país por correo</p></div>
       <a href="https://wa.me/5493412521678" class="btn-primary" style="margin-top:10px" target="_blank">Consultar ahora</a>
     </div>
-    <div class="map-placeholder"><span>📍</span><p>Rosario, Santa Fe</p></div>
+    <iframe
+  src="https://maps.app.goo.gl/zgQKPurKTudH676XA?g_st=ic"
+  width="100%" height="320" style="border:0; border-radius:20px;"
+  allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+</iframe>
+
   </div>
 </section>
 
@@ -2911,6 +2949,15 @@ onclick="openDetail('iphone17proused')">
     <a href="#seminuevos">Exhibición</a>
     <a href="#accesorios">Accesorios</a>
     <a href="#ubicacion">Ubicación</a>
+    
+    <div class="dev-credit">
+  Desarrollado por&nbsp;
+  <a class="dev-badge" href="https://instagram.com/btarratweb" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+    @btarratweb
+  </a>
+</div>
+
   </div>
 </footer>
 </div>
