@@ -5373,31 +5373,77 @@ function updateBadge(){
   badge.classList.add('pop');
 }
 
+
 function addToCart(name, icon, price = null, button = null){
-  if((price === null || price === 0) && button){
-    const card = button.closest('.prod-card');
-    const priceElement = card ? card.querySelector('.price') : null;
+    // variables para la tarjeta, el botón y el elemento de precio
+    let card = null;
+    let btnElement = null;
+    let priceElement = null;
 
-    if(priceElement){
-      let priceText = priceElement.textContent
-        .replace(/\$/g,'')
-        .replace(/\./g,'')
-        .replace(/,/g,'')
-        .trim();
+    // Si el precio es nulo o cero, buscamos la tarjeta y el precio en el DOM
+    if (price === null || price === 0) {
+        if (button) {
+            card = button.closest('.prod-card');
+        } else {
+            // buscamos el botón que llama a addToCart con este nombre de producto
+            btnElement = Array.from(document.querySelectorAll('.add-cart-btn')).find(b => {
+                const onclickAttr = b.getAttribute('onclick');
+                return onclickAttr && onclickAttr.includes(name);
+            });
+            if (btnElement) {
+                card = btnElement.closest('.prod-card');
+            }
+        }
 
-      const parsedPrice = parseInt(priceText,10);
-      if(!isNaN(parsedPrice) && parsedPrice > 0){
-        price = parsedPrice;
-      }
-              // Si el precio sigue siendo nulo o cero, derivar del atributo data-usd
-        if ((price === null || price === 0) && priceElement.dataset && priceElement.dataset.usd) {
-            const usdValue = Number(priceElement.dataset.usd);
-            if (!isNaN(usdValue) && usdValue > 0) {
-                price = usdValue * dolarBlueActual;
+        // obtenemos el elemento .price si se encontró la tarjeta
+        priceElement = card ? card.querySelector('.price') : null;
+
+        if (priceElement) {
+            // intentamos extraer un precio numérico del texto visible
+            let priceText = priceElement.textContent
+                .replace(/\$/g,'')
+                .replace(/\./g,'')
+                .replace(/,/g,'')
+                .replace(/\s/g,'')
+                .trim();
+
+            const parsedPrice = parseInt(priceText, 10);
+            if (!isNaN(parsedPrice) && parsedPrice > 0) {
+                price = parsedPrice;
+            }
+
+            // Si seguimos sin precio, usamos el valor en USD del data-usd
+            const usdValue = priceElement.dataset && priceElement.dataset.usd ? Number(priceElement.dataset.usd) : 0;
+            if ((price === null || price === 0) && !isNaN(usdValue) && usdValue > 0) {
+                // Usamos el tipo de cambio almacenado en dolarBlueActual, o 1 si no está definido o es 0
+                const rate = (typeof dolarBlueActual !== 'undefined' && dolarBlueActual > 0) ? dolarBlueActual : 1;
+                price = usdValue * rate;
             }
         }
     }
-  }
+
+    // Validamos el precio antes de añadir al carrito
+    if (price === null || isNaN(price)) price = 0;
+
+    // Si el producto ya está en el carrito, incrementa la cantidad
+    const existing = cart.find(item => item.name === name);
+    if (existing) {
+        existing.qty++;
+    } else {
+        cart.push({
+            name,
+            icon,
+            price,
+            qty: 1
+        });
+    }
+
+    // Guardamos el carrito y actualizamos la insignia, y abrimos la página del carrito
+    saveCart();
+    updateBadge();
+    openCartPage();
+}
+
 
   if(price === null || isNaN(price)) price = 0;
 
