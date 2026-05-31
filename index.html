@@ -29,7 +29,7 @@
   --foot-bg:#000;
   --spec-bg:#111;
 }
-
+                    
 [data-theme="light"] {
   --bg:#f0f0f5;
   --bg2:#e8e8f0;
@@ -5389,6 +5389,13 @@ function addToCart(name, icon, price = null, button = null){
       if(!isNaN(parsedPrice) && parsedPrice > 0){
         price = parsedPrice;
       }
+              // Si el precio sigue siendo nulo o cero, derivar del atributo data-usd
+        if ((price === null || price === 0) && priceElement.dataset && priceElement.dataset.usd) {
+            const usdValue = Number(priceElement.dataset.usd);
+            if (!isNaN(usdValue) && usdValue > 0) {
+                price = usdValue * dolarBlueActual;
+            }
+        }
     }
   }
 
