@@ -2776,7 +2776,7 @@ onclick="openDetail('iphone15promaxused')">
 <div class="prod-card iphone16 iphone16pro"
 onclick="openDetail('iphone16proused')">
 
-  <span class="prod-badge">Sin Stock</span>
+  <span class="prod-badge">Usado</span>
 
   <img src="https://i.postimg.cc/ZqTxkJBN/iphone-16-pro-max-256gb-natural-titanium-2-removebg-preview.png"
   alt="iPhone 16 Pro"
@@ -2784,7 +2784,7 @@ onclick="openDetail('iphone16proused')">
 
   <h3>iPhone 16 Pro</h3>
 
-  <div class="storage">256 GB · Excelente estado</div>
+  <div class="storage">128 GB · Excelente estado</div>
 
   <div class="price-label">Precio</div>
 
@@ -2799,9 +2799,10 @@ onclick="openDetail('iphone16proused')">
   Ver detalles
   </button>
 
-  <button class="add-cart-btn disabled-btn" disabled>
-  Sin stock
-</button>
+  <button class="add-cart-btn"
+  onclick="event.stopPropagation();addToCart('iPhone 16 Pro Usado','📱',1218750)">
+  🛒 Agregar
+  </button>
 
   <button class="toggle-btn"
   onclick="event.stopPropagation();toggleGroup('mas16pro')">
@@ -2809,7 +2810,7 @@ onclick="openDetail('iphone16proused')">
   </button>
 
 </div>
-
+  
 <!-- oculto -->
 <div id="mas16pro" class="hidden-group">
 
@@ -5046,7 +5047,7 @@ iphone16proused:{
   image:'https://i.postimg.cc/ZqTxkJBN/iphone-16-pro-max-256gb-natural-titanium-2-removebg-preview.png',
   price:1211250,
 
-  storage:'256 GB · Excelente estado',
+  storage:'128 GB · Excelente estado',
 
   description:'iPhone 16 Pro usado en excelente estado y funcionamiento.',
 
