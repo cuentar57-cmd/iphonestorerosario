@@ -340,17 +340,45 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:rgba(98,0,255,.3);border-radius:3px;}
 
+/* ─── MOBILE OVERLAY ─── */
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;z-index:99;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(3px);
+}
+.sidebar-overlay.show{display:block;}
+
 @media(max-width:900px){
-  .sidebar{transform:translateX(-100%);}
-  .sidebar.open{transform:translateX(0);}
+  .sidebar{transform:translateX(-100%);z-index:100;}
+  .sidebar.open{transform:translateX(0);box-shadow:8px 0 40px rgba(0,0,0,.5);}
   .main{margin-left:0;width:100%;}
   .stats-grid{grid-template-columns:1fr 1fr;}
   .form-grid,.spec-grid-form,.settings-form{grid-template-columns:1fr;}
   #menuBtn{display:flex!important;}
+  .content{padding:16px;}
+  .topbar{padding:0 14px;}
+  .toolbar{flex-direction:column;align-items:stretch;}
+  .toolbar-left{flex-wrap:wrap;}
+  .search-box{min-width:100%;}
+  .toolbar > div:last-child{display:flex;flex-wrap:wrap;gap:7px;}
+  .toolbar > div:last-child button{flex:1;justify-content:center;}
+  .table-wrap{overflow-x:auto;}
+  table{min-width:560px;}
+  .setup-box{margin:16px;padding:22px;}
+  .modal{margin:10px;max-height:95vh;}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .stat-card{padding:13px;}
+  .stat-value{font-size:1.5rem;}
+  .login-box{padding:26px 20px;margin:16px;}
+  .setup-box{padding:18px 16px;}
 }
 </style>
 </head>
 <body>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
 <!-- ═══════════════════════════════════
      LOGIN SCREEN
@@ -480,7 +508,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
 <div class="main">
   <header class="topbar">
     <div style="display:flex;align-items:center;gap:10px;">
-      <button class="icon-btn" id="menuBtn" onclick="document.getElementById('sidebar').classList.toggle('open')" style="display:none">
+      <button class="icon-btn" id="menuBtn" onclick="openSidebar()" style="display:none">
         <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <div class="topbar-title" id="topbarTitle">Todos los <span>Productos</span></div>
@@ -612,17 +640,26 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
 
       <!-- GOOGLE SHEETS -->
       <div class="settings-section">
-        <h3><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>Google Sheets</h3>
+        <h3><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>Google Sheets — Sincronización</h3>
         <p class="desc">
-          Conectá tu Google Sheet para que el admin sincronice productos automáticamente.<br>
-          Necesitás un <strong>Apps Script</strong> desplegado como Web App.
-          <a href="#" onclick="document.getElementById('sheetsGuide').classList.toggle('show');return false;">Ver instrucciones →</a>
+          Conectá tu Google Sheet para que los productos que cargues acá aparezcan automáticamente en tu tienda <strong>index.html</strong>.
+          <a href="#" onclick="document.getElementById('sheetsGuide').classList.toggle('show');return false;">Ver instrucciones completas →</a>
         </p>
+
+        <!-- FLUJO VISUAL -->
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 14px;background:rgba(98,0,255,.05);border:1px solid rgba(98,0,255,.14);border-radius:12px;margin-bottom:14px;font-size:.78rem;font-weight:600;">
+          <span style="background:rgba(98,0,255,.12);color:var(--violet);padding:4px 10px;border-radius:8px;">📋 Panel Admin</span>
+          <span style="color:var(--gray);">→ guarda en →</span>
+          <span style="background:rgba(52,199,89,.1);color:var(--green);padding:4px 10px;border-radius:8px;">🗂️ Google Sheets</span>
+          <span style="color:var(--gray);">→ lee automáticamente →</span>
+          <span style="background:rgba(98,0,255,.12);color:var(--violet);padding:4px 10px;border-radius:8px;">🛒 Tienda (index.html)</span>
+        </div>
+
         <div class="guide-box" id="sheetsGuide">
           <div class="g-title">GUÍA PASO A PASO</div>
           <div class="step-list">
             <div class="step-item"><div class="step-num">1</div><p>Abrí tu Google Sheet → <strong>Extensiones → Apps Script</strong>.</p></div>
-            <div class="step-item"><div class="step-num">2</div><p>Borrá todo y pegá el siguiente código:</p></div>
+            <div class="step-item"><div class="step-num">2</div><p>Borrá todo el código existente y pegá el script de abajo. Hacé clic en <strong>Guardar (💾)</strong>.</p></div>
           </div>
           <div class="code-snippet" id="sheetsScriptBox"></div>
           <div style="display:flex;justify-content:flex-end;margin-top:7px;">
@@ -631,10 +668,12 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
             </button>
           </div>
           <div class="step-list" style="margin-top:10px;">
-            <div class="step-item"><div class="step-num">3</div><p>Guardá → <strong>Implementar → Nueva implementación</strong>. Tipo: <code>Aplicación web</code>. Acceso: <code>Cualquier persona</code>.</p></div>
-            <div class="step-item"><div class="step-num">4</div><p>Copiá la URL y pegala abajo. Columnas necesarias en la hoja: <code>id | name | category | storage | priceUsd | stock | image | description | benefits | specs</code></p></div>
+            <div class="step-item"><div class="step-num">3</div><p>En Apps Script: <strong>Implementar → Nueva implementación</strong>. Tipo: <code>Aplicación web</code>. Ejecutar como: <code>Yo</code>. Acceso: <code>Cualquier persona</code>. Copiá la URL que te da.</p></div>
+            <div class="step-item"><div class="step-num">4</div><p>Pegá esa URL en el campo de abajo y hacé clic en <strong>Probar conexión</strong>. Si todo está bien, la tienda ya leerá los productos desde Sheets.</p></div>
+            <div class="step-item"><div class="step-num">5</div><p>La hoja debe tener estas columnas (fila 1): <code>id | name | category | storage | priceUsd | stock | image | description | benefits | specs</code></p></div>
           </div>
         </div>
+
         <div class="settings-form">
           <div class="setting-row">
             <div class="form-label">URL del Apps Script Web App</div>
@@ -649,8 +688,8 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
           <button class="btn-primary" onclick="testSheetsConn()" style="height:36px;font-size:.82rem;">
             <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>Probar conexión
           </button>
-          <button class="btn-ghost" onclick="syncFromSheets()" style="height:36px;font-size:.82rem;">Importar desde Sheets</button>
-          <button class="btn-ghost" onclick="pushToSheets()" style="height:36px;font-size:.82rem;">Exportar a Sheets</button>
+          <button class="btn-ghost" onclick="syncFromSheets()" style="height:36px;font-size:.82rem;">↓ Importar desde Sheets</button>
+          <button class="btn-ghost" onclick="pushToSheets()" style="height:36px;font-size:.82rem;">↑ Exportar a Sheets</button>
         </div>
         <div class="conn-test" id="sheetsTestResult">
           <div class="ct-icon idle" id="sheetsTestIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg></div>
@@ -1507,6 +1546,22 @@ function toggleTheme(){
 // ══════════════════════════════════════════════════════════════
 //  RESPONSIVE
 // ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+//  RESPONSIVE SIDEBAR
+// ══════════════════════════════════════════════════════════════
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+// Close sidebar on nav item click (mobile)
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click',()=>{ if(window.innerWidth<=900) closeSidebar(); });
+});
+
 if(window.innerWidth<=900) document.getElementById('menuBtn').style.display='flex';
 
 // ══════════════════════════════════════════════════════════════
@@ -1528,4 +1583,3 @@ window._initialSync = async function(){
 </script>
 </body>
 </html>
-
