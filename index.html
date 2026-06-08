@@ -557,6 +557,8 @@ footer p{font-size:.78rem;color:var(--gray)}
 <script>
 const PRODUCTS_KEY = 'isr_products_v3';
 const CFG_KEY      = 'isr_config_v3';
+const SHEETS_URL   = 'https://script.google.com/macros/s/AKfycbxrL03Ap1awmyHOmFe1txkCx3zvSLVAw4uiBq-c_ci5Z2GT9gzBqqoB7h2ebQu-wzkKXA/exec';
+const SHEETS_TAB   = 'rosariostore';
 
 let dolarBlue = 1450;
 async function fetchDolar(){
@@ -575,18 +577,16 @@ function arsPrice(usd){ return Math.round(usd * dolarBlue); }
 let storeProducts = [];
 
 async function loadStoreProducts(){
-  const cfg = JSON.parse(localStorage.getItem(CFG_KEY)||'{}');
-  if(cfg.sheetsUrl){
-    try{
-      const r = await fetch(`${cfg.sheetsUrl}?action=read&sheet=${encodeURIComponent(cfg.sheetsTab||'Hoja1')}`);
-      const d = await r.json();
-      if(d.ok && d.products?.length){
-        storeProducts = d.products;
-        renderAllGrids();
-        return;
-      }
-    }catch(e){}
-  }
+  try{
+    const r = await fetch(`${SHEETS_URL}?action=read&sheet=${encodeURIComponent(SHEETS_TAB)}`);
+    const d = await r.json();
+    if(d.ok && d.products?.length){
+      storeProducts = d.products;
+      renderAllGrids();
+      return;
+    }
+  }catch(e){}
+  // fallback localStorage
   try{
     const raw = localStorage.getItem(PRODUCTS_KEY);
     if(raw) storeProducts = JSON.parse(raw);
