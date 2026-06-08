@@ -895,7 +895,7 @@ function loadProducts(){
   try{ const r=localStorage.getItem(STORAGE_KEY); if(r) return JSON.parse(r); }catch(e){}
   return [];
 }
-function saveProducts(p){ localStorage.setItem(STORAGE_KEY,JSON.stringify(p)); updateStats(); }
+function saveProducts(p){ localStorage.setItem(STORAGE_KEY,JSON.stringify(p)); updateStats(); pushToSheets(true); }
 
 let products = loadProducts();
 let editingId = null;
