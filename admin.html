@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · iPhone Store Rosario</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --violet:#6200ff;--violet-light:#8033ff;--violet-glow:rgba(98,0,255,.25);
+  --bg:#0a0a0a;--bg2:#141414;--card:#1a1a1a;--text:#f5f5f7;
+  --text-muted:rgba(245,245,247,.65);--gray:#888;--border:rgba(255,255,255,.08);
+  --input-bg:#111;--input-border:rgba(255,255,255,.12);
+  --red:#ff3b30;--green:#34c759;--amber:#ff9f0a;
+}
+[data-theme="light"]{
+  --bg:#f0f0f5;--bg2:#e8e8f0;--card:#fff;--text:#0a0a0a;
+  --text-muted:rgba(10,10,10,.6);--gray:#666;--border:rgba(0,0,0,.09);
+  --input-bg:#f5f5f7;--input-border:rgba(0,0,0,.14);
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════════════════════════════════════
+   SCREEN SYSTEM
+════════════════════════════════════════ */
+.screen{display:none;position:fixed;inset:0;z-index:500;}
+.screen.active{display:flex;align-items:center;justify-content:center;}
+
+/* ─── LOGIN SCREEN ─── */
+#loginScreen{
+  background:radial-gradient(ellipse 80% 80% at 50% 0%, rgba(98,0,255,.35), transparent 70%), var(--bg);
+}
+.login-box{
+  background:var(--card);border:1px solid rgba(98,0,255,.25);
+  border-radius:24px;padding:40px;width:100%;max-width:400px;
+  animation:fadeUp .5s ease both;
+  box-shadow:0 30px 80px rgba(0,0,0,.6);
+}
+.login-logo{text-align:center;margin-bottom:28px;}
+.login-logo .ll-brand{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:3px;}
+.login-logo .ll-brand span{color:var(--violet);}
+.login-logo .ll-sub{font-size:.65rem;color:var(--gray);letter-spacing:3px;font-weight:700;}
+.login-logo .ll-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(98,0,255,.12);border:1px solid rgba(98,0,255,.25);
+  border-radius:8px;padding:5px 12px;font-size:.72rem;font-weight:700;
+  color:var(--violet);margin-top:10px;letter-spacing:.5px;
+}
+.login-logo .ll-badge .dot{width:5px;height:5px;border-radius:50%;background:var(--violet);animation:pulse 1.5s infinite;}
+.login-field{margin-bottom:16px;}
+.login-label{font-size:.7rem;font-weight:700;color:var(--gray);letter-spacing:.8px;text-transform:uppercase;margin-bottom:7px;display:block;}
+.login-input{
+  width:100%;padding:14px 16px;background:var(--input-bg);border:1px solid var(--input-border);
+  border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.9rem;
+  outline:none;transition:.2s;
+}
+.login-input:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(98,0,255,.12);}
+.login-input.error{border-color:var(--red);animation:shake .4s ease;}
+.login-btn{
+  width:100%;padding:15px;background:var(--violet);color:#fff;border:none;
+  border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;
+  cursor:pointer;transition:.2s;margin-top:4px;
+  box-shadow:0 0 28px rgba(98,0,255,.35);
+}
+.login-btn:hover{background:var(--violet-light);transform:translateY(-1px);}
+.login-btn:active{transform:translateY(0);}
+.login-error{
+  background:rgba(255,59,48,.1);border:1px solid rgba(255,59,48,.3);
+  border-radius:10px;padding:10px 14px;font-size:.8rem;color:var(--red);
+  margin-bottom:16px;display:none;text-align:center;font-weight:600;
+}
+.login-error.show{display:block;animation:slideDown .3s ease;}
+.login-hint{text-align:center;font-size:.72rem;color:var(--gray);margin-top:16px;}
+.login-hint span{color:var(--violet);font-weight:700;}
+
+/* ─── SETUP SCREEN ─── */
+#setupScreen{
+  background:radial-gradient(ellipse 80% 80% at 50% 0%, rgba(98,0,255,.25), transparent 70%), var(--bg);
+}
+.setup-box{
+  background:var(--card);border:1px solid rgba(98,0,255,.2);
+  border-radius:24px;padding:36px;width:100%;max-width:560px;
+  animation:fadeUp .5s ease both;
+  box-shadow:0 30px 80px rgba(0,0,0,.6);
+}
+.setup-header{text-align:center;margin-bottom:28px;}
+.setup-header .s-icon{font-size:2.8rem;margin-bottom:10px;}
+.setup-header h2{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;}
+.setup-header h2 span{color:var(--violet);}
+.setup-header p{font-size:.85rem;color:var(--gray);margin-top:6px;line-height:1.5;}
+.setup-step{
+  background:rgba(98,0,255,.05);border:1px solid rgba(98,0,255,.15);
+  border-radius:14px;padding:18px;margin-bottom:14px;
+}
+.setup-step h4{font-size:.75rem;font-weight:700;color:var(--violet);letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;}
+.setup-step p{font-size:.82rem;color:var(--text-muted);line-height:1.5;margin-bottom:10px;}
+.setup-step code{background:rgba(98,0,255,.1);color:var(--violet);padding:2px 7px;border-radius:5px;font-size:.78rem;}
+.setup-input{
+  width:100%;padding:13px 14px;background:var(--input-bg);border:1px solid var(--input-border);
+  border-radius:11px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;
+  outline:none;transition:.2s;
+}
+.setup-input:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(98,0,255,.1);}
+.setup-btn{
+  width:100%;padding:15px;background:var(--violet);color:#fff;border:none;
+  border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;
+  cursor:pointer;transition:.2s;margin-top:6px;
+  box-shadow:0 0 28px rgba(98,0,255,.35);
+}
+.setup-btn:hover{background:var(--violet-light);}
+.setup-skip{
+  width:100%;padding:12px;background:transparent;color:var(--gray);
+  border:1px solid var(--border);border-radius:12px;
+  font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer;transition:.2s;margin-top:8px;
+}
+.setup-skip:hover{color:var(--violet);border-color:var(--violet);}
+.setup-badge-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+.s-badge{
+  display:inline-flex;align-items:center;gap:6px;padding:5px 12px;
+  border-radius:8px;font-size:.72rem;font-weight:700;letter-spacing:.5px;
+}
+.s-badge.green{background:rgba(52,199,89,.12);border:1px solid rgba(52,199,89,.25);color:var(--green);}
+.s-badge.violet{background:rgba(98,0,255,.12);border:1px solid rgba(98,0,255,.25);color:var(--violet);}
+
+/* ═══════════════════════════════════════
+   MAIN APP (hidden until logged in)
+════════════════════════════════════════ */
+#app{display:none;}
+#app.active{display:flex;}
+
+/* ─── SIDEBAR ─── */
+.sidebar{
+  position:fixed;top:0;left:0;width:240px;height:100vh;
+  background:var(--card);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;z-index:100;
+  transition:transform .3s;
+}
+.sidebar-logo{padding:22px 20px 14px;border-bottom:1px solid var(--border);}
+.sidebar-logo .logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:2px;line-height:1;}
+.sidebar-logo .logo-text span{color:var(--violet);}
+.sidebar-logo .logo-sub{font-size:.62rem;color:var(--gray);letter-spacing:3px;font-weight:700;}
+.admin-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(98,0,255,.12);border:1px solid rgba(98,0,255,.25);border-radius:6px;padding:3px 9px;font-size:.65rem;font-weight:700;color:var(--violet);margin-top:6px;letter-spacing:.5px;}
+.admin-badge .dot{width:5px;height:5px;border-radius:50%;background:var(--violet);animation:pulse 1.5s infinite;}
+.sync-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:6px;font-size:.65rem;font-weight:700;letter-spacing:.5px;margin-top:5px;}
+.sync-badge.connected{background:rgba(52,199,89,.12);border:1px solid rgba(52,199,89,.25);color:var(--green);}
+.sync-badge.disconnected{background:rgba(255,59,48,.1);border:1px solid rgba(255,59,48,.2);color:var(--red);}
+.sync-badge.syncing{background:rgba(255,159,10,.1);border:1px solid rgba(255,159,10,.2);color:var(--amber);}
+.sync-badge .sdot{width:5px;height:5px;border-radius:50%;background:currentColor;}
+.sync-badge.syncing .sdot{animation:pulse .8s infinite;}
+.nav-section{padding:10px 12px 4px;font-size:.58rem;color:var(--gray);font-weight:700;letter-spacing:2px;text-transform:uppercase;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:10px;margin:2px 8px;cursor:pointer;font-size:.85rem;font-weight:500;color:var(--text-muted);transition:.2s;border:1px solid transparent;}
+.nav-item:hover{background:rgba(98,0,255,.08);color:var(--violet);}
+.nav-item.active{background:rgba(98,0,255,.12);color:var(--violet);border-color:rgba(98,0,255,.22);}
+.nav-item svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;}
+.sidebar-footer{margin-top:auto;padding:14px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:2px;}
+.sf-btn{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--gray);padding:8px 10px;border-radius:8px;transition:.2s;cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;width:100%;text-align:left;}
+.sf-btn:hover{background:rgba(98,0,255,.08);color:var(--violet);}
+.sf-btn.logout:hover{background:rgba(255,59,48,.08);color:var(--red);}
+.sf-btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;}
+
+/* ─── MAIN ─── */
+.main{margin-left:240px;min-height:100vh;display:flex;flex-direction:column;width:calc(100% - 240px);}
+.topbar{position:sticky;top:0;z-index:99;background:var(--bg);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(12px);}
+.topbar-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;}
+.topbar-title span{color:var(--violet);}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.icon-btn{width:34px;height:34px;border-radius:50%;background:rgba(98,0,255,.1);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--violet);transition:.2s;}
+.icon-btn:hover{background:var(--violet);color:#fff;}
+.icon-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;}
+.content{flex:1;padding:24px 28px;}
+
+/* ─── STATS ─── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;transition:.2s;animation:fadeUp .5s ease both;}
+.stat-card:hover{border-color:rgba(98,0,255,.3);}
+.stat-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(98,0,255,.1);margin-bottom:10px;}
+.stat-icon svg{width:17px;height:17px;fill:none;stroke:var(--violet);stroke-width:2;}
+.stat-value{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:1px;}
+.stat-label{font-size:.72rem;color:var(--gray);font-weight:600;letter-spacing:.5px;margin-top:2px;}
+
+/* ─── TOOLBAR ─── */
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:10px;flex-wrap:wrap;}
+.toolbar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0 12px;height:36px;min-width:200px;}
+.search-box svg{width:14px;height:14px;fill:none;stroke:var(--gray);stroke-width:2;flex-shrink:0;}
+.search-box input{background:none;border:none;outline:none;color:var(--text);font-size:.85rem;font-family:'DM Sans',sans-serif;width:100%;}
+.filter-select{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0 12px;height:36px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;cursor:pointer;}
+.btn-primary{background:var(--violet);color:#fff;border:none;padding:0 18px;height:36px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:.2s;box-shadow:0 0 18px rgba(98,0,255,.28);}
+.btn-primary:hover{background:var(--violet-light);transform:translateY(-1px);}
+.btn-primary svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.5;}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:0 14px;height:36px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.2s;}
+.btn-ghost:hover{border-color:var(--violet);color:var(--violet);}
+.btn-ghost svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;}
+.btn-green{background:rgba(52,199,89,.1);color:var(--green);border:1px solid rgba(52,199,89,.25);border-radius:10px;padding:0 14px;height:36px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.2s;}
+.btn-green:hover{background:var(--green);color:#fff;}
+.btn-green svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;}
+
+/* ─── TABLE ─── */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+thead tr{border-bottom:1px solid var(--border);}
+thead th{padding:12px 14px;text-align:left;font-size:.68rem;font-weight:700;color:var(--gray);letter-spacing:1px;text-transform:uppercase;cursor:pointer;user-select:none;white-space:nowrap;}
+thead th:hover{color:var(--violet);}
+tbody tr{border-bottom:1px solid var(--border);transition:.15s;animation:fadeUp .4s ease both;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:rgba(98,0,255,.03);}
+td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
+.prod-thumb{width:42px;height:42px;border-radius:10px;background:rgba(98,0,255,.08);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+.prod-thumb img{width:36px;height:36px;object-fit:contain;}
+.prod-thumb span{font-size:1.3rem;}
+.prod-name{font-weight:600;font-size:.88rem;}
+.prod-storage{font-size:.72rem;color:var(--gray);margin-top:2px;}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:100px;font-size:.65rem;font-weight:700;letter-spacing:.5px;}
+.badge-new{background:rgba(52,199,89,.12);color:var(--green);}
+.badge-used{background:rgba(255,159,10,.12);color:var(--amber);}
+.badge-nostock{background:rgba(255,59,48,.12);color:var(--red);}
+.badge-gaming{background:rgba(0,188,212,.12);color:#00bcd4;}
+.badge-tablet{background:rgba(98,0,255,.12);color:var(--violet);}
+.price-cell{font-weight:700;color:var(--violet);font-size:.9rem;}
+.usd-cell{font-size:.72rem;color:var(--gray);}
+.actions{display:flex;gap:5px;align-items:center;}
+.act-btn{width:28px;height:28px;border-radius:7px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;}
+.act-btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;}
+.act-edit{background:rgba(98,0,255,.1);color:var(--violet);}
+.act-edit:hover{background:var(--violet);color:#fff;}
+.act-del{background:rgba(255,59,48,.1);color:var(--red);}
+.act-del:hover{background:var(--red);color:#fff;}
+.empty-state{text-align:center;padding:60px 20px;color:var(--gray);}
+.empty-state .ico{font-size:2.8rem;margin-bottom:10px;opacity:.4;}
+
+/* ─── MODAL ─── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:.25s;backdrop-filter:blur(4px);}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;width:100%;max-width:820px;max-height:92vh;overflow-y:auto;transform:scale(.96) translateY(18px);transition:.25s;scrollbar-width:thin;scrollbar-color:rgba(98,0,255,.3) transparent;}
+.overlay.open .modal{transform:scale(1) translateY(0);}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card);z-index:10;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;letter-spacing:2px;}
+.modal-title span{color:var(--violet);}
+.modal-close{width:30px;height:30px;border-radius:50%;border:none;cursor:pointer;background:rgba(255,59,48,.1);color:var(--red);display:flex;align-items:center;justify-content:center;transition:.2s;}
+.modal-close:hover{background:var(--red);color:#fff;}
+.modal-close svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.5;}
+.modal-body{padding:22px 24px;}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;padding:14px 24px 20px;border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--card);}
+
+/* ─── FORM ─── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-col{display:flex;flex-direction:column;gap:4px;}
+.form-col.full{grid-column:1/-1;}
+.form-label{font-size:.68rem;font-weight:700;color:var(--gray);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;}
+.form-input,.form-select,.form-textarea{width:100%;padding:11px 13px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:11px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;transition:.2s;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(98,0,255,.1);}
+.form-textarea{min-height:75px;resize:vertical;}
+
+/* ─── IMAGE UPLOADER ─── */
+.img-uploader{border:2px dashed var(--input-border);border-radius:13px;padding:18px;text-align:center;cursor:pointer;transition:.2s;background:var(--input-bg);position:relative;}
+.img-uploader:hover,.img-uploader.drag-over{border-color:var(--violet);background:rgba(98,0,255,.04);}
+.img-uploader input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.img-preview{width:72px;height:72px;border-radius:11px;object-fit:contain;background:rgba(98,0,255,.07);border:1px solid var(--border);display:none;margin:0 auto 8px;}
+.img-preview.visible{display:block;}
+.up-icon{font-size:1.8rem;margin-bottom:5px;display:block;}
+.up-text{font-size:.76rem;color:var(--gray);}
+.up-text strong{color:var(--violet);}
+.upload-progress{height:4px;border-radius:2px;background:rgba(98,0,255,.1);margin-top:9px;overflow:hidden;display:none;}
+.upload-progress.show{display:block;}
+.upload-progress-bar{height:100%;background:var(--violet);border-radius:2px;transition:width .3s;width:0%;}
+.upload-status{font-size:.7rem;margin-top:5px;font-weight:600;display:none;}
+.upload-status.show{display:block;}
+.upload-status.ok{color:var(--green);}
+.upload-status.err{color:var(--red);}
+.upload-status.loading{color:var(--amber);}
+.url-readout{display:none;align-items:center;gap:7px;margin-top:7px;background:rgba(52,199,89,.05);border:1px solid rgba(52,199,89,.2);border-radius:9px;padding:7px 11px;}
+.url-readout.visible{display:flex;}
+.url-readout span{font-size:.68rem;color:var(--green);font-family:monospace;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.url-readout button{background:none;border:none;cursor:pointer;color:var(--green);flex-shrink:0;}
+.url-readout button svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2;}
+
+/* ─── SPEC SECTION ─── */
+.spec-section{background:rgba(98,0,255,.04);border:1px solid rgba(98,0,255,.14);border-radius:13px;padding:15px;margin-top:8px;}
+.spec-section h4{font-size:.72rem;font-weight:700;color:var(--violet);letter-spacing:.8px;text-transform:uppercase;margin-bottom:11px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.auto-fill-btn{display:flex;align-items:center;gap:5px;background:rgba(52,199,89,.1);border:1px solid rgba(52,199,89,.25);border-radius:7px;padding:5px 11px;font-size:.72rem;font-weight:700;color:var(--green);cursor:pointer;transition:.2s;font-family:'DM Sans',sans-serif;}
+.auto-fill-btn:hover{background:rgba(52,199,89,.2);}
+.spec-grid-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* ─── SETTINGS VIEW ─── */
+.settings-section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:18px;}
+.settings-section h3{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:2px;color:var(--text);margin-bottom:4px;display:flex;align-items:center;gap:10px;}
+.settings-section h3 svg{width:17px;height:17px;fill:none;stroke:var(--violet);stroke-width:2;}
+.settings-section .desc{font-size:.78rem;color:var(--gray);margin-bottom:16px;line-height:1.6;}
+.settings-section .desc a{color:var(--violet);text-decoration:none;}
+.settings-section .desc a:hover{text-decoration:underline;}
+.settings-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.setting-row{display:flex;flex-direction:column;gap:5px;}
+.conn-test{display:flex;align-items:center;gap:10px;margin-top:12px;padding:11px 14px;border-radius:11px;background:var(--bg2);border:1px solid var(--border);font-size:.8rem;display:none;}
+.conn-test.show{display:flex;}
+.ct-icon{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ct-icon svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2.5;}
+.ct-icon.ok{background:var(--green);}
+.ct-icon.err{background:var(--red);}
+.ct-icon.idle{background:var(--gray);}
+.ct-icon.loading{background:var(--amber);}
+.ct-icon.loading svg{animation:spin .7s linear infinite;}
+.code-snippet{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:13px;font-family:monospace;font-size:.7rem;color:#a0e0a0;line-height:1.6;white-space:pre-wrap;word-break:break-all;max-height:200px;overflow:auto;margin-top:9px;}
+.guide-box{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:15px;margin-bottom:15px;display:none;}
+.guide-box.show{display:block;animation:fadeIn .3s ease;}
+.guide-box .g-title{font-size:.72rem;font-weight:700;color:var(--violet);margin-bottom:10px;letter-spacing:.5px;}
+.step-list{display:flex;flex-direction:column;gap:8px;}
+.step-item{display:flex;align-items:flex-start;gap:10px;}
+.step-num{width:22px;height:22px;border-radius:50%;background:rgba(98,0,255,.15);color:var(--violet);font-size:.68rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-item p{font-size:.78rem;color:var(--text-muted);line-height:1.5;}
+.step-item code{background:rgba(98,0,255,.1);color:var(--violet);padding:1px 5px;border-radius:4px;font-size:.72rem;}
+
+/* ─── EXPORT VIEW ─── */
+.code-box{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:15px;font-family:monospace;font-size:.73rem;color:#a0e0a0;max-height:320px;overflow:auto;white-space:pre-wrap;word-break:break-all;line-height:1.5;scrollbar-width:thin;}
+.copy-btn{background:rgba(98,0,255,.1);border:1px solid rgba(98,0,255,.2);color:var(--violet);border-radius:8px;padding:7px 14px;cursor:pointer;font-size:.78rem;font-weight:700;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px;transition:.2s;}
+.copy-btn:hover{background:var(--violet);color:#fff;}
+.copy-btn svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:22px;right:22px;z-index:999;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 16px;display:flex;align-items:center;gap:9px;font-size:.85rem;font-weight:600;transform:translateY(80px);opacity:0;transition:.3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 30px rgba(0,0,0,.4);pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-icon{width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.toast-icon svg{width:10px;height:10px;fill:none;stroke:#fff;stroke-width:2.5;}
+.toast.success .toast-icon{background:var(--green);}
+.toast.error .toast-icon{background:var(--red);}
+.toast.info .toast-icon{background:var(--violet);}
+
+/* ─── VIEWS ─── */
+.page-view{display:none;}
+.page-view.active{display:block;animation:fadeUp .4s ease both;}
+
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(98,0,255,.3);border-radius:3px;}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;width:100%;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .form-grid,.spec-grid-form,.settings-form{grid-template-columns:1fr;}
+  #menuBtn{display:flex!important;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════
+     LOGIN SCREEN
+════════════════════════════════════ -->
+<div class="screen active" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--violet)"><path d="M17 2H7C5.9 2 5 2.9 5 4v16c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-5 18c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm5-4H7V4h10v12z"/></svg>
+        <span style="font-size:.7rem;color:var(--violet);font-weight:700;letter-spacing:1px;">iPhone</span>
+      </div>
+      <div class="ll-brand"><span>Store</span> Rosario</div>
+      <div class="ll-sub">Admin Panel</div>
+      <div class="ll-badge"><span class="dot"></span>Acceso Seguro</div>
+    </div>
+
+    <div class="login-error" id="loginError">Usuario o contraseña incorrectos</div>
+
+    <div class="login-field">
+      <label class="login-label">Usuario</label>
+      <input class="login-input" id="loginUser" type="text" placeholder="admin" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()">
+    </div>
+    <div class="login-field">
+      <label class="login-label">Contraseña</label>
+      <input class="login-input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Ingresar al panel</button>
+    <div class="login-hint">Usuario por defecto: <span>admin</span> / <span>isr2024</span><br>Podés cambiarlos en Configuración</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     SETUP SCREEN (first time)
+════════════════════════════════════ -->
+<div class="screen" id="setupScreen">
+  <div class="setup-box">
+    <div class="setup-header">
+      <div class="s-icon">🔗</div>
+      <h2>Conectar <span>Google Sheets</span></h2>
+      <p>Antes de entrar al panel, conectá tu hoja de Google Sheets para sincronizar los productos con la tienda automáticamente.</p>
+    </div>
+    <div class="setup-badge-row">
+      <span class="s-badge green">✓ Sincronización en tiempo real</span>
+      <span class="s-badge violet">✓ Sin código extra</span>
+    </div>
+
+    <div class="guide-box show" id="setupGuide">
+      <div class="g-title">CÓMO CONFIGURAR — 4 PASOS</div>
+      <div class="step-list">
+        <div class="step-item"><div class="step-num">1</div><p>Abrí tu <strong>Google Sheet</strong> y andá a <strong>Extensiones → Apps Script</strong>.</p></div>
+        <div class="step-item"><div class="step-num">2</div><p>Borrá el código existente, pegá el script de abajo y <strong>guardá</strong>.</p></div>
+        <div class="step-item"><div class="step-num">3</div><p>Hacé clic en <strong>Implementar → Nueva implementación</strong>. Tipo: <code>Aplicación web</code>. Ejecutar como: <code>Yo</code>. Acceso: <code>Cualquier persona</code>.</p></div>
+        <div class="step-item"><div class="step-num">4</div><p>Copiá la URL que te da Google y pegala abajo. La hoja debe llamarse <code>Hoja1</code> (o el nombre que indiques).</p></div>
+      </div>
+      <div class="code-snippet" id="setupScriptCode"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:7px;">
+        <button class="copy-btn" onclick="copySetupScript()">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copiar script
+        </button>
+      </div>
+    </div>
+
+    <div class="setup-step">
+      <h4>URL del Apps Script Web App</h4>
+      <p>Pegá aquí la URL que te generó Google al implementar.</p>
+      <input class="setup-input" id="setupUrl" placeholder="https://script.google.com/macros/s/AKfy.../exec">
+    </div>
+    <div class="setup-step">
+      <h4>Nombre de la pestaña (hoja)</h4>
+      <input class="setup-input" id="setupTab" placeholder="Hoja1" value="Hoja1">
+    </div>
+
+    <button class="setup-btn" onclick="finishSetup()">Conectar y entrar al panel</button>
+    <button class="setup-skip" onclick="skipSetup()">Omitir por ahora (sin Sheets)</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     MAIN APP
+════════════════════════════════════ -->
+<div id="app">
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--violet)"><path d="M17 2H7C5.9 2 5 2.9 5 4v16c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-5 18c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm5-4H7V4h10v12z"/></svg>
+      <span style="font-size:.68rem;color:var(--violet);font-weight:700;letter-spacing:1px;">iPhone</span>
+    </div>
+    <div class="logo-text"><span>Store</span> Rosario</div>
+    <div class="logo-sub">Admin Panel</div>
+    <div class="admin-badge"><span class="dot"></span>Panel Activo</div>
+    <div class="sync-badge disconnected" id="sheetsBadge">
+      <span class="sdot"></span><span id="sheetsBadgeText">Sheets: No conectado</span>
+    </div>
+  </div>
+
+  <div class="nav-section">Gestión</div>
+  <div class="nav-item active" onclick="showView('products')">
+    <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Productos
+  </div>
+  <div class="nav-item" onclick="showView('addProduct')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Agregar Producto
+  </div>
+  <div class="nav-item" onclick="showView('export')">
+    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar JSON
+  </div>
+
+  <div class="nav-section">Integraciones</div>
+  <div class="nav-item" onclick="showView('settings')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M4.93 4.93l1.41 1.41M22 12h-3M5 12H2M12 22v-3M12 5V2"/></svg>Configuración
+  </div>
+
+  <div class="sidebar-footer">
+    <button class="sf-btn" onclick="toggleTheme()">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2"/></svg>Cambiar tema
+    </button>
+    <button class="sf-btn" onclick="syncFromSheets()">
+      <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>Sincronizar Sheets
+    </button>
+    <button class="sf-btn logout" onclick="doLogout()">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Cerrar sesión
+    </button>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <button class="icon-btn" id="menuBtn" onclick="document.getElementById('sidebar').classList.toggle('open')" style="display:none">
+        <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-title" id="topbarTitle">Todos los <span>Productos</span></div>
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn" onclick="syncFromSheets()" title="Sincronizar Sheets">
+        <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+      </button>
+      <button class="icon-btn" onclick="exportJSON()" title="Exportar JSON">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </button>
+      <button class="icon-btn" onclick="toggleTheme()" title="Tema">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- PRODUCTS VIEW -->
+    <div class="page-view active" id="view-products">
+      <div class="stats-grid" id="statsGrid"></div>
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="searchInput" placeholder="Buscar..." oninput="renderTable()">
+          </div>
+          <select class="filter-select" id="categoryFilter" onchange="renderTable()">
+            <option value="">Todas las categorías</option>
+            <option value="sellado">Sellados</option>
+            <option value="usado">Usados</option>
+            <option value="gaming">Gaming</option>
+            <option value="tablet">iPad / Tablet</option>
+          </select>
+          <select class="filter-select" id="stockFilter" onchange="renderTable()">
+            <option value="">Todo el stock</option>
+            <option value="disponible">Con stock</option>
+            <option value="sin_stock">Sin stock</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;">
+          <button class="btn-green" onclick="syncFromSheets()">
+            <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>Sincronizar
+          </button>
+          <button class="btn-ghost" onclick="showView('export')">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar
+          </button>
+          <button class="btn-primary" onclick="openModal()">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Agregar
+          </button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Producto</th>
+            <th onclick="sortBy('category')">Categoría ↕</th>
+            <th onclick="sortBy('priceUsd')">USD ↕</th>
+            <th>ARS est.</th>
+            <th>Stock</th>
+            <th>Acciones</th>
+          </tr></thead>
+          <tbody id="productsTableBody"></tbody>
+        </table>
+        <div id="emptyState" class="empty-state" style="display:none;"><div class="ico">📦</div><p>No hay productos</p></div>
+      </div>
+    </div>
+
+    <!-- ADD PRODUCT VIEW -->
+    <div class="page-view" id="view-addProduct">
+      <p style="color:var(--gray);margin-bottom:18px;font-size:.88rem;">Completá el formulario para agregar un producto al catálogo.</p>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;">
+        <div style="padding:20px 24px;border-bottom:1px solid var(--border);">
+          <div class="modal-title">Nuevo <span>Producto</span></div>
+        </div>
+        <div class="modal-body" id="inlineFormBody"></div>
+        <div class="modal-footer">
+          <button class="btn-ghost" onclick="showView('products')">Cancelar</button>
+          <button class="btn-primary" onclick="saveProductInline()">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Guardar Producto
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPORT VIEW -->
+    <div class="page-view" id="view-export">
+      <p style="color:var(--gray);margin-bottom:18px;font-size:.88rem;">Copiá el JSON y pegalo en el <code style="background:rgba(98,0,255,.1);color:var(--violet);padding:2px 6px;border-radius:5px;">const products = {…}</code> de tu tienda.</p>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+          <span style="font-size:.875rem;font-weight:700;">products.js — listo para pegar</span>
+          <div style="display:flex;gap:7px;">
+            <button class="copy-btn" onclick="copyJSON()">
+              <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copiar todo
+            </button>
+            <button class="copy-btn" onclick="downloadJSON()" style="background:rgba(52,199,89,.1);border-color:rgba(52,199,89,.2);color:var(--green);">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Descargar .js
+            </button>
+          </div>
+        </div>
+        <div class="code-box" id="exportCodeBox">Cargando...</div>
+      </div>
+    </div>
+
+    <!-- SETTINGS VIEW -->
+    <div class="page-view" id="view-settings">
+
+      <!-- LOGIN & CREDENCIALES -->
+      <div class="settings-section">
+        <h3><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Credenciales de acceso</h3>
+        <p class="desc">Cambiá el usuario y contraseña del panel admin. Guardados en el navegador.</p>
+        <div class="settings-form">
+          <div class="setting-row">
+            <div class="form-label">Usuario</div>
+            <input class="form-input" id="cfgUser" placeholder="admin">
+          </div>
+          <div class="setting-row">
+            <div class="form-label">Contraseña nueva</div>
+            <input class="form-input" id="cfgPass" type="password" placeholder="Nueva contraseña">
+          </div>
+        </div>
+        <div style="margin-top:12px;">
+          <button class="btn-primary" onclick="saveCredentials()" style="height:36px;font-size:.82rem;">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Guardar credenciales
+          </button>
+        </div>
+      </div>
+
+      <!-- GOOGLE SHEETS -->
+      <div class="settings-section">
+        <h3><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>Google Sheets</h3>
+        <p class="desc">
+          Conectá tu Google Sheet para que el admin sincronice productos automáticamente.<br>
+          Necesitás un <strong>Apps Script</strong> desplegado como Web App.
+          <a href="#" onclick="document.getElementById('sheetsGuide').classList.toggle('show');return false;">Ver instrucciones →</a>
+        </p>
+        <div class="guide-box" id="sheetsGuide">
+          <div class="g-title">GUÍA PASO A PASO</div>
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><p>Abrí tu Google Sheet → <strong>Extensiones → Apps Script</strong>.</p></div>
+            <div class="step-item"><div class="step-num">2</div><p>Borrá todo y pegá el siguiente código:</p></div>
+          </div>
+          <div class="code-snippet" id="sheetsScriptBox"></div>
+          <div style="display:flex;justify-content:flex-end;margin-top:7px;">
+            <button class="copy-btn" onclick="copySheetsScript()">
+              <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copiar script
+            </button>
+          </div>
+          <div class="step-list" style="margin-top:10px;">
+            <div class="step-item"><div class="step-num">3</div><p>Guardá → <strong>Implementar → Nueva implementación</strong>. Tipo: <code>Aplicación web</code>. Acceso: <code>Cualquier persona</code>.</p></div>
+            <div class="step-item"><div class="step-num">4</div><p>Copiá la URL y pegala abajo. Columnas necesarias en la hoja: <code>id | name | category | storage | priceUsd | stock | image | description | benefits | specs</code></p></div>
+          </div>
+        </div>
+        <div class="settings-form">
+          <div class="setting-row">
+            <div class="form-label">URL del Apps Script Web App</div>
+            <input class="form-input" id="sheetsUrl" placeholder="https://script.google.com/macros/s/AKfy.../exec" oninput="saveSheetsConfig()">
+          </div>
+          <div class="setting-row">
+            <div class="form-label">Nombre de la hoja (pestaña)</div>
+            <input class="form-input" id="sheetsTab" placeholder="Hoja1" value="Hoja1" oninput="saveSheetsConfig()">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+          <button class="btn-primary" onclick="testSheetsConn()" style="height:36px;font-size:.82rem;">
+            <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>Probar conexión
+          </button>
+          <button class="btn-ghost" onclick="syncFromSheets()" style="height:36px;font-size:.82rem;">Importar desde Sheets</button>
+          <button class="btn-ghost" onclick="pushToSheets()" style="height:36px;font-size:.82rem;">Exportar a Sheets</button>
+        </div>
+        <div class="conn-test" id="sheetsTestResult">
+          <div class="ct-icon idle" id="sheetsTestIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg></div>
+          <div><div style="font-weight:700;font-size:.8rem;" id="sheetsTestTitle">—</div><div style="font-size:.7rem;color:var(--gray);margin-top:1px;" id="sheetsTestMsg">—</div></div>
+        </div>
+      </div>
+
+      <!-- CLOUDINARY -->
+      <div class="settings-section">
+        <h3><svg viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>Cloudinary — Imágenes</h3>
+        <p class="desc">
+          Creá una cuenta gratis en <a href="https://cloudinary.com" target="_blank">cloudinary.com</a>.
+          Andá a <strong>Settings → Upload → Upload Presets</strong>, creá un preset con modo <strong>Unsigned</strong> y copiá el nombre. También copiá tu <strong>Cloud Name</strong> del dashboard.
+        </p>
+        <div class="settings-form">
+          <div class="setting-row">
+            <div class="form-label">Cloud Name</div>
+            <input class="form-input" id="cloudName" placeholder="tu-cloud-name" oninput="saveCloudinaryConfig()">
+          </div>
+          <div class="setting-row">
+            <div class="form-label">Upload Preset (Unsigned)</div>
+            <input class="form-input" id="uploadPreset" placeholder="ml_default" oninput="saveCloudinaryConfig()">
+          </div>
+        </div>
+        <div style="margin-top:12px;">
+          <button class="btn-primary" onclick="testCloudinary()" style="height:36px;font-size:.82rem;">
+            <svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>Probar subida
+          </button>
+        </div>
+        <div class="conn-test" id="cloudTestResult" style="margin-top:10px;">
+          <div class="ct-icon idle" id="cloudTestIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg></div>
+          <div><div style="font-weight:700;font-size:.8rem;" id="cloudTestTitle">—</div><div style="font-size:.7rem;color:var(--gray);margin-top:1px;" id="cloudTestMsg">—</div></div>
+        </div>
+      </div>
+
+      <!-- DEPLOY GUIDE -->
+      <div class="settings-section">
+        <h3><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Publicar la tienda</h3>
+        <p class="desc">Cómo subir tu tienda a internet con GitHub Pages o Hostinger.</p>
+        <div class="guide-box show">
+          <div class="g-title">OPCIÓN A — GITHUB PAGES (gratis)</div>
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><p>Creá una cuenta en <a href="https://github.com" target="_blank" style="color:var(--violet);">github.com</a> si no tenés.</p></div>
+            <div class="step-item"><div class="step-num">2</div><p>Creá un repositorio nuevo llamado exactamente <code>tu-usuario.github.io</code> (reemplazá <code>tu-usuario</code> con tu nombre de usuario de GitHub).</p></div>
+            <div class="step-item"><div class="step-num">3</div><p>Subí los dos archivos: <code>index.html</code> (la tienda) y <code>admin.html</code> (este panel). Podés arrastrarlos directo a GitHub.</p></div>
+            <div class="step-item"><div class="step-num">4</div><p>Andá a <strong>Settings → Pages</strong> del repositorio. En "Branch" seleccioná <code>main</code> y guardá.</p></div>
+            <div class="step-item"><div class="step-num">5</div><p>Tu tienda estará en <code>https://tu-usuario.github.io</code> y el admin en <code>https://tu-usuario.github.io/admin.html</code>.</p></div>
+          </div>
+        </div>
+        <div class="guide-box show" style="margin-top:10px;">
+          <div class="g-title">OPCIÓN B — HOSTINGER (con dominio propio)</div>
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><p>Comprá un plan de hosting en <a href="https://hostinger.com" target="_blank" style="color:var(--violet);">hostinger.com</a> (desde ~3 USD/mes). Incluye dominio gratis el primer año.</p></div>
+            <div class="step-item"><div class="step-num">2</div><p>Desde el panel de Hostinger, andá a <strong>Administrador de archivos → public_html</strong>.</p></div>
+            <div class="step-item"><div class="step-num">3</div><p>Subí <code>index.html</code> (tienda) y <code>admin.html</code> (panel) en esa carpeta. Podés usar el botón "Subir" o FTP con FileZilla.</p></div>
+            <div class="step-item"><div class="step-num">4</div><p>La tienda quedará en <code>https://tudominio.com</code> y el admin en <code>https://tudominio.com/admin.html</code>.</p></div>
+            <div class="step-item"><div class="step-num">5</div><p><strong>Tip:</strong> Para proteger el admin, podés usar la función <strong>"Proteger directorios"</strong> de Hostinger o simplemente confiar en el login que ya tiene este panel.</p></div>
+          </div>
+        </div>
+        <div class="guide-box show" style="margin-top:10px;">
+          <div class="g-title">CONECTAR GITHUB + HOSTINGER (automático)</div>
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><p>En Hostinger andá a <strong>Git</strong> en tu panel de hosting.</p></div>
+            <div class="step-item"><div class="step-num">2</div><p>Conectá tu repositorio de GitHub. Cada vez que hagas <code>push</code> al repo, Hostinger actualiza el sitio automáticamente.</p></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /settings -->
+
+  </div>
+</div>
+</div>
+</div><!-- /app -->
+
+<!-- EDIT MODAL -->
+<div class="overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalTitle">Editar <span>Producto</span></div>
+      <button class="modal-close" onclick="closeModal()">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modalFormBody"></div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveProduct()">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Guardar cambios
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <div class="toast-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+  <span id="toastMsg">Guardado</span>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  APPS SCRIPT CODE
+// ══════════════════════════════════════════════════════════════
+const APPS_SCRIPT_CODE = `function doGet(e) {
+  const action = (e.parameter.action || 'read');
+  const sheetName = (e.parameter.sheet || 'Hoja1');
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(sheetName);
+  if (!sheet) return json({ ok:false, error:'Hoja no encontrada: '+sheetName });
+
+  if (action === 'read') {
+    const data = sheet.getDataRange().getValues();
+    if (data.length < 2) return json({ ok:true, products:[] });
+    const headers = data[0];
+    const rows = data.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((h,i) => { obj[h] = row[i]; });
+      try { obj.specs    = JSON.parse(obj.specs    || '{}'); } catch(e){ obj.specs=[]; }
+      try { obj.benefits = JSON.parse(obj.benefits || '[]'); } catch(e){ obj.benefits=[]; }
+      obj.stock    = (obj.stock===true||obj.stock==='TRUE'||obj.stock==='true');
+      obj.priceUsd = parseFloat(obj.priceUsd)||0;
+      return obj;
+    }).filter(r=>r.id);
+    return json({ ok:true, products:rows });
+  }
+
+  if (action === 'write') {
+    const products = JSON.parse(e.parameter.data || '[]');
+    sheet.clearContents();
+    const headers = ['id','name','category','storage','priceUsd','stock','image','description','benefits','specs'];
+    sheet.appendRow(headers);
+    products.forEach(p => {
+      sheet.appendRow([
+        p.id, p.name, p.category, p.storage, p.priceUsd,
+        p.stock, p.image, p.description,
+        JSON.stringify(p.benefits||[]),
+        JSON.stringify(p.specs||{})
+      ]);
+    });
+    return json({ ok:true, written:products.length });
+  }
+  return json({ ok:false, error:'Unknown action' });
+}
+function doPost(e){ return doGet(e); }
+function json(obj){
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+// ══════════════════════════════════════════════════════════════
+//  MODEL SPECS
+// ══════════════════════════════════════════════════════════════
+const MODEL_SPECS = {
+  'iPhone 11':{chip:'A13 Bionic',pantalla:'6.1" Liquid Retina HD',camara:'Dual 12 MP',faceID:'Sí',bateria:'Hasta 17 hs video',usb:'Lightning'},
+  'iPhone 12':{chip:'A14 Bionic',pantalla:'6.1" Super Retina XDR',camara:'Dual 12 MP',faceID:'Sí',bateria:'Hasta 17 hs video',usb:'Lightning'},
+  'iPhone 13':{chip:'A15 Bionic',pantalla:'6.1" Super Retina XDR OLED',camara:'Dual 12 MP',faceID:'Sí',bateria:'Hasta 19 hs video',usb:'Lightning'},
+  'iPhone 13 Pro':{chip:'A15 Bionic',pantalla:'6.1" ProMotion 120Hz',camara:'Triple 12 MP Pro + LiDAR',faceID:'Sí',bateria:'Hasta 22 hs video',usb:'Lightning'},
+  'iPhone 13 Pro Max':{chip:'A15 Bionic',pantalla:'6.7" ProMotion 120Hz',camara:'Triple 12 MP Pro + LiDAR',faceID:'Sí',bateria:'Hasta 28 hs video',usb:'Lightning'},
+  'iPhone 14':{chip:'A15 Bionic',pantalla:'6.1" Super Retina XDR',camara:'Dual 12 MP',faceID:'Sí',bateria:'Hasta 20 hs video',usb:'Lightning'},
+  'iPhone 14 Pro':{chip:'A16 Bionic',pantalla:'6.1" ProMotion (Dynamic Island)',camara:'Triple 48 MP Pro + LiDAR',faceID:'Sí',bateria:'Hasta 23 hs video',usb:'Lightning'},
+  'iPhone 14 Pro Max':{chip:'A16 Bionic',pantalla:'6.7" ProMotion (Dynamic Island)',camara:'Triple 48 MP Pro + LiDAR',faceID:'Sí',bateria:'Hasta 29 hs video',usb:'Lightning'},
+  'iPhone 15':{chip:'A16 Bionic',pantalla:'6.1" Super Retina XDR (Dynamic Island)',camara:'Dual 48 MP',faceID:'Sí',bateria:'Hasta 20 hs video',usb:'USB-C'},
+  'iPhone 15 Pro':{chip:'A17 Pro',pantalla:'6.1" ProMotion 120Hz',camara:'Triple 48 MP Pro + LiDAR',faceID:'Sí',bateria:'Hasta 23 hs video',usb:'USB-C (3.0)'},
+  'iPhone 15 Pro Max':{chip:'A17 Pro',pantalla:'6.7" ProMotion 120Hz',camara:'Triple 48 MP Pro + LiDAR + 5x',faceID:'Sí',bateria:'Hasta 29 hs video',usb:'USB-C (3.0)'},
+  'iPhone 16':{chip:'A18',pantalla:'6.1" Super Retina XDR (Dynamic Island)',camara:'Dual 48 MP + Botón Cámara',faceID:'Sí',bateria:'Hasta 22 hs video',usb:'USB-C'},
+  'iPhone 16 Pro':{chip:'A18 Pro',pantalla:'6.3" ProMotion 120Hz',camara:'Triple 48 MP Pro + LiDAR + Botón Cámara',faceID:'Sí',bateria:'Hasta 27 hs video',usb:'USB-C (3.1)'},
+  'iPhone 16 Pro Max':{chip:'A18 Pro',pantalla:'6.9" ProMotion 120Hz',camara:'Triple 48 MP Pro + LiDAR + Botón Cámara',faceID:'Sí',bateria:'Hasta 33 hs video',usb:'USB-C (3.1)'},
+  'iPhone 17':{chip:'A19',pantalla:'6.3" Super Retina XDR (Dynamic Island + Titanio)',camara:'Dual 48 MP + 24 MP frontal',faceID:'Sí',bateria:'Hasta 25 hs video',usb:'USB-C (3.2)'},
+  'iPhone 17 Pro':{chip:'A19 Pro',pantalla:'6.3" ProMotion 120Hz (Titanio)',camara:'Triple 48 MP Pro + LiDAR',faceID:'Sí',bateria:'Hasta 28 hs video',usb:'USB-C (3.2)'},
+  'iPhone 17 Pro Max':{chip:'A19 Pro',pantalla:'6.9" ProMotion 120Hz (Titanio)',camara:'Triple 48 MP Pro + LiDAR',faceID:'Sí',bateria:'Hasta 34 hs video',usb:'USB-C (3.2)'},
+  'PS5 Slim':{chip:'AMD Zen 2 + RDNA 2',pantalla:'Salida HDMI 2.1',camara:'No',faceID:'No',bateria:'—',usb:'USB-A + USB-C'},
+  'Xbox Serie S':{chip:'Custom Zen 2 + RDNA 2',pantalla:'Salida HDMI 2.1',camara:'No',faceID:'No',bateria:'—',usb:'USB-A x3'},
+  'Nintendo Switch 2':{chip:'NVIDIA Tegra personalizado',pantalla:'8" IPS 1080p 120Hz',camara:'No',faceID:'No',bateria:'4310 mAh',usb:'USB-C'},
+  'iPad Air M4':{chip:'Apple M4',pantalla:'11" / 13" Liquid Retina 60Hz',camara:'12 MP gran angular',faceID:'No (Touch ID)',bateria:'Hasta 10 hs',usb:'USB-C (Thunderbolt 3)'},
+  'iPad Pro M5':{chip:'Apple M5',pantalla:'11" / 13" Ultra Retina XDR OLED 120Hz',camara:'12 MP + LiDAR',faceID:'Sí',bateria:'Hasta 10 hs',usb:'USB-C (Thunderbolt 4)'},
+};
+
+// ══════════════════════════════════════════════════════════════
+//  CONFIG & AUTH
+// ══════════════════════════════════════════════════════════════
+const STORAGE_KEY = 'isr_products_v3';
+const CFG_KEY     = 'isr_config_v3';
+const AUTH_KEY    = 'isr_auth';
+const SESSION_KEY = 'isr_session';
+
+function loadCfg(){ try{ return JSON.parse(localStorage.getItem(CFG_KEY))||{}; }catch(e){ return {}; } }
+function saveCfg(c){ localStorage.setItem(CFG_KEY, JSON.stringify(c)); }
+
+// Credentials
+function getCredentials(){
+  const c = loadCfg();
+  return { user: c.user||'admin', pass: c.pass||'isr2024' };
+}
+
+// LOGIN
+function doLogin(){
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const creds = getCredentials();
+  if(u===creds.user && p===creds.pass){
+    sessionStorage.setItem(SESSION_KEY,'1');
+    document.getElementById('loginScreen').classList.remove('active');
+    checkFirstTime();
+  } else {
+    const err = document.getElementById('loginError');
+    err.classList.add('show');
+    document.getElementById('loginUser').classList.add('error');
+    document.getElementById('loginPass').classList.add('error');
+    setTimeout(()=>{
+      err.classList.remove('show');
+      document.getElementById('loginUser').classList.remove('error');
+      document.getElementById('loginPass').classList.remove('error');
+    }, 3000);
+  }
+}
+
+function doLogout(){
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+function saveCredentials(){
+  const u = document.getElementById('cfgUser').value.trim();
+  const p = document.getElementById('cfgPass').value;
+  if(!u){ showToast('El usuario no puede estar vacío','error'); return; }
+  const c = loadCfg();
+  if(u) c.user = u;
+  if(p) c.pass = p;
+  saveCfg(c);
+  showToast('Credenciales guardadas. Usalas al próximo login.','success');
+  document.getElementById('cfgPass').value='';
+}
+
+// FIRST TIME CHECK
+function checkFirstTime(){
+  const cfg = loadCfg();
+  if(!cfg.sheetsUrl && !cfg.sheetsSkipped){
+    document.getElementById('setupScreen').classList.add('active');
+  } else {
+    enterApp();
+  }
+}
+
+function finishSetup(){
+  const url = document.getElementById('setupUrl').value.trim();
+  const tab = document.getElementById('setupTab').value.trim()||'Hoja1';
+  if(!url){ showToast('Pegá la URL del Apps Script','error'); return; }
+  const c = loadCfg();
+  c.sheetsUrl = url;
+  c.sheetsTab = tab;
+  saveCfg(c);
+  document.getElementById('setupScreen').classList.remove('active');
+  enterApp();
+  setTimeout(()=>syncFromSheets(true), 800);
+}
+
+function skipSetup(){
+  const c = loadCfg();
+  c.sheetsSkipped = true;
+  saveCfg(c);
+  document.getElementById('setupScreen').classList.remove('active');
+  enterApp();
+}
+
+function enterApp(){
+  document.getElementById('app').classList.add('active');
+  document.getElementById('app').style.display='flex';
+  updateStats();
+  renderTable();
+  updateSheetsBadge();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════════════════════════
+function loadProducts(){
+  try{ const r=localStorage.getItem(STORAGE_KEY); if(r) return JSON.parse(r); }catch(e){}
+  return [];
+}
+function saveProducts(p){ localStorage.setItem(STORAGE_KEY,JSON.stringify(p)); updateStats(); }
+
+let products = loadProducts();
+let editingId = null;
+let sortField = null;
+let sortAsc   = true;
+let currentDolar = 1450;
+
+async function fetchDolar(){
+  try{
+    const r=await fetch('https://dolarapi.com/v1/dolares/blue');
+    const d=await r.json();
+    currentDolar=(d.venta||1425)+25;
+  }catch(e){ currentDolar=1450; }
+}
+fetchDolar();
+
+function arsPrice(usd){ return Math.round(usd*currentDolar); }
+function moneyARS(n){ return '$'+Math.round(n).toLocaleString('es-AR'); }
+
+// ══════════════════════════════════════════════════════════════
+//  STATS
+// ══════════════════════════════════════════════════════════════
+function updateStats(){
+  const total=products.length;
+  const sellados=products.filter(p=>p.category==='sellado').length;
+  const usados=products.filter(p=>p.category==='usado').length;
+  const sinStock=products.filter(p=>!p.stock).length;
+  document.getElementById('statsGrid').innerHTML=`
+    <div class="stat-card" style="animation-delay:.0s"><div class="stat-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><div class="stat-value">${total}</div><div class="stat-label">Productos</div></div>
+    <div class="stat-card" style="animation-delay:.08s"><div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div><div class="stat-value">${sellados}</div><div class="stat-label">Sellados</div></div>
+    <div class="stat-card" style="animation-delay:.16s"><div class="stat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="stat-value">${usados}</div><div class="stat-label">Usados</div></div>
+    <div class="stat-card" style="animation-delay:.24s"><div class="stat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="stat-value" style="color:${sinStock>0?'var(--amber)':'var(--green)'}">${sinStock}</div><div class="stat-label">Sin Stock</div></div>
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  TABLE
+// ══════════════════════════════════════════════════════════════
+function renderTable(){
+  const q=(document.getElementById('searchInput').value||'').toLowerCase();
+  const cat=document.getElementById('categoryFilter').value;
+  const stock=document.getElementById('stockFilter').value;
+  let filtered=products.filter(p=>{
+    const mq=!q||p.name.toLowerCase().includes(q)||(p.storage||'').toLowerCase().includes(q);
+    const mc=!cat||p.category===cat;
+    const ms=!stock||(stock==='disponible'?p.stock:!p.stock);
+    return mq&&mc&&ms;
+  });
+  if(sortField) filtered.sort((a,b)=>{
+    let va=a[sortField]||0,vb=b[sortField]||0;
+    if(typeof va==='string'){va=va.toLowerCase();vb=vb.toLowerCase();}
+    return sortAsc?(va>vb?1:-1):(va<vb?1:-1);
+  });
+  const tbody=document.getElementById('productsTableBody');
+  const empty=document.getElementById('emptyState');
+  if(!filtered.length){tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  const cL={sellado:'Sellado',usado:'Usado',gaming:'Gaming',tablet:'iPad/Tablet'};
+  const cC={sellado:'badge-new',usado:'badge-used',gaming:'badge-gaming',tablet:'badge-tablet'};
+  tbody.innerHTML=filtered.map((p,i)=>`
+    <tr style="animation-delay:${i*.04}s">
+      <td>
+        <div style="display:flex;align-items:center;gap:11px;">
+          <div class="prod-thumb">${p.image?`<img src="${p.image}" alt="" loading="lazy">`:`<span>${p.category==='gaming'?'🎮':p.category==='tablet'?'💻':'📱'}</span>`}</div>
+          <div><div class="prod-name">${p.name}</div><div class="prod-storage">${p.storage||'—'}</div></div>
+        </div>
+      </td>
+      <td><span class="badge ${cC[p.category]||'badge-used'}">${cL[p.category]||p.category}</span></td>
+      <td><div class="price-cell">USD ${p.priceUsd||0}</div></td>
+      <td><div class="usd-cell">${moneyARS(arsPrice(p.priceUsd||0))}</div></td>
+      <td><span class="badge ${p.stock?'badge-new':'badge-nostock'}">${p.stock?'✓ Stock':'Sin Stock'}</span></td>
+      <td>
+        <div class="actions">
+          <button class="act-btn act-edit" onclick="editProduct('${p.id}')" title="Editar">
+            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="act-btn act-del" onclick="deleteProduct('${p.id}')" title="Eliminar">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function sortBy(f){ if(sortField===f) sortAsc=!sortAsc; else{sortField=f;sortAsc=true;} renderTable(); }
+
+// ══════════════════════════════════════════════════════════════
+//  CLOUDINARY UPLOAD
+// ══════════════════════════════════════════════════════════════
+async function uploadToCloudinary(file){
+  const cfg=loadCfg();
+  if(!cfg.cloudName||!cfg.uploadPreset){ showToast('Configurá Cloudinary primero','error'); return null; }
+  const progress=document.getElementById('imgProgress');
+  const status=document.getElementById('imgStatus');
+  const preview=document.getElementById('imgPreview');
+  const urlReadout=document.getElementById('imgUrlReadout');
+  const urlSpan=document.getElementById('imgUrlSpan');
+  progress.classList.add('show');
+  status.className='upload-status show loading';
+  status.textContent='Subiendo imagen a Cloudinary...';
+  progress.querySelector('.upload-progress-bar').style.width='40%';
+  const fd=new FormData();
+  fd.append('file',file);
+  fd.append('upload_preset',cfg.uploadPreset);
+  fd.append('folder','isr-admin');
+  try{
+    progress.querySelector('.upload-progress-bar').style.width='70%';
+    const res=await fetch(`https://api.cloudinary.com/v1_1/${cfg.cloudName}/image/upload`,{method:'POST',body:fd});
+    const data=await res.json();
+    progress.querySelector('.upload-progress-bar').style.width='100%';
+    if(data.secure_url){
+      status.className='upload-status show ok';
+      status.textContent='✓ Imagen subida correctamente';
+      preview.src=data.secure_url;
+      preview.classList.add('visible');
+      urlReadout.classList.add('visible');
+      urlSpan.textContent=data.secure_url;
+      const fi=document.getElementById('fImage');
+      if(fi) fi.value=data.secure_url;
+      return data.secure_url;
+    } else throw new Error(data.error?.message||'Error desconocido');
+  }catch(err){
+    status.className='upload-status show err';
+    status.textContent='✗ Error: '+(err.message||'No se pudo subir');
+    progress.querySelector('.upload-progress-bar').style.width='0%';
+    showToast('Error Cloudinary: '+err.message,'error');
+    return null;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  FORM
+// ══════════════════════════════════════════════════════════════
+function buildExtraSpecs(specs){
+  if(!specs) return '';
+  const fixed=['Pantalla','Chip','Camara','Cámara','Bateria','Batería','FaceID','Puerto','USB'];
+  return Object.entries(specs).filter(([k])=>!fixed.includes(k)).map(([k,v])=>`${k}:${v}`).join('\n');
+}
+
+function buildFormHTML(p){
+  p=p||{};
+  const cfg=loadCfg();
+  const hasCld=cfg.cloudName&&cfg.uploadPreset;
+  const models=Object.keys(MODEL_SPECS);
+  return `
+    <div class="form-grid">
+      <div class="form-col">
+        <div class="form-label">ID único</div>
+        <input class="form-input" id="fId" value="${p.id||''}" placeholder="ej: iphone16_128_azul">
+      </div>
+      <div class="form-col">
+        <div class="form-label">Nombre del producto</div>
+        <input class="form-input" id="fName" value="${p.name||''}" placeholder="ej: iPhone 16 Pro"
+          list="modelList" oninput="handleNameChange(this.value)">
+        <datalist id="modelList">${models.map(m=>`<option value="${m}">`).join('')}</datalist>
+      </div>
+      <div class="form-col">
+        <div class="form-label">Categoría</div>
+        <select class="form-select" id="fCategory">
+          <option value="sellado" ${p.category==='sellado'?'selected':''}>Sellado</option>
+          <option value="usado" ${p.category==='usado'?'selected':''}>Usado</option>
+          <option value="gaming" ${p.category==='gaming'?'selected':''}>Gaming</option>
+          <option value="tablet" ${p.category==='tablet'?'selected':''}>iPad / Tablet</option>
+        </select>
+      </div>
+      <div class="form-col">
+        <div class="form-label">Almacenamiento / variante</div>
+        <input class="form-input" id="fStorage" value="${p.storage||''}" placeholder="ej: 128 GB · Negro">
+      </div>
+      <div class="form-col">
+        <div class="form-label">Precio en USD</div>
+        <input class="form-input" id="fPriceUsd" type="number" value="${p.priceUsd||''}" placeholder="750" oninput="updateARS()">
+      </div>
+      <div class="form-col">
+        <div class="form-label">Precio ARS estimado (dólar hoy)</div>
+        <input class="form-input" id="fPriceArs" readonly value="${p.priceUsd?moneyARS(arsPrice(p.priceUsd)):''}" style="opacity:.6;cursor:default;">
+      </div>
+      <div class="form-col">
+        <div class="form-label">Stock</div>
+        <select class="form-select" id="fStock">
+          <option value="true" ${p.stock!==false?'selected':''}>Con Stock</option>
+          <option value="false" ${p.stock===false?'selected':''}>Sin Stock</option>
+        </select>
+      </div>
+      <div class="form-col">
+        <div class="form-label">URL de imagen (o subí abajo)</div>
+        <input class="form-input" id="fImage" value="${p.image||''}" placeholder="https://...">
+      </div>
+
+      <div class="form-col full">
+        <div class="form-label">
+          Subir imagen
+          ${hasCld
+            ? '<span style="color:var(--green);margin-left:5px;font-size:.65rem;">● Cloudinary conectado</span>'
+            : '<span style="color:var(--amber);margin-left:5px;font-size:.65rem;">⚠ Configurá Cloudinary primero</span>'}
+        </div>
+        <div class="img-uploader" id="imgUploaderArea"
+          ondragover="event.preventDefault();this.classList.add('drag-over')"
+          ondragleave="this.classList.remove('drag-over')"
+          ondrop="handleDrop(event)">
+          <input type="file" id="imgFileInput" accept="image/*" onchange="handleFileSelect(event)">
+          <img id="imgPreview" class="img-preview ${p.image?'visible':''}" src="${p.image||''}" alt="">
+          <span class="up-icon">${p.image?'🖼':'📁'}</span>
+          <div class="up-text">${hasCld?'<strong>Clic para seleccionar</strong> o arrastrá una foto':'Configurá Cloudinary en Configuración para habilitar la subida'}</div>
+        </div>
+        <div class="upload-progress" id="imgProgress"><div class="upload-progress-bar"></div></div>
+        <div class="upload-status" id="imgStatus"></div>
+        <div class="url-readout" id="imgUrlReadout">
+          <span id="imgUrlSpan"></span>
+          <button onclick="navigator.clipboard.writeText(document.getElementById('imgUrlSpan').textContent).then(()=>showToast('URL copiada','success'))">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-col full">
+        <div class="form-label">Descripción</div>
+        <textarea class="form-textarea" id="fDesc" placeholder="Descripción del producto...">${p.description||''}</textarea>
+      </div>
+      <div class="form-col full">
+        <div class="form-label">Beneficios (uno por línea)</div>
+        <textarea class="form-textarea" id="fBenefits" placeholder="Equipo nuevo y sellado&#10;Excelente rendimiento&#10;Garantía de funcionamiento">${(p.benefits||[]).join('\n')}</textarea>
+      </div>
+    </div>
+
+    <div class="spec-section" style="margin-top:14px;">
+      <h4>
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M5.34 5.34L3.93 6.75M19.07 19.07l-1.41-1.41M5.34 18.66l-1.41 1.41M22 12h-3M5 12H2M12 22v-3M12 5V2"/></svg>
+        Especificaciones técnicas
+        <button class="auto-fill-btn" onclick="autoFillSpecs()" type="button">
+          <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Auto-completar
+        </button>
+      </h4>
+      <div class="spec-grid-form">
+        <div class="form-col"><div class="form-label">Pantalla</div><input class="form-input" id="sPantalla" value="${(p.specs?.Pantalla)||''}" placeholder='6.1" Super Retina'></div>
+        <div class="form-col"><div class="form-label">Chip</div><input class="form-input" id="sChip" value="${(p.specs?.Chip)||''}" placeholder="A18 Bionic"></div>
+        <div class="form-col"><div class="form-label">Cámara</div><input class="form-input" id="sCamara" value="${(p.specs?.Camara||p.specs?.Cámara)||''}" placeholder="48 MP dual"></div>
+        <div class="form-col"><div class="form-label">Batería</div><input class="form-input" id="sBateria" value="${(p.specs?.Bateria||p.specs?.Batería)||''}" placeholder="Hasta 22 hs video"></div>
+        <div class="form-col"><div class="form-label">Face ID</div><input class="form-input" id="sFaceID" value="${(p.specs?.FaceID)||''}" placeholder="Sí / No"></div>
+        <div class="form-col"><div class="form-label">Puerto de carga</div><input class="form-input" id="sUSB" value="${(p.specs?.Puerto||p.specs?.USB)||''}" placeholder="USB-C / Lightning"></div>
+        <div class="form-col full">
+          <div class="form-label">Specs adicionales (clave:valor, una por línea)</div>
+          <textarea class="form-textarea" id="sExtra" style="min-height:55px;" placeholder="RAM:8 GB&#10;5G:Sí&#10;Color:Negro">${buildExtraSpecs(p.specs)}</textarea>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function handleFileSelect(e){ const f=e.target.files[0]; if(f) uploadToCloudinary(f); }
+function handleDrop(e){
+  e.preventDefault();
+  document.getElementById('imgUploaderArea').classList.remove('drag-over');
+  const f=e.dataTransfer.files[0];
+  if(f&&f.type.startsWith('image/')) uploadToCloudinary(f);
+}
+function updateARS(){
+  const usd=parseFloat(document.getElementById('fPriceUsd')?.value)||0;
+  const el=document.getElementById('fPriceArs');
+  if(el) el.value=usd?moneyARS(arsPrice(usd)):'';
+}
+function handleNameChange(name){
+  document.getElementById('fId').value=name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+}
+function autoFillSpecs(){
+  const name=document.getElementById('fName').value.trim();
+  const found=MODEL_SPECS[name];
+  if(!found){showToast('Nombre exacto no encontrado: "'+name+'"','error');return;}
+  if(found.pantalla) document.getElementById('sPantalla').value=found.pantalla;
+  if(found.chip)     document.getElementById('sChip').value=found.chip;
+  if(found.camara)   document.getElementById('sCamara').value=found.camara;
+  if(found.bateria)  document.getElementById('sBateria').value=found.bateria;
+  if(found.faceID)   document.getElementById('sFaceID').value=found.faceID;
+  if(found.usb)      document.getElementById('sUSB').value=found.usb;
+  showToast('Specs cargadas para '+name,'success');
+}
+function collectFormData(){
+  const name=(document.getElementById('fName').value||'').trim();
+  const priceUsd=parseFloat(document.getElementById('fPriceUsd').value)||0;
+  const extraRaw=(document.getElementById('sExtra').value||'').trim();
+  const extraSpecs={};
+  extraRaw.split('\n').forEach(line=>{const[k,...v]=line.split(':');if(k&&v.length) extraSpecs[k.trim()]=v.join(':').trim();});
+  const specs={
+    Pantalla:document.getElementById('sPantalla').value||undefined,
+    Chip:document.getElementById('sChip').value||undefined,
+    Camara:document.getElementById('sCamara').value||undefined,
+    Bateria:document.getElementById('sBateria').value||undefined,
+    FaceID:document.getElementById('sFaceID').value||undefined,
+    Puerto:document.getElementById('sUSB').value||undefined,
+    ...extraSpecs,
+  };
+  Object.keys(specs).forEach(k=>specs[k]===undefined&&delete specs[k]);
+  const benefits=(document.getElementById('fBenefits').value||'').trim().split('\n').map(b=>b.trim()).filter(Boolean);
+  return {
+    id:document.getElementById('fId').value.trim()||name.toLowerCase().replace(/\s+/g,'_'),
+    name, category:document.getElementById('fCategory').value,
+    storage:document.getElementById('fStorage').value.trim(),
+    priceUsd, stock:document.getElementById('fStock').value==='true',
+    image:document.getElementById('fImage').value.trim(),
+    description:(document.getElementById('fDesc').value||'').trim(),
+    specs, benefits,
+  };
+}
+
+// ══════════════════════════════════════════════════════════════
+//  MODAL
+// ══════════════════════════════════════════════════════════════
+function openModal(id){
+  editingId=id||null;
+  const p=id?products.find(x=>x.id===id):null;
+  document.getElementById('modalTitle').innerHTML=id?'Editar <span>Producto</span>':'Nuevo <span>Producto</span>';
+  document.getElementById('modalFormBody').innerHTML=buildFormHTML(p);
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); editingId=null; }
+function closeModalOutside(e){ if(e.target===document.getElementById('modalOverlay')) closeModal(); }
+
+function saveProduct(){
+  const data=collectFormData();
+  if(!data.name){showToast('El nombre es obligatorio','error');return;}
+  if(editingId){ const i=products.findIndex(p=>p.id===editingId); if(i>=0) products[i]=data; }
+  else { if(products.find(p=>p.id===data.id)) data.id=data.id+'_'+Date.now(); products.push(data); }
+  saveProducts(products);
+  renderTable();
+  closeModal();
+  showToast(editingId?'Producto actualizado':'Producto agregado','success');
+  autoPush();
+}
+
+function editProduct(id){ openModal(id); }
+
+function deleteProduct(id){
+  const p=products.find(x=>x.id===id);
+  if(!confirm(`¿Eliminar "${p?.name||id}"?`)) return;
+  products=products.filter(x=>x.id!==id);
+  saveProducts(products);
+  renderTable();
+  showToast('Producto eliminado','info');
+  autoPush();
+}
+
+// INLINE ADD
+function initInlineForm(){ document.getElementById('inlineFormBody').innerHTML=buildFormHTML(); }
+function saveProductInline(){
+  editingId=null;
+  const data=collectFormData();
+  if(!data.name){showToast('El nombre es obligatorio','error');return;}
+  if(products.find(p=>p.id===data.id)) data.id=data.id+'_'+Date.now();
+  products.push(data);
+  saveProducts(products);
+  renderTable();
+  showToast('Producto agregado','success');
+  autoPush();
+  showView('products');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  GOOGLE SHEETS
+// ══════════════════════════════════════════════════════════════
+function saveSheetsConfig(){
+  const c=loadCfg();
+  c.sheetsUrl=document.getElementById('sheetsUrl')?.value||c.sheetsUrl||'';
+  c.sheetsTab=document.getElementById('sheetsTab')?.value||c.sheetsTab||'Hoja1';
+  saveCfg(c);
+  updateSheetsBadge();
+}
+
+function updateSheetsBadge(){
+  const cfg=loadCfg();
+  const badge=document.getElementById('sheetsBadge');
+  const txt=document.getElementById('sheetsBadgeText');
+  if(cfg.sheetsUrl&&cfg.sheetsUrl.includes('script.google.com')){
+    badge.className='sync-badge connected';
+    txt.textContent='Sheets: Conectado';
+  } else {
+    badge.className='sync-badge disconnected';
+    txt.textContent='Sheets: No conectado';
+  }
+}
+
+function setBadge(cls,text){
+  const badge=document.getElementById('sheetsBadge');
+  badge.className='sync-badge '+cls;
+  document.getElementById('sheetsBadgeText').textContent=text;
+}
+
+async function testSheetsConn(){
+  const cfg=loadCfg();
+  const url=document.getElementById('sheetsUrl')?.value||cfg.sheetsUrl||'';
+  const tab=document.getElementById('sheetsTab')?.value||cfg.sheetsTab||'Hoja1';
+  const res=document.getElementById('sheetsTestResult');
+  const icon=document.getElementById('sheetsTestIcon');
+  const title=document.getElementById('sheetsTestTitle');
+  const msg=document.getElementById('sheetsTestMsg');
+  res.classList.add('show');
+  icon.className='ct-icon loading';
+  icon.innerHTML='<svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>';
+  title.textContent='Probando...';msg.textContent='Conectando con Apps Script...';
+  try{
+    const r=await fetch(`${url}?action=read&sheet=${encodeURIComponent(tab)}`);
+    const d=await r.json();
+    if(d.ok){
+      icon.className='ct-icon ok';
+      icon.innerHTML='<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+      title.textContent='Conexión exitosa';
+      msg.textContent=`${d.products?.length||0} productos encontrados en "${tab}"`;
+      showToast('Sheets conectado correctamente','success');
+      setBadge('connected','Sheets: Conectado');
+    } else throw new Error(d.error||'Respuesta inválida');
+  }catch(err){
+    icon.className='ct-icon err';
+    icon.innerHTML='<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    title.textContent='Error de conexión';msg.textContent=err.message;
+    showToast('Error: '+err.message,'error');
+  }
+}
+
+async function syncFromSheets(silent){
+  const cfg=loadCfg();
+  if(!cfg.sheetsUrl){if(!silent) showToast('Configurá la URL de Apps Script primero','error');return;}
+  setBadge('syncing','Sincronizando...');
+  try{
+    const r=await fetch(`${cfg.sheetsUrl}?action=read&sheet=${encodeURIComponent(cfg.sheetsTab||'Hoja1')}`);
+    const d=await r.json();
+    if(d.ok&&d.products?.length){
+      products=d.products;
+      saveProducts(products);
+      renderTable();
+      setBadge('connected','Sheets: Sincronizado');
+      if(!silent) showToast(`✓ ${d.products.length} productos importados desde Sheets`,'success');
+    } else throw new Error('Sin productos o respuesta inválida');
+  }catch(err){
+    setBadge('disconnected','Sheets: Error');
+    if(!silent) showToast('Error al sincronizar: '+err.message,'error');
+  }
+}
+
+async function pushToSheets(silent){
+  const cfg=loadCfg();
+  if(!cfg.sheetsUrl){if(!silent) showToast('Configurá la URL primero','error');return;}
+  setBadge('syncing','Guardando en Sheets...');
+  try{
+    const encoded=encodeURIComponent(JSON.stringify(products));
+    const r=await fetch(`${cfg.sheetsUrl}?action=write&sheet=${encodeURIComponent(cfg.sheetsTab||'Hoja1')}&data=${encoded}`);
+    const d=await r.json();
+    if(d.ok){ setBadge('connected','Sheets: Conectado'); if(!silent) showToast(`✓ ${d.written} productos guardados en Sheets`,'success'); }
+    else throw new Error(d.error||'Error al guardar');
+  }catch(err){ setBadge('disconnected','Sheets: Error'); if(!silent) showToast('Error: '+err.message,'error'); }
+}
+
+function autoPush(){ const cfg=loadCfg(); if(cfg.sheetsUrl) pushToSheets(true); }
+
+// ══════════════════════════════════════════════════════════════
+//  CLOUDINARY CONFIG TEST
+// ══════════════════════════════════════════════════════════════
+function saveCloudinaryConfig(){
+  const c=loadCfg();
+  c.cloudName=document.getElementById('cloudName')?.value||'';
+  c.uploadPreset=document.getElementById('uploadPreset')?.value||'';
+  saveCfg(c);
+}
+
+async function testCloudinary(){
+  const cfg=loadCfg();
+  if(!cfg.cloudName||!cfg.uploadPreset){showToast('Completá Cloud Name y Upload Preset','error');return;}
+  const res=document.getElementById('cloudTestResult');
+  const icon=document.getElementById('cloudTestIcon');
+  const title=document.getElementById('cloudTestTitle');
+  const msg=document.getElementById('cloudTestMsg');
+  res.classList.add('show');
+  icon.className='ct-icon loading';
+  icon.innerHTML='<svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>';
+  title.textContent='Probando...';msg.textContent='Subiendo imagen de prueba...';
+  const canvas=document.createElement('canvas');canvas.width=1;canvas.height=1;
+  canvas.getContext('2d').fillStyle='#6200ff';canvas.getContext('2d').fillRect(0,0,1,1);
+  canvas.toBlob(async blob=>{
+    const fd=new FormData();fd.append('file',blob,'test.png');fd.append('upload_preset',cfg.uploadPreset);
+    try{
+      const r=await fetch(`https://api.cloudinary.com/v1_1/${cfg.cloudName}/image/upload`,{method:'POST',body:fd});
+      const d=await r.json();
+      if(d.secure_url){
+        icon.className='ct-icon ok';icon.innerHTML='<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+        title.textContent='Cloudinary funcionando';msg.textContent='Subida exitosa: '+d.secure_url.substring(0,55)+'...';
+        showToast('Cloudinary configurado correctamente','success');
+      } else throw new Error(d.error?.message||'Error desconocido');
+    }catch(err){
+      icon.className='ct-icon err';icon.innerHTML='<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+      title.textContent='Error en Cloudinary';msg.textContent=err.message;
+      showToast('Error Cloudinary: '+err.message,'error');
+    }
+  },'image/png');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  EXPORT
+// ══════════════════════════════════════════════════════════════
+function buildExportCode(){
+  const obj={};
+  products.forEach(p=>{
+    obj[p.id]={
+      name:p.name,price:arsPrice(p.priceUsd||0),image:p.image||'',
+      storage:p.storage||'',description:p.description||'',
+      specs:p.specs||{},benefits:p.benefits||[],
+      ...(p.stock===false?{outOfStock:true}:{}),
+    };
+  });
+  return 'const products = '+JSON.stringify(obj,null,2)+';';
+}
+function exportJSON(){ showView('export'); document.getElementById('exportCodeBox').textContent=buildExportCode(); }
+function copyJSON(){ navigator.clipboard.writeText(buildExportCode()).then(()=>showToast('Copiado al portapapeles','success')); }
+function downloadJSON(){
+  const blob=new Blob([buildExportCode()],{type:'text/javascript'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='products.js';a.click();URL.revokeObjectURL(url);
+  showToast('Archivo descargado','success');
+}
+function copySheetsScript(){ navigator.clipboard.writeText(APPS_SCRIPT_CODE).then(()=>showToast('Script copiado','success')); }
+function copySetupScript(){ navigator.clipboard.writeText(APPS_SCRIPT_CODE).then(()=>showToast('Script copiado','success')); }
+
+// ══════════════════════════════════════════════════════════════
+//  VIEWS
+// ══════════════════════════════════════════════════════════════
+function showView(name){
+  document.querySelectorAll('.page-view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    n.classList.toggle('active',n.getAttribute('onclick')===`showView('${name}')`);
+  });
+  const titles={products:'Todos los <span>Productos</span>',addProduct:'Agregar <span>Producto</span>',export:'Exportar <span>JSON</span>',settings:'<span>Configuración</span>'};
+  document.getElementById('topbarTitle').innerHTML=titles[name]||'';
+  if(name==='addProduct') initInlineForm();
+  if(name==='export') document.getElementById('exportCodeBox').textContent=buildExportCode();
+  if(name==='settings'){
+    const cfg=loadCfg();
+    ['sheetsUrl','sheetsTab','cloudName','uploadPreset','cfgUser'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.value=cfg[id.replace('cfg','')?.[0]?.toLowerCase()+id.replace('cfg','').slice(1)]||cfg[id]||'';
+    });
+    const su=document.getElementById('sheetsUrl');if(su) su.value=cfg.sheetsUrl||'';
+    const st=document.getElementById('sheetsTab');if(st) st.value=cfg.sheetsTab||'Hoja1';
+    const cn=document.getElementById('cloudName');if(cn) cn.value=cfg.cloudName||'';
+    const up=document.getElementById('uploadPreset');if(up) up.value=cfg.uploadPreset||'';
+    const cu=document.getElementById('cfgUser');if(cu) cu.value=cfg.user||'admin';
+    document.getElementById('sheetsScriptBox').textContent=APPS_SCRIPT_CODE;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════════════════
+let _tt;
+function showToast(msg,type='success'){
+  const t=document.getElementById('toast');
+  const icon=t.querySelector('.toast-icon svg');
+  document.getElementById('toastMsg').textContent=msg;
+  t.className='toast show '+type;
+  if(type==='error') icon.innerHTML='<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
+  else if(type==='info') icon.innerHTML='<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+  else icon.innerHTML='<polyline points="20 6 9 17 4 12"/>';
+  clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  THEME
+// ══════════════════════════════════════════════════════════════
+function toggleTheme(){
+  const h=document.documentElement;
+  h.setAttribute('data-theme',h.getAttribute('data-theme')==='dark'?'light':'dark');
+  localStorage.setItem('isr_theme',h.getAttribute('data-theme'));
+}
+(function(){ document.documentElement.setAttribute('data-theme',localStorage.getItem('isr_theme')||'dark'); })();
+
+// ══════════════════════════════════════════════════════════════
+//  RESPONSIVE
+// ══════════════════════════════════════════════════════════════
+if(window.innerWidth<=900) document.getElementById('menuBtn').style.display='flex';
+
+// ══════════════════════════════════════════════════════════════
+//  INIT — Populate setup script preview
+// ══════════════════════════════════════════════════════════════
+document.getElementById('setupScriptCode').textContent = APPS_SCRIPT_CODE;
+
+// Check if already logged in (session persists on tab)
+if(sessionStorage.getItem(SESSION_KEY)==='1'){
+  document.getElementById('loginScreen').classList.remove('active');
+  checkFirstTime();
+}
+
+// Auto-sync on enter if sheets configured
+window._initialSync = async function(){
+  const cfg=loadCfg();
+  if(cfg.sheetsUrl) await syncFromSheets(true);
+};
+</script>
+</body>
+</html>
+
