@@ -659,13 +659,17 @@ function filterUsados(family, btn){
 }
 
 function buildProductCard(p){
-  const priceArs = arsPrice(p.priceUsd||0);
+  const usdValue = Number(p.priceUsd || p.usd || p.price || 0);
+  const priceArs = arsPrice(usdValue);
+
   const stockBtn = p.stock===false
     ? `<button class="add-cart-btn disabled-btn" disabled>Sin Stock</button>`
     : `<button class="add-cart-btn" onclick="event.stopPropagation();addToCart('${escQ(p.name)} ${escQ(p.storage||'')}','${categoryIcon(p.category)}',${priceArs})">🛒 Agregar</button>`;
+
   const badge = p.stock===false
     ? `<span class="prod-badge sin-stock">Sin Stock</span>`
     : `<span class="prod-badge">${p.category==='sellado'?'Nuevo':p.category==='usado'?'Usado':p.category==='gaming'?'Gaming':'iPad'}</span>`;
+
   return `
     <div class="prod-card" onclick="openDetail('${p.id}')">
       ${badge}
@@ -674,7 +678,7 @@ function buildProductCard(p){
       <div class="storage">${p.storage||'—'}</div>
       <div class="price-label">Precio</div>
       <div class="price">${money(priceArs)}</div>
-      <div class="usd-price">USD ${p.priceUsd||0}</div>
+      <div class="usd-price">USD ${usdValue}</div>
       <button class="detail-btn" onclick="event.stopPropagation();openDetail('${p.id}')">Ver detalles</button>
       ${stockBtn}
     </div>
@@ -692,14 +696,15 @@ function openDetail(id){
   const p = storeProducts.find(x=>x.id===id);
   if(!p) return;
   selectedProduct = p;
-  const priceArs = arsPrice(p.priceUsd||0);
+ const usdValue = Number(p.priceUsd || p.usd || p.price || 0);
+const priceArs = arsPrice(usdValue);
   document.getElementById('detailImage').src = p.image||'';
   const parts = (p.name||'').split(' ');
   document.getElementById('detailName').innerHTML = `<span>${parts[0]}</span> ${parts.slice(1).join(' ')}`;
   document.getElementById('detailStorage').textContent = p.storage||'';
   document.getElementById('detailPrice').textContent = money(priceArs);
   document.getElementById('detailSidePrice').textContent = money(priceArs);
-  document.getElementById('detailUsdPrice').textContent = p.priceUsd ? 'USD '+p.priceUsd : '';
+  document.getElementById('detailUsdPrice').textContent = usdValue ? 'USD '+usdValue : '';
   document.getElementById('detailDescription').textContent = p.description||'';
   document.getElementById('detailSpecs').innerHTML = Object.entries(p.specs||{})
     .map(([k,v])=>`<div class="spec-card"><span>${k}</span><strong>${v}</strong></div>`).join('');
