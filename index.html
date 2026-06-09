@@ -641,16 +641,53 @@ function normalizeProductsFromSheets(products){
         .trim()
     );
 
+    let category = String(p.category || p.categoria || p.Categoria || '')
+      .toLowerCase()
+      .trim();
+
+    if(category === 'sellados') category = 'sellado';
+    if(category === 'usados') category = 'usado';
+    if(category === 'ipads' || category === 'ipad') category = 'tablet';
+
+    const rawStock = String(p.stock ?? p.Stock ?? p.estadoStock ?? '').toLowerCase().trim();
+
+    const stock =
+      p.stock === true ||
+      rawStock === 'true' ||
+      rawStock === '1' ||
+      rawStock === 'si' ||
+      rawStock === 'sí' ||
+      rawStock === 'con stock' ||
+      rawStock === 'disponible' ||
+      rawStock === 'verdadero';
+
+    const rawActive = String(p.active ?? p.Active ?? '').toLowerCase().trim();
+
+    const active =
+      p.active === true ||
+      rawActive === 'true' ||
+      rawActive === '1' ||
+      rawActive === 'si' ||
+      rawActive === 'sí' ||
+      rawActive === 'activo' ||
+      rawActive === 'verdadero' ||
+      rawActive === '';
+
     return {
       ...p,
+      id: String(p.id || p.ID || p.name || '').trim(),
+      name: String(p.name || p.Nombre || p.producto || p.Producto || '').trim(),
+      category,
       priceUsd: isNaN(priceUsd) ? 0 : priceUsd,
       usd: isNaN(priceUsd) ? 0 : priceUsd,
       price: isNaN(priceUsd) ? 0 : priceUsd,
-      stock: p.stock === true || p.stock === 'true' || p.stock === 'TRUE' || p.stock === 'Con Stock' || p.stock === 'con stock',
-      active: p.active !== false && p.active !== 'false' && p.active !== 'FALSE',
-      category: String(p.category || p.categoria || p.Categoria || '').toLowerCase().trim()
+      storage: p.storage || p.Storage || p.memoria || p.Memoria || '',
+      image: p.image || p.Image || p.imagen || p.Imagen || '',
+      description: p.description || p.Descripcion || p.descripcion || '',
+      stock,
+      active
     };
-  }).filter(p => p.active !== false);
+  }).filter(p => p.active !== false && p.name && p.category);
 }
 
 function renderAllGrids(){
