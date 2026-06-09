@@ -34,6 +34,40 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 .screen{display:none;position:fixed;inset:0;z-index:500;}
 .screen.active{display:flex;align-items:center;justify-content:center;}
 
+/* ─── SETUP SCREEN ─── */
+#setupScreen{
+  background:radial-gradient(ellipse 80% 80% at 50% 0%, rgba(98,0,255,.35), transparent 70%), var(--bg);
+}
+.setup-box-init{
+  background:var(--card);border:1px solid rgba(98,0,255,.25);
+  border-radius:24px;padding:44px 40px;width:100%;max-width:480px;
+  animation:fadeUp .5s ease both;
+  box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 80px rgba(98,0,255,.2);
+  text-align:center;
+}
+.setup-init-icon{width:70px;height:70px;border-radius:20px;background:linear-gradient(135deg,#10b981,#6200ff);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 22px;box-shadow:0 8px 32px rgba(98,0,255,.35);}
+.setup-init-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;margin-bottom:6px;}
+.setup-init-title span{color:var(--violet);}
+.setup-init-sub{font-size:.82rem;color:var(--gray);margin-bottom:28px;line-height:1.6;}
+.setup-init-input{
+  width:100%;padding:13px 16px;background:var(--input-bg);border:1px solid var(--input-border);
+  border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;
+  outline:none;transition:.2s;margin-bottom:12px;
+}
+.setup-init-input:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(98,0,255,.12);}
+.setup-init-btn{
+  width:100%;padding:14px;background:var(--violet);color:#fff;border:none;
+  border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:700;
+  cursor:pointer;transition:.2s;box-shadow:0 8px 28px rgba(98,0,255,.35);
+}
+.setup-init-btn:hover{background:var(--violet-light);transform:translateY(-2px);}
+.setup-init-error{
+  background:rgba(255,59,48,.1);border:1px solid rgba(255,59,48,.3);
+  border-radius:10px;padding:9px 14px;font-size:.78rem;color:var(--red);
+  margin-bottom:12px;display:none;font-weight:600;
+}
+.setup-init-error.show{display:block;animation:slideDown .2s ease;}
+
 /* ─── LOGIN SCREEN ─── */
 #loginScreen{
   background:radial-gradient(ellipse 80% 80% at 50% 0%, rgba(98,0,255,.35), transparent 70%), var(--bg);
@@ -80,61 +114,6 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 .login-error.show{display:block;animation:slideDown .3s ease;}
 .login-hint{text-align:center;font-size:.72rem;color:var(--gray);margin-top:16px;}
 .login-hint span{color:var(--violet);font-weight:700;}
-
-/* ─── SETUP SCREEN ─── */
-#setupScreen{
-  background:radial-gradient(ellipse 80% 80% at 50% 0%, rgba(98,0,255,.25), transparent 70%), var(--bg);
-}
-.setup-box{
-  background:var(--card);border:1px solid rgba(98,0,255,.2);
-  border-radius:24px;padding:36px;width:100%;max-width:560px;
-  animation:fadeUp .5s ease both;
-  box-shadow:0 30px 80px rgba(0,0,0,.6);
-}
-.setup-header{text-align:center;margin-bottom:28px;}
-.setup-header .s-icon{font-size:2.8rem;margin-bottom:10px;}
-.setup-header h2{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;}
-.setup-header h2 span{color:var(--violet);}
-.setup-header p{font-size:.85rem;color:var(--gray);margin-top:6px;line-height:1.5;}
-.setup-step{
-  background:rgba(98,0,255,.05);border:1px solid rgba(98,0,255,.15);
-  border-radius:14px;padding:18px;margin-bottom:14px;
-}
-.setup-step h4{font-size:.75rem;font-weight:700;color:var(--violet);letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;}
-.setup-step p{font-size:.82rem;color:var(--text-muted);line-height:1.5;margin-bottom:10px;}
-.setup-step code{background:rgba(98,0,255,.1);color:var(--violet);padding:2px 7px;border-radius:5px;font-size:.78rem;}
-.setup-input{
-  width:100%;padding:13px 14px;background:var(--input-bg);border:1px solid var(--input-border);
-  border-radius:11px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;
-  outline:none;transition:.2s;
-}
-.setup-input:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(98,0,255,.1);}
-.setup-btn{
-  width:100%;padding:15px;background:var(--violet);color:#fff;border:none;
-  border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;
-  cursor:pointer;transition:.2s;margin-top:6px;
-  box-shadow:0 0 28px rgba(98,0,255,.35);
-}
-.setup-btn:hover{background:var(--violet-light);}
-.setup-skip{
-  width:100%;padding:12px;background:transparent;color:var(--gray);
-  border:1px solid var(--border);border-radius:12px;
-  font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer;transition:.2s;margin-top:8px;
-}
-.setup-skip:hover{color:var(--violet);border-color:var(--violet);}
-.setup-badge-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
-.s-badge{
-  display:inline-flex;align-items:center;gap:6px;padding:5px 12px;
-  border-radius:8px;font-size:.72rem;font-weight:700;letter-spacing:.5px;
-}
-.s-badge.green{background:rgba(52,199,89,.12);border:1px solid rgba(52,199,89,.25);color:var(--green);}
-.s-badge.violet{background:rgba(98,0,255,.12);border:1px solid rgba(98,0,255,.25);color:var(--violet);}
-
-/* ═══════════════════════════════════════
-   MAIN APP (hidden until logged in)
-════════════════════════════════════════ */
-#app{display:none;}
-#app.active{display:flex;}
 
 /* ─── SIDEBAR ─── */
 .sidebar{
@@ -341,10 +320,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
 ::-webkit-scrollbar-thumb{background:rgba(98,0,255,.3);border-radius:3px;}
 
 /* ─── MOBILE OVERLAY ─── */
-.sidebar-overlay{
-  display:none;position:fixed;inset:0;z-index:99;
-  background:rgba(0,0,0,.55);backdrop-filter:blur(3px);
-}
+.sidebar-overlay{display:none;position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);}
 .sidebar-overlay.show{display:block;}
 
 @media(max-width:900px){
@@ -363,15 +339,14 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
   .toolbar > div:last-child button{flex:1;justify-content:center;}
   .table-wrap{overflow-x:auto;}
   table{min-width:560px;}
-  .setup-box{margin:16px;padding:22px;}
   .modal{margin:10px;max-height:95vh;}
+  .setup-box-init{margin:16px;padding:28px 22px;}
 }
 @media(max-width:480px){
   .stats-grid{grid-template-columns:1fr 1fr;}
   .stat-card{padding:13px;}
   .stat-value{font-size:1.5rem;}
   .login-box{padding:26px 20px;margin:16px;}
-  .setup-box{padding:18px 16px;}
 }
 </style>
 </head>
@@ -381,9 +356,26 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
 <!-- ═══════════════════════════════════
+     SETUP SCREEN (primera vez)
+════════════════════════════════════ -->
+<div class="screen active" id="setupScreen">
+  <div class="setup-box-init">
+    <div class="setup-init-icon">🔗</div>
+    <div class="setup-init-title">Configuración <span>inicial</span></div>
+    <p class="setup-init-sub">Ingresá la URL de tu Google Apps Script para conectar el panel con tu planilla de productos.</p>
+    <div class="setup-init-error" id="setupError">URL inválida. Debe empezar con https://script.google.com</div>
+    <input type="url" id="setupUrl" class="setup-init-input"
+      placeholder="https://script.google.com/macros/s/.../exec"
+      oninput="this.value=this.value.trim()"
+      onkeydown="if(event.key==='Enter')doSetup()">
+    <button class="setup-init-btn" onclick="doSetup()">Conectar con Google Sheets →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
      LOGIN SCREEN
 ════════════════════════════════════ -->
-<div class="screen active" id="loginScreen">
+<div class="screen" id="loginScreen">
   <div class="login-box">
     <div class="login-logo">
       <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;">
@@ -452,6 +444,9 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
     </button>
     <button class="sf-btn" onclick="syncFromSheets()">
       <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>Sincronizar Sheets
+    </button>
+    <button class="sf-btn" onclick="resetApiUrl()">
+      <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/></svg>Cambiar URL API
     </button>
     <button class="sf-btn logout" onclick="doLogout()">
       <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Cerrar sesión
@@ -571,10 +566,9 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
     <!-- SETTINGS VIEW -->
     <div class="page-view" id="view-settings">
 
-      <!-- LOGIN & CREDENCIALES -->
       <div class="settings-section">
         <h3><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Credenciales de acceso</h3>
-        <p class="desc">Cambiá el usuario y contraseña del panel admin. Guardados en el navegador.</p>
+        <p class="desc">Cambiá el usuario y contraseña del panel admin.</p>
         <div class="settings-form">
           <div class="setting-row">
             <div class="form-label">Usuario</div>
@@ -592,25 +586,13 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
         </div>
       </div>
 
-      <!-- GOOGLE SHEETS -->
       <div class="settings-section">
         <h3><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>Google Sheets — Sincronización</h3>
-        <p class="desc">
-          Conectá tu Google Sheet para que los productos aparezcan automáticamente en la tienda <strong>index.html</strong>.
-        </p>
-
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 14px;background:rgba(98,0,255,.05);border:1px solid rgba(98,0,255,.14);border-radius:12px;margin-bottom:14px;font-size:.78rem;font-weight:600;">
-          <span style="background:rgba(98,0,255,.12);color:var(--violet);padding:4px 10px;border-radius:8px;">📋 Panel Admin</span>
-          <span style="color:var(--gray);">→ guarda en →</span>
-          <span style="background:rgba(52,199,89,.1);color:var(--green);padding:4px 10px;border-radius:8px;">🗂️ Google Sheets</span>
-          <span style="color:var(--gray);">→ lee automáticamente →</span>
-          <span style="background:rgba(98,0,255,.12);color:var(--violet);padding:4px 10px;border-radius:8px;">🛒 Tienda (index.html)</span>
-        </div>
-
+        <p class="desc">URL conectada actualmente. Para cambiarla usá <strong>Cambiar URL API</strong> en el menú lateral.</p>
         <div class="settings-form">
-          <div class="setting-row">
-            <div class="form-label">URL del Apps Script Web App</div>
-            <input class="form-input" id="sheetsUrl" placeholder="https://script.google.com/macros/s/AKfy.../exec" oninput="saveSheetsConfig()">
+          <div class="setting-row" style="grid-column:1/-1;">
+            <div class="form-label">URL del Apps Script (activa)</div>
+            <input class="form-input" id="sheetsUrl" placeholder="https://script.google.com/macros/s/..." oninput="saveSheetsConfig()" style="font-size:.78rem;">
           </div>
           <div class="setting-row">
             <div class="form-label">Nombre de la hoja (pestaña)</div>
@@ -630,10 +612,9 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
         </div>
       </div>
 
-      <!-- CLOUDINARY -->
       <div class="settings-section">
         <h3><svg viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>Cloudinary — Imágenes</h3>
-        <p class="desc">Configuración de subida de imágenes. Los valores ya están cargados.</p>
+        <p class="desc">Configuración de subida de imágenes.</p>
         <div class="settings-form">
           <div class="setting-row">
             <div class="form-label">Cloud Name</div>
@@ -655,45 +636,27 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
         </div>
       </div>
 
-      <!-- DEPLOY GUIDE -->
       <div class="settings-section">
         <h3><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Publicar la tienda</h3>
         <p class="desc">Cómo subir tu tienda a internet con GitHub Pages o Hostinger.</p>
         <div class="guide-box show">
           <div class="g-title">OPCIÓN A — GITHUB PAGES (gratis)</div>
           <div class="step-list">
-            <div class="step-item"><div class="step-num">1</div><p>Creá una cuenta en <a href="https://github.com" target="_blank" style="color:var(--violet);">github.com</a> si no tenés.</p></div>
-            <div class="step-item"><div class="step-num">2</div><p>Creá un repositorio nuevo llamado exactamente <code>tu-usuario.github.io</code> (reemplazá <code>tu-usuario</code> con tu nombre de usuario de GitHub).</p></div>
-            <div class="step-item"><div class="step-num">3</div><p>Subí los dos archivos: <code>index.html</code> (la tienda) y <code>admin.html</code> (este panel). Podés arrastrarlos directo a GitHub.</p></div>
-            <div class="step-item"><div class="step-num">4</div><p>Andá a <strong>Settings → Pages</strong> del repositorio. En "Branch" seleccioná <code>main</code> y guardá.</p></div>
-            <div class="step-item"><div class="step-num">5</div><p>Tu tienda estará en <code>https://tu-usuario.github.io</code> y el admin en <code>https://tu-usuario.github.io/admin.html</code>.</p></div>
-          </div>
-        </div>
-        <div class="guide-box show" style="margin-top:10px;">
-          <div class="g-title">OPCIÓN B — HOSTINGER (con dominio propio)</div>
-          <div class="step-list">
-            <div class="step-item"><div class="step-num">1</div><p>Comprá un plan de hosting en <a href="https://hostinger.com" target="_blank" style="color:var(--violet);">hostinger.com</a> (desde ~3 USD/mes). Incluye dominio gratis el primer año.</p></div>
-            <div class="step-item"><div class="step-num">2</div><p>Desde el panel de Hostinger, andá a <strong>Administrador de archivos → public_html</strong>.</p></div>
-            <div class="step-item"><div class="step-num">3</div><p>Subí <code>index.html</code> (tienda) y <code>admin.html</code> (panel) en esa carpeta. Podés usar el botón "Subir" o FTP con FileZilla.</p></div>
-            <div class="step-item"><div class="step-num">4</div><p>La tienda quedará en <code>https://tudominio.com</code> y el admin en <code>https://tudominio.com/admin.html</code>.</p></div>
-            <div class="step-item"><div class="step-num">5</div><p><strong>Tip:</strong> Para proteger el admin, podés usar la función <strong>"Proteger directorios"</strong> de Hostinger o simplemente confiar en el login que ya tiene este panel.</p></div>
-          </div>
-        </div>
-        <div class="guide-box show" style="margin-top:10px;">
-          <div class="g-title">CONECTAR GITHUB + HOSTINGER (automático)</div>
-          <div class="step-list">
-            <div class="step-item"><div class="step-num">1</div><p>En Hostinger andá a <strong>Git</strong> en tu panel de hosting.</p></div>
-            <div class="step-item"><div class="step-num">2</div><p>Conectá tu repositorio de GitHub. Cada vez que hagas <code>push</code> al repo, Hostinger actualiza el sitio automáticamente.</p></div>
+            <div class="step-item"><div class="step-num">1</div><p>Creá una cuenta en <a href="https://github.com" target="_blank">github.com</a> si no tenés.</p></div>
+            <div class="step-item"><div class="step-num">2</div><p>Creá un repositorio nuevo llamado exactamente <code>tu-usuario.github.io</code>.</p></div>
+            <div class="step-item"><div class="step-num">3</div><p>Subí los archivos <code>index.html</code> y <code>admin.html</code>. Podés arrastrarlos directo a GitHub.</p></div>
+            <div class="step-item"><div class="step-num">4</div><p>Andá a <strong>Settings → Pages</strong>, seleccioná branch <code>main</code> y guardá.</p></div>
+            <div class="step-item"><div class="step-num">5</div><p>Tu tienda estará en <code>https://tu-usuario.github.io</code>.</p></div>
           </div>
         </div>
       </div>
 
-    </div><!-- /settings -->
+    </div>
 
   </div>
 </div>
 </div>
-</div><!-- /app -->
+</div>
 
 <!-- EDIT MODAL -->
 <div class="overlay" id="modalOverlay" onclick="closeModalOutside(event)">
@@ -721,53 +684,112 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
 
 <script>
 // ══════════════════════════════════════════════════════════════
-//  APPS SCRIPT CODE
+//  KEYS
 // ══════════════════════════════════════════════════════════════
-const APPS_SCRIPT_CODE = `function doGet(e) {
-  const action = (e.parameter.action || 'read');
-  const sheetName = (e.parameter.sheet || 'Hoja1');
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(sheetName);
-  if (!sheet) return json({ ok:false, error:'Hoja no encontrada: '+sheetName });
+const API_URL_KEY  = 'isr_api_url';
+const STORAGE_KEY  = 'isr_products_v3';
+const CFG_KEY      = 'isr_config_v3';
+const SESSION_KEY  = 'isr_session';
 
-  if (action === 'read') {
-    const data = sheet.getDataRange().getValues();
-    if (data.length < 2) return json({ ok:true, products:[] });
-    const headers = data[0];
-    const rows = data.slice(1).map(row => {
-      const obj = {};
-      headers.forEach((h,i) => { obj[h] = row[i]; });
-      try { obj.specs    = JSON.parse(obj.specs    || '{}'); } catch(e){ obj.specs=[]; }
-      try { obj.benefits = JSON.parse(obj.benefits || '[]'); } catch(e){ obj.benefits=[]; }
-      obj.stock    = (obj.stock===true||obj.stock==='TRUE'||obj.stock==='true');
-      obj.priceUsd = parseFloat(obj.priceUsd)||0;
-      return obj;
-    }).filter(r=>r.id);
-    return json({ ok:true, products:rows });
-  }
+let API_URL = '';
 
-  if (action === 'write') {
-    const products = JSON.parse(e.parameter.data || '[]');
-    sheet.clearContents();
-    const headers = ['id','name','category','storage','priceUsd','stock','image','description','benefits','specs'];
-    sheet.appendRow(headers);
-    products.forEach(p => {
-      sheet.appendRow([
-        p.id, p.name, p.category, p.storage, p.priceUsd,
-        p.stock, p.image, p.description,
-        JSON.stringify(p.benefits||[]),
-        JSON.stringify(p.specs||{})
-      ]);
-    });
-    return json({ ok:true, written:products.length });
+// ══════════════════════════════════════════════════════════════
+//  SETUP (primera vez)
+// ══════════════════════════════════════════════════════════════
+function doSetup(){
+  const url = document.getElementById('setupUrl').value.trim();
+  const errEl = document.getElementById('setupError');
+  if(!url.startsWith('https://script.google.com')){
+    errEl.classList.add('show');
+    setTimeout(()=>errEl.classList.remove('show'), 3000);
+    return;
   }
-  return json({ ok:false, error:'Unknown action' });
+  localStorage.setItem(API_URL_KEY, url);
+  API_URL = url;
+  // Guardar también en config de Sheets
+  const c = loadCfg();
+  c.sheetsUrl = url;
+  saveCfg(c);
+  document.getElementById('setupScreen').classList.remove('active');
+  document.getElementById('loginScreen').classList.add('active');
+  setTimeout(()=>document.getElementById('loginUser').focus(), 80);
 }
-function doPost(e){ return doGet(e); }
-function json(obj){
-  return ContentService.createTextOutput(JSON.stringify(obj))
-    .setMimeType(ContentService.MimeType.JSON);
-}`;
+
+function resetApiUrl(){
+  if(!confirm('¿Cambiar la URL de la API? Tendrás que ingresar los datos de nuevo.')) return;
+  localStorage.removeItem(API_URL_KEY);
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════════════════════
+function loadCfg(){
+  const defaults={
+    cloudName:'dwjqzalvq',
+    uploadPreset:'iphonerosario',
+    sheetsUrl: localStorage.getItem(API_URL_KEY)||'',
+    sheetsTab:'Hoja1'
+  };
+  try{ return Object.assign({},defaults,JSON.parse(localStorage.getItem(CFG_KEY))||{}); }catch(e){ return defaults; }
+}
+function saveCfg(c){ localStorage.setItem(CFG_KEY, JSON.stringify(c)); }
+
+function getCredentials(){
+  const c = loadCfg();
+  return { user: c.user||'admin', pass: c.pass||'isr2024' };
+}
+
+// ══════════════════════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════════════════════
+function doLogin(){
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const creds = getCredentials();
+  if(u===creds.user && p===creds.pass){
+    sessionStorage.setItem(SESSION_KEY,'1');
+    document.getElementById('loginScreen').classList.remove('active');
+    enterApp();
+  } else {
+    const err = document.getElementById('loginError');
+    err.classList.add('show');
+    document.getElementById('loginUser').classList.add('error');
+    document.getElementById('loginPass').classList.add('error');
+    setTimeout(()=>{
+      err.classList.remove('show');
+      document.getElementById('loginUser').classList.remove('error');
+      document.getElementById('loginPass').classList.remove('error');
+    }, 3000);
+  }
+}
+
+function doLogout(){
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+function saveCredentials(){
+  const u = document.getElementById('cfgUser').value.trim();
+  const p = document.getElementById('cfgPass').value;
+  if(!u){ showToast('El usuario no puede estar vacío','error'); return; }
+  const c = loadCfg();
+  if(u) c.user = u;
+  if(p) c.pass = p;
+  saveCfg(c);
+  showToast('Credenciales guardadas.','success');
+  document.getElementById('cfgPass').value='';
+}
+
+function enterApp(){
+  document.getElementById('app').style.display='flex';
+  updateStats();
+  renderTable();
+  updateSheetsBadge();
+  const cfg = loadCfg();
+  if(cfg.sheetsUrl) syncFromSheets(true);
+}
 
 // ══════════════════════════════════════════════════════════════
 //  MODEL SPECS
@@ -796,102 +818,6 @@ const MODEL_SPECS = {
   'iPad Air M4':{chip:'Apple M4',pantalla:'11" / 13" Liquid Retina 60Hz',camara:'12 MP gran angular',faceID:'No (Touch ID)',bateria:'Hasta 10 hs',usb:'USB-C (Thunderbolt 3)'},
   'iPad Pro M5':{chip:'Apple M5',pantalla:'11" / 13" Ultra Retina XDR OLED 120Hz',camara:'12 MP + LiDAR',faceID:'Sí',bateria:'Hasta 10 hs',usb:'USB-C (Thunderbolt 4)'},
 };
-
-// ══════════════════════════════════════════════════════════════
-//  CONFIG & AUTH
-// ══════════════════════════════════════════════════════════════
-const STORAGE_KEY = 'isr_products_v3';
-const CFG_KEY     = 'isr_config_v3';
-const AUTH_KEY    = 'isr_auth';
-const SESSION_KEY = 'isr_session';
-
-function loadCfg(){
-  const defaults={
-    cloudName:'dwjqzalvq',
-    uploadPreset:'iphonerosario',
-    sheetsUrl:'https://script.google.com/macros/s/AKfycbwW1RwoBTHlU_YBtuIMcsUL2rTuZPgh5iCa7uBplqNQPxLRboFdND8HBopmYkqa9yLvCg/exec',
-    sheetsTab:'Hoja1'
-  };
-  try{ return Object.assign({},defaults,JSON.parse(localStorage.getItem(CFG_KEY))||{}); }catch(e){ return defaults; }
-}
-function saveCfg(c){ localStorage.setItem(CFG_KEY, JSON.stringify(c)); }
-
-// Credentials
-function getCredentials(){
-  const c = loadCfg();
-  return { user: c.user||'admin', pass: c.pass||'isr2024' };
-}
-
-// LOGIN
-function doLogin(){
-  const u = document.getElementById('loginUser').value.trim();
-  const p = document.getElementById('loginPass').value;
-  const creds = getCredentials();
-  if(u===creds.user && p===creds.pass){
-    sessionStorage.setItem(SESSION_KEY,'1');
-    document.getElementById('loginScreen').classList.remove('active');
-    checkFirstTime();
-  } else {
-    const err = document.getElementById('loginError');
-    err.classList.add('show');
-    document.getElementById('loginUser').classList.add('error');
-    document.getElementById('loginPass').classList.add('error');
-    setTimeout(()=>{
-      err.classList.remove('show');
-      document.getElementById('loginUser').classList.remove('error');
-      document.getElementById('loginPass').classList.remove('error');
-    }, 3000);
-  }
-}
-
-function doLogout(){
-  sessionStorage.removeItem(SESSION_KEY);
-  location.reload();
-}
-
-function saveCredentials(){
-  const u = document.getElementById('cfgUser').value.trim();
-  const p = document.getElementById('cfgPass').value;
-  if(!u){ showToast('El usuario no puede estar vacío','error'); return; }
-  const c = loadCfg();
-  if(u) c.user = u;
-  if(p) c.pass = p;
-  saveCfg(c);
-  showToast('Credenciales guardadas. Usalas al próximo login.','success');
-  document.getElementById('cfgPass').value='';
-}
-
-// FIRST TIME CHECK — va directo al app
-function checkFirstTime(){ enterApp(); }
-
-function finishSetup(){
-  const url = document.getElementById('setupUrl').value.trim();
-  const tab = document.getElementById('setupTab').value.trim()||'Hoja1';
-  if(!url){ showToast('Pegá la URL del Apps Script','error'); return; }
-  const c = loadCfg();
-  c.sheetsUrl = url;
-  c.sheetsTab = tab;
-  saveCfg(c);
-  document.getElementById('setupScreen').classList.remove('active');
-  enterApp();
-  setTimeout(()=>syncFromSheets(true), 800);
-}
-
-function skipSetup(){
-  const c = loadCfg();
-  c.sheetsSkipped = true;
-  saveCfg(c);
-  document.getElementById('setupScreen').classList.remove('active');
-  enterApp();
-}
-
-function enterApp(){
-  document.getElementById('app').classList.add('active');
-  document.getElementById('app').style.display='flex';
-  updateStats();
-  renderTable();
-  updateSheetsBadge();
-}
 
 // ══════════════════════════════════════════════════════════════
 //  DATA
@@ -1090,7 +1016,6 @@ function buildFormHTML(p){
         <div class="form-label">URL de imagen (o subí abajo)</div>
         <input class="form-input" id="fImage" value="${p.image||''}" placeholder="https://...">
       </div>
-
       <div class="form-col full">
         <div class="form-label">
           Subir imagen
@@ -1116,7 +1041,6 @@ function buildFormHTML(p){
           </button>
         </div>
       </div>
-
       <div class="form-col full">
         <div class="form-label">Descripción</div>
         <textarea class="form-textarea" id="fDesc" placeholder="Descripción del producto...">${p.description||''}</textarea>
@@ -1126,7 +1050,6 @@ function buildFormHTML(p){
         <textarea class="form-textarea" id="fBenefits" placeholder="Equipo nuevo y sellado&#10;Excelente rendimiento&#10;Garantía de funcionamiento">${(p.benefits||[]).join('\n')}</textarea>
       </div>
     </div>
-
     <div class="spec-section" style="margin-top:14px;">
       <h4>
         <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M5.34 5.34L3.93 6.75M19.07 19.07l-1.41-1.41M5.34 18.66l-1.41 1.41M22 12h-3M5 12H2M12 22v-3M12 5V2"/></svg>
@@ -1243,7 +1166,6 @@ function deleteProduct(id){
   autoPush();
 }
 
-// INLINE ADD
 function initInlineForm(){ document.getElementById('inlineFormBody').innerHTML=buildFormHTML(); }
 function saveProductInline(){
   editingId=null;
@@ -1263,8 +1185,12 @@ function saveProductInline(){
 // ══════════════════════════════════════════════════════════════
 function saveSheetsConfig(){
   const c=loadCfg();
-  c.sheetsUrl=document.getElementById('sheetsUrl')?.value||c.sheetsUrl||'';
-  c.sheetsTab=document.getElementById('sheetsTab')?.value||c.sheetsTab||'Hoja1';
+  const urlEl=document.getElementById('sheetsUrl');
+  const tabEl=document.getElementById('sheetsTab');
+  if(urlEl) c.sheetsUrl=urlEl.value||c.sheetsUrl||'';
+  if(tabEl) c.sheetsTab=tabEl.value||c.sheetsTab||'Hoja1';
+  // Sincronizar también API_URL_KEY
+  if(c.sheetsUrl) localStorage.setItem(API_URL_KEY, c.sheetsUrl);
   saveCfg(c);
   updateSheetsBadge();
 }
@@ -1328,7 +1254,8 @@ async function syncFromSheets(silent){
     const d=await r.json();
     if(d.ok&&d.products?.length){
       products=d.products;
-      saveProducts(products);
+      localStorage.setItem(STORAGE_KEY,JSON.stringify(products));
+      updateStats();
       renderTable();
       setBadge('connected','Sheets: Sincronizado');
       if(!silent) showToast(`✓ ${d.products.length} productos importados desde Sheets`,'success');
@@ -1419,8 +1346,6 @@ function downloadJSON(){
   const a=document.createElement('a');a.href=url;a.download='products.js';a.click();URL.revokeObjectURL(url);
   showToast('Archivo descargado','success');
 }
-function copySheetsScript(){ navigator.clipboard.writeText(APPS_SCRIPT_CODE).then(()=>showToast('Script copiado','success')); }
-function copySetupScript(){ navigator.clipboard.writeText(APPS_SCRIPT_CODE).then(()=>showToast('Script copiado','success')); }
 
 // ══════════════════════════════════════════════════════════════
 //  VIEWS
@@ -1437,16 +1362,11 @@ function showView(name){
   if(name==='export') document.getElementById('exportCodeBox').textContent=buildExportCode();
   if(name==='settings'){
     const cfg=loadCfg();
-    ['sheetsUrl','sheetsTab','cloudName','uploadPreset','cfgUser'].forEach(id=>{
-      const el=document.getElementById(id);
-      if(el) el.value=cfg[id.replace('cfg','')?.[0]?.toLowerCase()+id.replace('cfg','').slice(1)]||cfg[id]||'';
-    });
     const su=document.getElementById('sheetsUrl');if(su) su.value=cfg.sheetsUrl||'';
     const st=document.getElementById('sheetsTab');if(st) st.value=cfg.sheetsTab||'Hoja1';
     const cn=document.getElementById('cloudName');if(cn) cn.value=cfg.cloudName||'dwjqzalvq';
     const up=document.getElementById('uploadPreset');if(up) up.value=cfg.uploadPreset||'iphonerosario';
     const cu=document.getElementById('cfgUser');if(cu) cu.value=cfg.user||'admin';
-    document.getElementById('sheetsScriptBox').textContent=APPS_SCRIPT_CODE;
   }
 }
 
@@ -1476,9 +1396,6 @@ function toggleTheme(){
 (function(){ document.documentElement.setAttribute('data-theme',localStorage.getItem('isr_theme')||'dark'); })();
 
 // ══════════════════════════════════════════════════════════════
-//  RESPONSIVE
-// ══════════════════════════════════════════════════════════════
-// ══════════════════════════════════════════════════════════════
 //  RESPONSIVE SIDEBAR
 // ══════════════════════════════════════════════════════════════
 function openSidebar(){
@@ -1489,27 +1406,42 @@ function closeSidebar(){
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebarOverlay').classList.remove('show');
 }
-// Close sidebar on nav item click (mobile)
 document.querySelectorAll('.nav-item').forEach(item=>{
   item.addEventListener('click',()=>{ if(window.innerWidth<=900) closeSidebar(); });
 });
-
 if(window.innerWidth<=900) document.getElementById('menuBtn').style.display='flex';
 
 // ══════════════════════════════════════════════════════════════
-//  INIT — Populate setup script preview
+//  BOOT — flujo: setup → login → app
 // ══════════════════════════════════════════════════════════════
-// Check if already logged in (session persists on tab)
-if(sessionStorage.getItem(SESSION_KEY)==='1'){
-  document.getElementById('loginScreen').classList.remove('active');
-  checkFirstTime();
-}
+(function boot(){
+  const savedUrl = localStorage.getItem(API_URL_KEY);
 
-// Auto-sync on enter if sheets configured
-window._initialSync = async function(){
-  const cfg=loadCfg();
-  if(cfg.sheetsUrl) await syncFromSheets(true);
-};
+  if(!savedUrl){
+    // Primera vez: mostrar setup
+    document.getElementById('setupScreen').classList.add('active');
+    return;
+  }
+
+  API_URL = savedUrl;
+  // Asegurarse que la config también tenga la URL
+  const c = loadCfg();
+  if(!c.sheetsUrl) { c.sheetsUrl = savedUrl; saveCfg(c); }
+
+  document.getElementById('setupScreen').classList.remove('active');
+
+  if(sessionStorage.getItem(SESSION_KEY)==='1'){
+    // Sesión activa: ir directo al app
+    document.getElementById('loginScreen').classList.remove('active');
+    enterApp();
+  } else {
+    // Mostrar login
+    document.getElementById('loginScreen').classList.add('active');
+    setTimeout(()=>document.getElementById('loginUser').focus(), 80);
+  }
+})();
+
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
 </script>
 </body>
 </html>
