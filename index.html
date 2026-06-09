@@ -578,20 +578,42 @@ let storeProducts = [];
 
 async function loadStoreProducts(){
   try{
-    const r = await fetch(`${SHEETS_URL}?action=read&sheet=${encodeURIComponent(SHEETS_TAB)}`);
+    const r = await fetch(`${SHEETS_URL}?action=getProducts`);
     const d = await r.json();
-    if(d.ok && d.products?.length){
-      storeProducts = d.products;
+
+    if(d.ok && Array.isArray(d.products)){
+      storeProducts = normalizeProductsFromSheets(d.products);
       renderAllGrids();
       return;
     }
-  }catch(e){}
-  // fallback localStorage
-  try{
-    const raw = localStorage.getItem(PRODUCTS_KEY);
-    if(raw) storeProducts = JSON.parse(raw);
-  }catch(e){ storeProducts = []; }
-  renderAllGrids();
+
+    throw new Error(d.error || 'Google Sheets no devolvió productos');
+
+  }catch(e){
+    console.error('Error cargando productos desde Google Sheets:', e);
+
+    try{
+      const raw = localStorage.getItem(PRODUCTS_KEY);
+      if(raw){
+        storeProducts = normalizeProductsFromSheets(JSON.parse(raw));
+      }else{
+        storeProducts = [];
+      }
+    }catch(err){
+      storeProducts = [];
+    }
+
+    renderAllGrids();
+  }
+}
+
+function normalizeProductsFromSheets(products){
+  return products.map(p => ({
+    ...p,
+    priceUsd: Number(p.priceUsd || p.usd || 0),
+    stock: p.stock === true || p.stock === 'true' || p.stock === 'TRUE' || p.stock === 'Con Stock',
+    active: p.active !== false && p.active !== 'false' && p.active !== 'FALSE'
+  })).filter(p => p.active !== false);
 }
 
 function renderAllGrids(){
