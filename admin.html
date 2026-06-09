@@ -806,7 +806,12 @@ const AUTH_KEY    = 'isr_auth';
 const SESSION_KEY = 'isr_session';
 
 function loadCfg(){
-  const defaults={ cloudName:'dwjqzalvq', uploadPreset:'iphonerosario' };
+  const defaults={
+    cloudName:'dwjqzalvq',
+    uploadPreset:'iphonerosario',
+    sheetsUrl:'https://script.google.com/macros/s/AKfycbxrL03Ap1awmyHOmFe1txkCx3zvSLVAw4uiBq-c_ci5Z2GT9gzBqqoB7h2ebQu-wzkKXA/exec',
+    sheetsTab:'Hoja1'
+  };
   try{ return Object.assign({},defaults,JSON.parse(localStorage.getItem(CFG_KEY))||{}); }catch(e){ return defaults; }
 }
 function saveCfg(c){ localStorage.setItem(CFG_KEY, JSON.stringify(c)); }
