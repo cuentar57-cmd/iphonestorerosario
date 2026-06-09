@@ -683,43 +683,42 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════════════
-//  KEYS
-// ══════════════════════════════════════════════════════════════
+  
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGGmCePitQSQPoNT4_Wpu6mHkXAjaYI6_F2sRvYy6LbaAPpRg1mpeojO_4hO1vcPCRog/exec';
+
 const API_URL_KEY  = 'isr_api_url';
 const STORAGE_KEY  = 'isr_products_v3';
 const CFG_KEY      = 'isr_config_v3';
 const SESSION_KEY  = 'isr_session';
 
-let API_URL = '';
+let API_URL = SCRIPT_URL;
 
 // ══════════════════════════════════════════════════════════════
 //  SETUP (primera vez)
 // ══════════════════════════════════════════════════════════════
 function doSetup(){
-  const url = document.getElementById('setupUrl').value.trim();
-  const errEl = document.getElementById('setupError');
-  if(!url.startsWith('https://script.google.com')){
-    errEl.classList.add('show');
-    setTimeout(()=>errEl.classList.remove('show'), 3000);
-    return;
-  }
-  localStorage.setItem(API_URL_KEY, url);
-  API_URL = url;
-  // Guardar también en config de Sheets
+  localStorage.setItem(API_URL_KEY, SCRIPT_URL);
+
+  API_URL = SCRIPT_URL;
+
   const c = loadCfg();
-  c.sheetsUrl = url;
+  c.sheetsUrl = SCRIPT_URL;
   saveCfg(c);
+
   document.getElementById('setupScreen').classList.remove('active');
   document.getElementById('loginScreen').classList.add('active');
+
   setTimeout(()=>document.getElementById('loginUser').focus(), 80);
 }
 
 function resetApiUrl(){
-  if(!confirm('¿Cambiar la URL de la API? Tendrás que ingresar los datos de nuevo.')) return;
-  localStorage.removeItem(API_URL_KEY);
-  sessionStorage.removeItem(SESSION_KEY);
-  location.reload();
+  localStorage.setItem(API_URL_KEY, SCRIPT_URL);
+
+  const c = loadCfg();
+  c.sheetsUrl = SCRIPT_URL;
+  saveCfg(c);
+
+  showToast('URL fija restaurada correctamente','success');
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -729,10 +728,16 @@ function loadCfg(){
   const defaults={
     cloudName:'dwjqzalvq',
     uploadPreset:'iphonerosario',
-    sheetsUrl: localStorage.getItem(API_URL_KEY)||'',
-    sheetsTab:'Hoja1'
+    sheetsUrl: SCRIPT_URL,
+    sheetsTab:'Productos'
   };
-  try{ return Object.assign({},defaults,JSON.parse(localStorage.getItem(CFG_KEY))||{}); }catch(e){ return defaults; }
+
+  try{
+    const saved = JSON.parse(localStorage.getItem(CFG_KEY)) || {};
+    return Object.assign({}, defaults, saved, { sheetsUrl: SCRIPT_URL });
+  }catch(e){
+    return defaults;
+  }
 }
 function saveCfg(c){ localStorage.setItem(CFG_KEY, JSON.stringify(c)); }
 
@@ -1442,6 +1447,178 @@ if(window.innerWidth<=900) document.getElementById('menuBtn').style.display='fle
 })();
 
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+// ══════════════════════════════════════════════════════════════
+// GOOGLE SHEETS SYNC
+// ══════════════════════════════════════════════════════════════
+
+async function syncProductsToSheets(){
+  try{
+    if(typeof products === 'undefined' || !Array.isArray(products)){
+      throw new Error('No se encontró la lista de productos del panel');
+    }
+
+    showToast('Sincronizando con Google Sheets...', 'info');
+
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({
+        action: 'saveProducts',
+        products: products
+      })
+    });
+
+    const result = await response.json();
+
+    if(!result.ok){
+      throw new Error(result.error || 'Google Script respondió con error');
+    }
+
+    showToast('Productos sincronizados con Google Sheets', 'success');
+
+  }catch(error){
+    console.error('Error al sincronizar:', error);
+    showToast('Error al sincronizar: ' + error.message, 'error');
+  }
+}
+
+async function loadProductsFromSheets(){
+  try{
+    showToast('Cargando productos desde Google Sheets...', 'info');
+
+    const response = await fetch(SCRIPT_URL + '?action=getProducts');
+    const result = await response.json();
+
+    if(!result.ok){
+      throw new Error(result.error || 'No se pudieron cargar los productos');
+    }
+
+    products = Array.isArray(result.products) ? result.products : [];
+
+    if(typeof renderTable === 'function') renderTable();
+    if(typeof updateStats === 'function') updateStats();
+
+    showToast('Productos cargados desde Google Sheets', 'success');
+
+  }catch(error){
+    console.error('Error cargando productos:', error);
+    showToast('Error cargando desde Sheets: ' + error.message, 'error');
+  }
+}
+
+async function syncFromSheets(silent=false){
+  try{
+    if(!silent) showToast('Importando productos desde Google Sheets...', 'info');
+
+    const res = await fetch(SCRIPT_URL + '?action=getProducts');
+    const data = await res.json();
+
+    if(!data.ok){
+      throw new Error(data.error || 'No se pudieron importar productos');
+    }
+
+    products = Array.isArray(data.products) ? data.products : [];
+
+    if(typeof renderTable === 'function') renderTable();
+    if(typeof updateStats === 'function') updateStats();
+    if(typeof updateExport === 'function') updateExport();
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+
+    updateSheetsBadge(true);
+
+    if(!silent) showToast('Productos importados desde Sheets', 'success');
+
+  }catch(err){
+    console.error('Error syncFromSheets:', err);
+    updateSheetsBadge(false);
+    if(!silent) showToast('Error al importar desde Sheets: ' + err.message, 'error');
+  }
+}
+
+async function pushToSheets(){
+  try{
+    showToast('Exportando productos a Google Sheets...', 'info');
+
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({
+        action: 'saveProducts',
+        products: products
+      })
+    });
+
+    const data = await res.json();
+
+    if(!data.ok){
+      throw new Error(data.error || 'No se pudieron exportar productos');
+    }
+
+    updateSheetsBadge(true);
+    showToast('Productos exportados correctamente a Sheets', 'success');
+
+  }catch(err){
+    console.error('Error pushToSheets:', err);
+    updateSheetsBadge(false);
+    showToast('Error al exportar a Sheets: ' + err.message, 'error');
+  }
+}
+
+async function testSheetsConn(){
+  const box = document.getElementById('sheetsTestResult');
+  const icon = document.getElementById('sheetsTestIcon');
+  const title = document.getElementById('sheetsTestTitle');
+  const msg = document.getElementById('sheetsTestMsg');
+
+  if(box) box.classList.add('show');
+  if(icon) icon.className = 'ct-icon loading';
+  if(title) title.textContent = 'Probando conexión...';
+  if(msg) msg.textContent = 'Conectando con Google Apps Script';
+
+  try{
+    const res = await fetch(SCRIPT_URL + '?action=getProducts');
+    const data = await res.json();
+
+    if(!data.ok){
+      throw new Error(data.error || 'Respuesta inválida');
+    }
+
+    if(icon) icon.className = 'ct-icon ok';
+    if(title) title.textContent = 'Conexión correcta';
+    if(msg) msg.textContent = 'Google Sheets respondió bien';
+
+    updateSheetsBadge(true);
+
+  }catch(err){
+    if(icon) icon.className = 'ct-icon err';
+    if(title) title.textContent = 'Error de conexión';
+    if(msg) msg.textContent = err.message;
+
+    updateSheetsBadge(false);
+  }
+}
+
+function updateSheetsBadge(connected=false){
+  const badge = document.getElementById('sheetsBadge');
+  const text = document.getElementById('sheetsBadgeText');
+
+  if(!badge || !text) return;
+
+  if(connected){
+    badge.className = 'sync-badge connected';
+    text.textContent = 'Sheets: Conectado';
+  }else{
+    badge.className = 'sync-badge disconnected';
+    text.textContent = 'Sheets: No conectado';
+  }
+}
+  
 </script>
 </body>
 </html>
