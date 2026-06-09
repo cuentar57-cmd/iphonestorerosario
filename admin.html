@@ -809,7 +809,7 @@ function loadCfg(){
   const defaults={
     cloudName:'dwjqzalvq',
     uploadPreset:'iphonerosario',
-    sheetsUrl:'https://script.google.com/macros/s/AKfycbw7VGHFY1YDQnWqQJWUiqVG2WeJyJxw7VSJVlkHyobWJV8wPMd9vC2IfM7-XffRAidMyA/exec',
+    sheetsUrl:'https://script.google.com/macros/s/AKfycbwW1RwoBTHlU_YBtuIMcsUL2rTuZPgh5iCa7uBplqNQPxLRboFdND8HBopmYkqa9yLvCg/exec',
     sheetsTab:'Hoja1'
   };
   try{ return Object.assign({},defaults,JSON.parse(localStorage.getItem(CFG_KEY))||{}); }catch(e){ return defaults; }
@@ -1345,11 +1345,8 @@ async function pushToSheets(silent){
   setBadge('syncing','Guardando en Sheets...');
   try{
     const tab=encodeURIComponent(cfg.sheetsTab||'Hoja1');
-    const r=await fetch(`${cfg.sheetsUrl}?action=write&sheet=${tab}`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({products})
-    });
+    const body=new URLSearchParams({data:JSON.stringify(products)});
+    const r=await fetch(`${cfg.sheetsUrl}?action=write&sheet=${tab}`,{method:'POST',body});
     const d=await r.json();
     if(d.ok){ setBadge('connected','Sheets: Conectado'); if(!silent) showToast(`✓ ${d.written} productos guardados en Sheets`,'success'); }
     else throw new Error(d.error||'Error al guardar');
