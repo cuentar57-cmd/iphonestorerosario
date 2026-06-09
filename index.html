@@ -583,6 +583,7 @@ async function loadStoreProducts(){
 
     if(d.ok && Array.isArray(d.products)){
       storeProducts = normalizeProductsFromSheets(d.products);
+      console.log('PRODUCTOS NORMALIZADOS:', storeProducts);
       renderAllGrids();
       return;
     }
@@ -608,12 +609,48 @@ async function loadStoreProducts(){
 }
 
 function normalizeProductsFromSheets(products){
-  return products.map(p => ({
-    ...p,
-    priceUsd: Number(p.priceUsd || p.usd || 0),
-    stock: p.stock === true || p.stock === 'true' || p.stock === 'TRUE' || p.stock === 'Con Stock',
-    active: p.active !== false && p.active !== 'false' && p.active !== 'FALSE'
-  })).filter(p => p.active !== false);
+  return products.map(p => {
+    const rawUsd =
+      p.priceUsd ||
+      p.usd ||
+      p.USD ||
+      p.price ||
+      p.Price ||
+      p.precio ||
+      p.Precio ||
+      p.precioUsd ||
+      p.precio_usd ||
+      p['Precio USD'] ||
+      p['precio USD'] ||
+      p['PRECIO USD'] ||
+      p['Precio'] ||
+      p['precio'] ||
+      p['USD'] ||
+      p['usd '] ||
+      p[' usd'] ||
+      0;
+
+    const priceUsd = Number(
+      String(rawUsd)
+        .replace('USD', '')
+        .replace('usd', '')
+        .replace('US$', '')
+        .replace('$', '')
+        .replace(/\./g, '')
+        .replace(',', '.')
+        .trim()
+    );
+
+    return {
+      ...p,
+      priceUsd: isNaN(priceUsd) ? 0 : priceUsd,
+      usd: isNaN(priceUsd) ? 0 : priceUsd,
+      price: isNaN(priceUsd) ? 0 : priceUsd,
+      stock: p.stock === true || p.stock === 'true' || p.stock === 'TRUE' || p.stock === 'Con Stock' || p.stock === 'con stock',
+      active: p.active !== false && p.active !== 'false' && p.active !== 'FALSE',
+      category: String(p.category || p.categoria || p.Categoria || '').toLowerCase().trim()
+    };
+  }).filter(p => p.active !== false);
 }
 
 function renderAllGrids(){
