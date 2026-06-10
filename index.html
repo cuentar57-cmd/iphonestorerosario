@@ -668,9 +668,9 @@ function normalizeProductsFromSheets(products){
       priceUsd: isNaN(priceUsd) ? 0 : priceUsd,
       usd: isNaN(priceUsd) ? 0 : priceUsd,
       price: isNaN(priceUsd) ? 0 : priceUsd,
-      storage: p.storage || p.Storage || p.memoria || p.Memoria || '',
-      image: p.image || p.Image || p.imagen || p.Imagen || '',
-      description: p.description || p.Descripcion || p.descripcion || '',
+      storage: String(p.storage || p.Storage || p.memoria || p.Memoria || ''),
+      image: String(p.image || p.Image || p.imagen || p.Imagen || ''),
+      description: String(p.description || p.Descripcion || p.descripcion || ''),
       stock,
       active
     };
@@ -749,7 +749,7 @@ function buildProductCard(p){
 function categoryIcon(cat){
   return cat==='gaming'?'🎮':cat==='tablet'?'💻':'📱';
 }
-function escQ(s){ return (s||'').replace(/'/g,"\\'"); }
+function escQ(s){ return (String(s||'')).replace(/'/g,"\\'"); }
 
 let selectedProduct = null;
 
