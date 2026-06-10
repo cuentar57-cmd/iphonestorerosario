@@ -1127,7 +1127,10 @@ function collectFormData(){
     id:document.getElementById('fId').value.trim()||name.toLowerCase().replace(/\s+/g,'_'),
     name, category:document.getElementById('fCategory').value,
     storage:document.getElementById('fStorage').value.trim(),
-    priceUsd, stock:document.getElementById('fStock').value==='true',
+    priceUsd, usd:parseFloat(document.getElementById('fPriceUsd').value)||0,
+    price:parseFloat(document.getElementById('fPriceUsd').value)||0,
+    stock:document.getElementById('fStock').value==='true',
+    active:true,
     image:document.getElementById('fImage').value.trim(),
     description:(document.getElementById('fDesc').value||'').trim(),
     specs, benefits,
@@ -1232,13 +1235,13 @@ async function testSheetsConn(){
   icon.innerHTML='<svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>';
   title.textContent='Probando...';msg.textContent='Conectando con Apps Script...';
   try{
-    const r=await fetch(`${url}?action=read&sheet=${encodeURIComponent(tab)}`);
+    const r=await fetch(`${url}?action=getProducts`);
     const d=await r.json();
     if(d.ok){
       icon.className='ct-icon ok';
       icon.innerHTML='<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
       title.textContent='Conexión exitosa';
-      msg.textContent=`${d.products?.length||0} productos encontrados en "${tab}"`;
+      msg.textContent=`${d.products?.length||0} productos encontrados`;
       showToast('Sheets conectado correctamente','success');
       setBadge('connected','Sheets: Conectado');
     } else throw new Error(d.error||'Respuesta inválida');
@@ -1255,7 +1258,7 @@ async function syncFromSheets(silent){
   if(!cfg.sheetsUrl){if(!silent) showToast('Configurá la URL de Apps Script primero','error');return;}
   setBadge('syncing','Sincronizando...');
   try{
-    const r=await fetch(`${cfg.sheetsUrl}?action=read&sheet=${encodeURIComponent(cfg.sheetsTab||'Hoja1')}`);
+    const r=await fetch(`${cfg.sheetsUrl}?action=getProducts`);
     const d=await r.json();
     if(d.ok&&d.products?.length){
       products=d.products;
@@ -1527,9 +1530,9 @@ async function syncFromSheets(silent=false){
   }
 }
 
-async function pushToSheets(){
+async function pushToSheets(silent=false){
   try{
-    showToast('Exportando productos a Google Sheets...', 'info');
+    if(!silent) showToast('Exportando productos a Google Sheets...', 'info');
 
     const productsForSheets = products.map(p => {
       const usdValue = Number(
@@ -1568,12 +1571,12 @@ async function pushToSheets(){
     }
 
     updateSheetsBadge(true);
-    showToast('Productos exportados correctamente a Sheets', 'success');
+    if(!silent) showToast('Productos exportados correctamente a Sheets', 'success');
 
   }catch(err){
     console.error('Error pushToSheets:', err);
     updateSheetsBadge(false);
-    showToast('Error al exportar a Sheets: ' + err.message, 'error');
+    if(!silent) showToast('Error al exportar a Sheets: ' + err.message, 'error');
   }
 }
 async function testSheetsConn(){
