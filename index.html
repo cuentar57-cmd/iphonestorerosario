@@ -50,7 +50,7 @@ nav ul a:hover::after{transform:scaleX(1)}
 /* ══ PAGES ══ */
 .page{display:none;min-height:100vh}
 .page.active{display:block;animation:fadeIn .35s ease}
-section{padding:90px 5%}
+section{padding:90px 5%;transition:background .35s}
 .sec-head{text-align:center;margin-bottom:52px}
 .sec-head h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,5vw,3.5rem);letter-spacing:2px}
 .sec-head h2 span{color:var(--violet)}
@@ -64,7 +64,7 @@ section{padding:90px 5%}
 .btn-ghost:hover{border-color:var(--violet);color:var(--violet)}
 
 /* ══ HERO ══ */
-.hero{min-height:100vh;display:flex;align-items:center;padding:110px 5% 60px;position:relative;overflow:hidden}
+.hero{min-height:100vh;display:flex;align-items:center;padding:110px 5% 60px;position:relative;overflow:hidden;background:var(--bg);transition:background .35s,color .35s}
 
 /* FIX: hero overlay por tema */
 [data-theme="dark"] .hero::before{
@@ -360,7 +360,7 @@ footer p{font-size:.78rem;color:var(--gray)}
 </section>
 
 <!-- SELLADOS -->
-<section id="sellados">
+<section id="sellados" style="background:var(--bg);">
   <div class="sec-head">
     <h2>iPhone <span>Sellados</span></h2>
     <div class="violet-bar"></div>
@@ -555,10 +555,7 @@ footer p{font-size:.78rem;color:var(--gray)}
 </a>
 
 <script>
-const PRODUCTS_KEY = 'isr_products_v3';
-const CFG_KEY      = 'isr_config_v3';
-const SHEETS_URL   = 'https://script.google.com/macros/s/AKfycbzGGmCePitQSQPoNT4_Wpu6mHkXAjaYI6_F2sRvYy6LbaAPpRg1mpeojO_4hO1vcPCRog/exec';
-const SHEETS_TAB   = 'Productos';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzGGmCePitQSQPoNT4_Wpu6mHkXAjaYI6_F2sRvYy6LbaAPpRg1mpeojO_4hO1vcPCRog/exec';
 
 let dolarBlue = 1450;
 async function fetchDolar(){
@@ -583,7 +580,6 @@ async function loadStoreProducts(){
 
     if(d.ok && Array.isArray(d.products)){
       storeProducts = normalizeProductsFromSheets(d.products);
-      console.log('PRODUCTOS NORMALIZADOS:', storeProducts);
       renderAllGrids();
       return;
     }
@@ -591,19 +587,8 @@ async function loadStoreProducts(){
     throw new Error(d.error || 'Google Sheets no devolvió productos');
 
   }catch(e){
-    console.error('Error cargando productos desde Google Sheets:', e);
-
-    try{
-      const raw = localStorage.getItem(PRODUCTS_KEY);
-      if(raw){
-        storeProducts = normalizeProductsFromSheets(JSON.parse(raw));
-      }else{
-        storeProducts = [];
-      }
-    }catch(err){
-      storeProducts = [];
-    }
-
+    console.error('[ISR] Error al cargar productos:', e);
+    storeProducts = [];
     renderAllGrids();
   }
 }
@@ -648,6 +633,8 @@ function normalizeProductsFromSheets(products){
     if(category === 'sellados') category = 'sellado';
     if(category === 'usados') category = 'usado';
     if(category === 'ipads' || category === 'ipad') category = 'tablet';
+    if(category === 'tablets') category = 'tablet';
+    if(category === 'juegos' || category === 'consolas') category = 'gaming';
 
     const rawStock = String(p.stock ?? p.Stock ?? p.estadoStock ?? '').toLowerCase().trim();
 
