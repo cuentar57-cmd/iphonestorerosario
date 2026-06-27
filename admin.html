@@ -341,6 +341,12 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
       <input class="login-input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
     <button class="login-btn" onclick="doLogin()">Ingresar al panel</button>
+    <div class="login-field" id="codeBox" style="display:none;margin-top:16px;">
+      <label class="login-label">Código recibido por email</label>
+      <input class="login-input" id="loginCode" type="text" placeholder="123456" maxlength="6" inputmode="numeric" autocomplete="one-time-code"
+        onkeydown="if(event.key==='Enter')verifyLoginCode()">
+      <button class="login-btn" onclick="verifyLoginCode()" style="margin-top:12px;">Verificar código</button>
+    </div>
    
   </div>
 </div>
@@ -786,34 +792,88 @@ function loadCfg(){
   catch(e){ return defaults; }
 }
 function saveCfg(c){ localStorage.setItem(CFG_KEY,JSON.stringify(c)); }
-function getCredentials(){ const c=loadCfg(); return {user:c.user||'admin',pass:c.pass||'isr2024'}; }
-
 // ══════════════════════════════════════════════════════════════
 //  AUTH
 // ══════════════════════════════════════════════════════════════
-function doLogin(){
+function getSessionToken(){
+  return sessionStorage.getItem(SESSION_KEY) || '';
+}
+
+async function doLogin(){
   const u=document.getElementById('loginUser').value.trim();
   const p=document.getElementById('loginPass').value;
-  const creds=getCredentials();
-  if(u===creds.user&&p===creds.pass){
-    sessionStorage.setItem(SESSION_KEY,'1');
-    document.getElementById('loginScreen').classList.remove('active');
-    enterApp();
-  } else {
-    const err=document.getElementById('loginError'); err.classList.add('show');
-    document.getElementById('loginUser').classList.add('error');
-    document.getElementById('loginPass').classList.add('error');
-    setTimeout(()=>{ err.classList.remove('show'); document.getElementById('loginUser').classList.remove('error'); document.getElementById('loginPass').classList.remove('error'); },3000);
+  const err=document.getElementById('loginError');
+
+  err.classList.remove('show');
+
+  if(!u || !p){
+    err.textContent='Completá usuario y contraseña';
+    err.classList.add('show');
+    return;
+  }
+
+  try{
+    const res=await fetch(API_URL,{ 
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({action:'loginStep1',user:u,pass:p})
+    });
+    const data=await res.json();
+
+    if(!data.ok) throw new Error(data.error || 'Usuario o contraseña incorrectos');
+
+    err.textContent='Código enviado al email. Revisá tu correo.';
+    err.classList.add('show');
+    document.getElementById('codeBox').style.display='block';
+    setTimeout(()=>document.getElementById('loginCode').focus(),100);
+
+  }catch(e){
+    err.textContent=e.message || 'No se pudo iniciar sesión';
+    err.classList.add('show');
   }
 }
-function doLogout(){ sessionStorage.removeItem(SESSION_KEY); location.reload(); }
-function saveCredentials(){
-  const u=document.getElementById('cfgUser').value.trim();
-  const p=document.getElementById('cfgPass').value;
-  if(!u){showToast('El usuario no puede estar vacío','error');return;}
-  const c=loadCfg(); if(u) c.user=u; if(p) c.pass=p; saveCfg(c);
-  showToast('Credenciales guardadas.','success'); document.getElementById('cfgPass').value='';
+
+async function verifyLoginCode(){
+  const code=document.getElementById('loginCode').value.trim();
+  const err=document.getElementById('loginError');
+
+  err.classList.remove('show');
+
+  if(!code){
+    err.textContent='Ingresá el código';
+    err.classList.add('show');
+    return;
+  }
+
+  try{
+    const res=await fetch(API_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({action:'verifyCode',code})
+    });
+    const data=await res.json();
+
+    if(!data.ok) throw new Error(data.error || 'Código incorrecto');
+
+    sessionStorage.setItem(SESSION_KEY,data.sessionToken);
+    document.getElementById('loginScreen').classList.remove('active');
+    enterApp();
+
+  }catch(e){
+    err.textContent=e.message || 'No se pudo verificar el código';
+    err.classList.add('show');
+  }
 }
+
+function doLogout(){
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+function saveCredentials(){
+  showToast('Las credenciales ahora se cambian desde Apps Script.','info');
+}
+
 function enterApp(){
   document.getElementById('app').style.display='flex';
   updateStats(); renderTable(); updateSheetsBadge();
@@ -1217,7 +1277,7 @@ async function testSheetsConn(){
   if(res) res.classList.add('show');
   if(icon) icon.className='ct-icon loading'; if(title) title.textContent='Probando...'; if(msg) msg.textContent='Conectando...';
   try{
-    const r=await fetch(SCRIPT_URL+'?action=getProducts'); const d=await r.json();
+    const r=await fetch(API_URL+'?action=getProducts'); const d=await r.json();
     if(!d.ok) throw new Error(d.error||'Respuesta inválida');
     if(icon) icon.className='ct-icon ok'; if(title) title.textContent='Conexión correcta'; if(msg) msg.textContent='Google Sheets respondió bien';
     updateSheetsBadge(true);
@@ -1230,7 +1290,7 @@ async function testSheetsConn(){
 async function syncFromSheets(silent=false){
   try{
     if(!silent) showToast('Importando desde Google Sheets...','info');
-    const res=await fetch(SCRIPT_URL+'?action=getProducts'); const data=await res.json();
+    const res=await fetch(API_URL+'?action=getProducts'); const data=await res.json();
     if(!data.ok) throw new Error(data.error||'No se pudieron importar productos');
     products=Array.isArray(data.products)?data.products:[];
     renderTable(); updateStats(); localStorage.setItem(STORAGE_KEY,JSON.stringify(products));
@@ -1246,7 +1306,7 @@ async function pushToSheets(silent=false){
   try{
     if(!silent) showToast('Exportando a Google Sheets...','info');
     const productsForSheets=products.map(p=>({...p,priceUsd:Number(p.priceUsd||p.usd||p.price||0),usd:Number(p.priceUsd||p.usd||p.price||0),price:Number(p.priceUsd||p.usd||p.price||0)}));
-    const res=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'saveProducts',products:productsForSheets})});
+    const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'saveProducts',sessionToken:getSessionToken(),products:productsForSheets})});
     const data=await res.json();
     if(!data.ok) throw new Error(data.error||'No se pudieron exportar productos');
     updateSheetsBadge(true);
@@ -1368,7 +1428,7 @@ if(window.innerWidth<=900) document.getElementById('menuBtn').style.display='fle
   API_URL=savedUrl;
   const c=loadCfg(); if(!c.sheetsUrl){c.sheetsUrl=savedUrl;saveCfg(c);}
   document.getElementById('setupScreen').classList.remove('active');
-  if(sessionStorage.getItem(SESSION_KEY)==='1'){ document.getElementById('loginScreen').classList.remove('active'); enterApp(); }
+  if(getSessionToken()){ document.getElementById('loginScreen').classList.remove('active'); enterApp(); }
   else { document.getElementById('loginScreen').classList.add('active'); setTimeout(()=>document.getElementById('loginUser').focus(),80); }
 })();
 
