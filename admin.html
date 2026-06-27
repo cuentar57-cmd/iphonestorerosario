@@ -579,7 +579,9 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGGmCePitQSQPoNT4_Wpu6mHkXAjaYI6_F2sRvYy6LbaAPpRg1mpeojO_4hO1vcPCRog/exec';
+// ADMIN V3 SEGURO - login servidor + código por email
+
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzUB0tDEif1IyyJUa0bb1x_fM_GKRU5XqaXpqxU0siZzBjprgmOvtQFblGQLSG4xc2gOw/exec';
 const API_URL_KEY = 'isr_api_url';
 const STORAGE_KEY = 'isr_products_v3';
 const CFG_KEY     = 'isr_config_v3';
@@ -821,7 +823,7 @@ async function doLogin(){
   }
 
   try{
-    const res=await fetch(API_URL || SCRIPT_URL,{
+    const res=await fetch(SCRIPT_URL,{
       method:'POST',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
       body:JSON.stringify({action:'loginStep1',user:u,pass:p})
@@ -853,7 +855,7 @@ async function verifyLoginCode(){
   }
 
   try{
-    const res=await fetch(API_URL || SCRIPT_URL,{
+    const res=await fetch(SCRIPT_URL,{
       method:'POST',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
       body:JSON.stringify({action:'verifyCode',code:code})
@@ -1422,13 +1424,22 @@ if(window.innerWidth<=900) document.getElementById('menuBtn').style.display='fle
 //  BOOT
 // ══════════════════════════════════════════════════════════════
 (function boot(){
-  const savedUrl=localStorage.getItem(API_URL_KEY);
-  if(!savedUrl){ document.getElementById('setupScreen').classList.add('active'); return; }
-  API_URL=savedUrl;
-  const c=loadCfg(); if(!c.sheetsUrl){c.sheetsUrl=savedUrl;saveCfg(c);}
+  // URL fija para evitar que el navegador use una implementación vieja guardada en localStorage.
+  API_URL = SCRIPT_URL;
+  localStorage.setItem(API_URL_KEY, SCRIPT_URL);
+  const c = loadCfg();
+  c.sheetsUrl = SCRIPT_URL;
+  saveCfg(c);
+
   document.getElementById('setupScreen').classList.remove('active');
-  if(sessionStorage.getItem(SESSION_KEY)==='1'){ document.getElementById('loginScreen').classList.remove('active'); enterApp(); }
-  else { document.getElementById('loginScreen').classList.add('active'); setTimeout(()=>document.getElementById('loginUser').focus(),80); }
+
+  if(getSessionToken()){
+    document.getElementById('loginScreen').classList.remove('active');
+    enterApp();
+  } else {
+    document.getElementById('loginScreen').classList.add('active');
+    setTimeout(()=>document.getElementById('loginUser').focus(),80);
+  }
 })();
 
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
