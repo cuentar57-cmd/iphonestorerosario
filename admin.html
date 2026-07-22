@@ -1155,7 +1155,7 @@ async function removeBackgroundAndUpload(){
     const removeBackground=module.removeBackground||module.default;
     if(typeof removeBackground!=='function') throw new Error('No se pudo iniciar el recortador');
     const transparentBlob=await removeBackground(selectedImageFile,{
-      publicPath:'https://unpkg.com/@imgly/background-removal-data@1.4.5/dist/',
+      publicPath:new URL('./bg-model/',window.location.href).href,
       model:'small',
       proxyToWorker:false,
       output:{format:'image/png',quality:1},
