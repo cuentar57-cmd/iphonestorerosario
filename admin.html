@@ -726,7 +726,7 @@ function getCredentials(){ const c=loadCfg(); return {user:c.user||'admin',pass:
 //  AUTH SEGURO: contraseña en Apps Script + código por email
 // ══════════════════════════════════════════════════════════════
 function getSessionToken(){
-  return sessionStorage.getItem(SESSION_KEY) || '';
+  return localStorage.getItem(SESSION_KEY) || '';
 }
 function clearLoginErrorSoon(){
   setTimeout(()=>{
@@ -789,7 +789,7 @@ async function verifyLoginCode(){
     const data=await res.json();
     if(!data.ok) throw new Error(data.error || data.message || 'Código incorrecto');
 
-    sessionStorage.setItem(SESSION_KEY,data.sessionToken);
+    localStorage.setItem(SESSION_KEY,data.sessionToken);
     document.getElementById('loginScreen').classList.remove('active');
     enterApp();
   }catch(e){
@@ -797,7 +797,7 @@ async function verifyLoginCode(){
     err.classList.add('show');
   }
 }
-function doLogout(){ sessionStorage.removeItem(SESSION_KEY); location.reload(); }
+function doLogout(){ localStorage.removeItem(SESSION_KEY); location.reload(); }
 function saveCredentials(){
   showToast('Ahora las credenciales se cambian desde Apps Script, no desde este panel.','info');
 }
