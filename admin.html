@@ -1151,7 +1151,7 @@ async function removeBackgroundAndUpload(){
   if(bar) bar.style.width='8%';
   if(status){status.className='upload-status show loading';status.textContent='Preparando el recorte con IA…';}
   try{
-    const module=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm');
+    const module=await import('https://esm.sh/@imgly/background-removal@1.4.5?bundle');
     const removeBackground=module.removeBackground||module.default;
     if(typeof removeBackground!=='function') throw new Error('No se pudo iniciar el recortador');
     const transparentBlob=await removeBackground(selectedImageFile,{
