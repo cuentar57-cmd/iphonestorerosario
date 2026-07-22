@@ -1046,7 +1046,7 @@ function buildFormHTML(p){
         </div>
         <div class="upload-progress" id="imgProgress"><div class="upload-progress-bar"></div></div>
         <div class="upload-status" id="imgStatus"></div>
-        <!-- Recorte local: @imgly/background-removal 1.7.0, licencia AGPL-3.0.
+        <!-- Recorte local: @imgly/background-removal 1.4.5, licencia AGPL-3.0.
              Código fuente: https://github.com/imgly/background-removal-js -->
         <div id="imageUploadActions" style="display:none;gap:8px;margin-top:10px;flex-wrap:wrap;">
           <button class="btn-primary" type="button" onclick="removeBackgroundAndUpload()" id="removeBgBtn" style="height:38px;font-size:.78rem;">
@@ -1151,12 +1151,13 @@ async function removeBackgroundAndUpload(){
   if(bar) bar.style.width='8%';
   if(status){status.className='upload-status show loading';status.textContent='Preparando el recorte con IA…';}
   try{
-    const module=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm');
+    const module=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm');
     const removeBackground=module.removeBackground||module.default;
     if(typeof removeBackground!=='function') throw new Error('No se pudo iniciar el recortador');
     const transparentBlob=await removeBackground(selectedImageFile,{
-      model:'isnet_quint8',
-      output:{format:'image/png',quality:1,type:'foreground'},
+      model:'small',
+      proxyToWorker:false,
+      output:{format:'image/png',quality:1},
       progress:(key,current,total)=>{
         const pct=total?Math.min(82,10+Math.round((current/total)*72)):35;
         if(bar) bar.style.width=pct+'%';
@@ -1178,8 +1179,11 @@ async function removeBackgroundAndUpload(){
     if(status) status.textContent='Fondo eliminado. Subiendo PNG a Cloudinary…';
     await uploadToCloudinary(transparentFile);
   }catch(err){
+    const detail=err?.message||err?.error?.message||err?.reason?.message||
+      (typeof err==='string'?err:'No se pudo cargar el modelo de IA');
+    console.error('Error al quitar el fondo:',err);
     if(bar) bar.style.width='0%';
-    if(status){status.className='upload-status show err';status.textContent='✗ No se pudo quitar el fondo: '+(err.message||'Error desconocido');}
+    if(status){status.className='upload-status show err';status.textContent='✗ No se pudo quitar el fondo: '+detail;}
     showToast('No se pudo quitar el fondo. Podés subir la imagen original.','error');
   }finally{
     setImageActionButtons(false);
