@@ -932,6 +932,9 @@ async function uploadToCloudinary(file){
       preview.src=data.secure_url; preview.classList.add('visible');
       urlReadout.classList.add('visible'); urlSpan.textContent=data.secure_url;
       const fi=document.getElementById('fImage'); if(fi) fi.value=data.secure_url;
+      const actions=document.getElementById('imageUploadActions'); if(actions) actions.style.display='none';
+      const note=document.getElementById('removeBgNote'); if(note) note.style.display='none';
+      selectedImageFile=null;
       return data.secure_url;
     } else throw new Error(data.error?.message||'Error desconocido');
   }catch(err){
@@ -1043,6 +1046,19 @@ function buildFormHTML(p){
         </div>
         <div class="upload-progress" id="imgProgress"><div class="upload-progress-bar"></div></div>
         <div class="upload-status" id="imgStatus"></div>
+        <!-- Recorte local: @imgly/background-removal 1.7.0, licencia AGPL-3.0.
+             Código fuente: https://github.com/imgly/background-removal-js -->
+        <div id="imageUploadActions" style="display:none;gap:8px;margin-top:10px;flex-wrap:wrap;">
+          <button class="btn-primary" type="button" onclick="removeBackgroundAndUpload()" id="removeBgBtn" style="height:38px;font-size:.78rem;">
+            ✨ Quitar fondo gratis y subir
+          </button>
+          <button class="btn-ghost" type="button" onclick="uploadSelectedImage()" id="normalUploadBtn" style="height:38px;font-size:.78rem;">
+            Subir sin quitar fondo
+          </button>
+        </div>
+        <p id="removeBgNote" style="display:none;font-size:.66rem;color:var(--gray);margin-top:7px;line-height:1.4;">
+          El recorte se procesa en este dispositivo. La primera vez puede tardar mientras se carga el modelo de IA.
+        </p>
         <div class="url-readout" id="imgUrlReadout">
           <span id="imgUrlSpan">${p.image||''}</span>
           <button onclick="navigator.clipboard.writeText(document.getElementById('imgUrlSpan').textContent).then(()=>showToast('URL copiada','success'))">
@@ -1084,12 +1100,90 @@ function buildFormHTML(p){
   `;
 }
 
-function handleFileSelect(e){ const f=e.target.files[0]; if(f) uploadToCloudinary(f); }
+let selectedImageFile=null;
+
+function prepareSelectedImage(file){
+  if(!file||!file.type.startsWith('image/')){showToast('Seleccioná una imagen válida','error');return;}
+  selectedImageFile=file;
+  const preview=document.getElementById('imgPreview');
+  if(preview){
+    if(preview.dataset.localPreview) URL.revokeObjectURL(preview.dataset.localPreview);
+    const localUrl=URL.createObjectURL(file);
+    preview.src=localUrl;
+    preview.dataset.localPreview=localUrl;
+    preview.classList.add('visible');
+  }
+  const actions=document.getElementById('imageUploadActions');
+  const note=document.getElementById('removeBgNote');
+  if(actions) actions.style.display='flex';
+  if(note) note.style.display='block';
+  const status=document.getElementById('imgStatus');
+  if(status){status.className='upload-status show';status.textContent='Imagen lista. Elegí cómo querés subirla.';}
+}
+
+function handleFileSelect(e){ prepareSelectedImage(e.target.files[0]); }
 function handleDrop(e){
   e.preventDefault();
   document.getElementById('imgUploaderArea').classList.remove('drag-over');
   const f=e.dataTransfer.files[0];
-  if(f&&f.type.startsWith('image/')) uploadToCloudinary(f);
+  prepareSelectedImage(f);
+}
+
+async function uploadSelectedImage(){
+  if(!selectedImageFile){showToast('Primero seleccioná una imagen','error');return;}
+  await uploadToCloudinary(selectedImageFile);
+}
+
+function setImageActionButtons(disabled){
+  const removeBtn=document.getElementById('removeBgBtn');
+  const normalBtn=document.getElementById('normalUploadBtn');
+  if(removeBtn) removeBtn.disabled=disabled;
+  if(normalBtn) normalBtn.disabled=disabled;
+}
+
+async function removeBackgroundAndUpload(){
+  if(!selectedImageFile){showToast('Primero seleccioná una imagen','error');return;}
+  const status=document.getElementById('imgStatus');
+  const progress=document.getElementById('imgProgress');
+  const bar=progress?.querySelector('.upload-progress-bar');
+  setImageActionButtons(true);
+  if(progress) progress.classList.add('show');
+  if(bar) bar.style.width='8%';
+  if(status){status.className='upload-status show loading';status.textContent='Preparando el recorte con IA…';}
+  try{
+    const module=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm');
+    const removeBackground=module.removeBackground||module.default;
+    if(typeof removeBackground!=='function') throw new Error('No se pudo iniciar el recortador');
+    const transparentBlob=await removeBackground(selectedImageFile,{
+      model:'isnet_quint8',
+      output:{format:'image/png',quality:1,type:'foreground'},
+      progress:(key,current,total)=>{
+        const pct=total?Math.min(82,10+Math.round((current/total)*72)):35;
+        if(bar) bar.style.width=pct+'%';
+        if(status) status.textContent=String(key).includes('fetch')?'Descargando modelo de IA…':'Quitando el fondo…';
+      }
+    });
+    const baseName=(selectedImageFile.name||'producto').replace(/\.[^.]+$/,'');
+    const transparentFile=new File([transparentBlob],baseName+'-sin-fondo.png',{type:'image/png'});
+    selectedImageFile=transparentFile;
+    const preview=document.getElementById('imgPreview');
+    if(preview){
+      if(preview.dataset.localPreview) URL.revokeObjectURL(preview.dataset.localPreview);
+      const localUrl=URL.createObjectURL(transparentBlob);
+      preview.src=localUrl;
+      preview.dataset.localPreview=localUrl;
+      preview.classList.add('visible');
+    }
+    if(bar) bar.style.width='88%';
+    if(status) status.textContent='Fondo eliminado. Subiendo PNG a Cloudinary…';
+    await uploadToCloudinary(transparentFile);
+  }catch(err){
+    if(bar) bar.style.width='0%';
+    if(status){status.className='upload-status show err';status.textContent='✗ No se pudo quitar el fondo: '+(err.message||'Error desconocido');}
+    showToast('No se pudo quitar el fondo. Podés subir la imagen original.','error');
+  }finally{
+    setImageActionButtons(false);
+  }
 }
 function updateARS(){
   const usd=parseFloat(document.getElementById('fPriceUsd')?.value)||0;
