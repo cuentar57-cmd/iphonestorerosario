@@ -1,0 +1,55 @@
+name: Instalar modelo de recorte
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/install-bg-model.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  instalar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Descargar archivos del modelo
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/imgly-data bg-model
+          curl -fsSL https://registry.npmjs.org/@imgly/background-removal-data/-/background-removal-data-1.4.5.tgz \
+            | tar -xzf - -C /tmp/imgly-data
+          cp /tmp/imgly-data/package/dist/resources.json bg-model/resources.json
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const source = '/tmp/imgly-data/package/dist';
+          const resources = JSON.parse(fs.readFileSync(path.join(source, 'resources.json'), 'utf8'));
+          const needed = [
+            '/models/small',
+            '/onnxruntime-web/ort-wasm.wasm',
+            '/onnxruntime-web/ort-wasm-threaded.wasm',
+            '/onnxruntime-web/ort-wasm-simd.wasm',
+            '/onnxruntime-web/ort-wasm-simd-threaded.wasm'
+          ];
+          for (const key of needed) {
+            for (const hash of resources[key] || []) {
+              fs.copyFileSync(path.join(source, hash), path.join('bg-model', hash));
+            }
+          }
+          NODE
+
+      - name: Guardar el modelo en el repositorio
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bg-model
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "Instalar modelo gratuito de recorte"
+          git push
