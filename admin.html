@@ -1151,7 +1151,7 @@ async function removeBackgroundAndUpload(){
   if(bar) bar.style.width='8%';
   if(status){status.className='upload-status show loading';status.textContent='Preparando el recorte con IA…';}
   try{
-    const module=await import('https://esm.sh/@imgly/background-removal@1.4.5?bundle');
+    const module=await import('https://esm.sh/@imgly/background-removal@1.4.5/es2022/background-removal.bundle.mjs?panel=2');
     const removeBackground=module.removeBackground||module.default;
     if(typeof removeBackground!=='function') throw new Error('No se pudo iniciar el recortador');
     const transparentBlob=await removeBackground(selectedImageFile,{
@@ -1181,7 +1181,8 @@ async function removeBackgroundAndUpload(){
     await uploadToCloudinary(transparentFile);
   }catch(err){
     const detail=err?.message||err?.error?.message||err?.reason?.message||
-      (typeof err==='string'?err:'No se pudo cargar el modelo de IA');
+      (err?.status?('Error HTTP '+err.status):'')||
+      (typeof err==='string'?err:'No se pudo procesar esta imagen. Probá con JPG o PNG');
     console.error('Error al quitar el fondo:',err);
     if(bar) bar.style.width='0%';
     if(status){status.className='upload-status show err';status.textContent='✗ No se pudo quitar el fondo: '+detail;}
