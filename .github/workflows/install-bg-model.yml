@@ -36,8 +36,8 @@ jobs:
             '/onnxruntime-web/ort-wasm-simd-threaded.wasm'
           ];
           for (const key of needed) {
-            for (const hash of resources[key] || []) {
-              fs.copyFileSync(path.join(source, hash), path.join('bg-model', hash));
+            for (const chunk of resources[key]?.chunks || []) {
+              fs.copyFileSync(path.join(source, chunk.hash), path.join('bg-model', chunk.hash));
             }
           }
           NODE
