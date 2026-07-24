@@ -1287,7 +1287,7 @@ function saveProduct(){
   const data=collectFormData();
   if(!data.name){showToast('El nombre es obligatorio','error');return;}
   if(editingId){ const i=products.findIndex(p=>p.id===editingId); if(i>=0) products[i]=data; }
-  else { if(products.find(p=>p.id===data.id)) data.id=data.id+'_'+Date.now(); products.push(data); }
+  else { if(products.find(p=>p.id===data.id)) data.id=data.id+'_'+Date.now(); products.unshift(data); }
   saveProducts(products); renderTable(); closeModal();
   showToast(editingId?'Producto actualizado':'Producto agregado','success'); autoPush();
 }
@@ -1304,7 +1304,7 @@ function saveProductInline(){
   const data=collectFormData();
   if(!data.name){showToast('El nombre es obligatorio','error');return;}
   if(products.find(p=>p.id===data.id)) data.id=data.id+'_'+Date.now();
-  products.push(data); saveProducts(products); renderTable();
+  products.unshift(data); saveProducts(products); renderTable();
   showToast('Producto agregado','success'); autoPush(); showView('products');
 }
 
