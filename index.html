@@ -886,9 +886,9 @@ function sortIphoneProducts(items){
   };
   return [...items].sort((a,b)=>{
     const aa=getOrder(a),bb=getOrder(b);
-    if(aa.model!==bb.model) return bb.model-aa.model;
-    if(aa.variant!==bb.variant) return bb.variant-aa.variant;
-    if(aa.storage!==bb.storage) return bb.storage-aa.storage;
+    if(aa.model!==bb.model) return aa.model-bb.model;
+    if(aa.variant!==bb.variant) return aa.variant-bb.variant;
+    if(aa.storage!==bb.storage) return aa.storage-bb.storage;
     return aa.name.localeCompare(bb.name,'es',{numeric:true});
   });
 }
