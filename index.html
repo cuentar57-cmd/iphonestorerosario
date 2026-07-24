@@ -870,16 +870,39 @@ function normalizeProductsFromSheets(products){
   }).filter(p => p.active !== false && p.name && p.category);
 }
 
+function sortIphoneProducts(items){
+  const getOrder=p=>{
+    const name=String(p.name||'');
+    const modelMatch=name.match(/iphone\s*(\d+)/i);
+    const model=modelMatch?Number(modelMatch[1]):0;
+    let variant=0;
+    if(/pro\s*max/i.test(name)) variant=4;
+    else if(/\bpro\b/i.test(name)) variant=3;
+    else if(/\bplus\b/i.test(name)) variant=2;
+    else if(/\bmini\b/i.test(name)) variant=1;
+    const storageMatch=String(p.storage||'').match(/\d+/);
+    const storage=storageMatch?Number(storageMatch[0]):0;
+    return {model,variant,storage,name};
+  };
+  return [...items].sort((a,b)=>{
+    const aa=getOrder(a),bb=getOrder(b);
+    if(aa.model!==bb.model) return bb.model-aa.model;
+    if(aa.variant!==bb.variant) return bb.variant-aa.variant;
+    if(aa.storage!==bb.storage) return bb.storage-aa.storage;
+    return aa.name.localeCompare(bb.name,'es',{numeric:true});
+  });
+}
+
 function renderAllGrids(){
-  const sellados = storeProducts.filter(p=>p.category==='sellado'&&p.stock!==false);
-  const usados   = storeProducts.filter(p=>p.category==='usado');
+  const sellados = sortIphoneProducts(storeProducts.filter(p=>p.category==='sellado'&&p.stock!==false));
+  const usados   = sortIphoneProducts(storeProducts.filter(p=>p.category==='usado'));
   const gaming   = storeProducts.filter(p=>p.category==='gaming'&&p.stock!==false);
   const tablets  = storeProducts.filter(p=>p.category==='tablet'&&p.stock!==false);
   renderGrid('gridSellados', sellados);
   renderUsadosGrid(usados);
   renderGrid('gridGaming', gaming);
   renderGrid('gridTablets', tablets);
-  const newest = storeProducts[storeProducts.length-1];
+  const newest = sellados[0] || usados[0] || storeProducts[0];
   if(newest) document.getElementById('heroNewest').textContent = newest.name + ' ' + (newest.storage||'');
 }
 
@@ -907,7 +930,7 @@ function renderUsadosGrid(items){
 function filterUsados(family, btn){
   document.querySelectorAll('#usadoFilters button').forEach(b=>b.classList.remove('active-filter'));
   btn.classList.add('active-filter');
-  const usados = storeProducts.filter(p=>p.category==='usado');
+  const usados = sortIphoneProducts(storeProducts.filter(p=>p.category==='usado'));
   const filtered = family==='Todos' ? usados : usados.filter(p=>p.name.includes(family));
   renderGrid('gridUsados', filtered);
 }
