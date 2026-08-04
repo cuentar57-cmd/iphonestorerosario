@@ -1118,7 +1118,10 @@ function updateARS(){
 
 // ★ MODIFICADO: ahora también dispara auto-imágenes
 function handleNameChange(name){
-  document.getElementById('fId').value=name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+  // El ID identifica al producto en Google Sheets: no debe cambiar durante una edición.
+  if(!editingId){
+    document.getElementById('fId').value=name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+  }
   triggerAutoImage(name);
 }
 
@@ -1181,10 +1184,19 @@ function closeModalOutside(e){ if(e.target===document.getElementById('modalOverl
 function saveProduct(){
   const data=collectFormData();
   if(!data.name){showToast('El nombre es obligatorio','error');return;}
-  if(editingId){ const i=products.findIndex(p=>p.id===editingId); if(i>=0) products[i]=data; }
-  else { if(products.find(p=>p.id===data.id)) data.id=data.id+'_'+Date.now(); products.unshift(data); }
+  const wasEditing=Boolean(editingId);
+  if(wasEditing){
+    const i=products.findIndex(p=>String(p.id)===String(editingId));
+    if(i<0){showToast('No se encontró el producto original. Recargá el panel.','error');return;}
+    // Conserva la identidad y cualquier dato que el formulario no edite.
+    data.id=products[i].id;
+    products[i]={...products[i],...data,id:products[i].id};
+  } else {
+    if(products.find(p=>String(p.id)===String(data.id))) data.id=data.id+'_'+Date.now();
+    products.unshift(data);
+  }
   saveProducts(products); renderTable(); closeModal();
-  showToast(editingId?'Producto actualizado':'Producto agregado','success'); autoPush();
+  showToast(wasEditing?'Producto actualizado':'Producto agregado','success'); autoPush();
 }
 function editProduct(id){ openModal(id); }
 function deleteProduct(id){
