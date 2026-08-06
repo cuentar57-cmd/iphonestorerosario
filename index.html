@@ -515,6 +515,7 @@ footer p{font-size:.78rem;color:var(--gray)}
       <li><a href="#usados" onclick="showPage('storePage')">Usados</a></li>
       <li><a href="#gaming" onclick="showPage('storePage')">Gaming</a></li>
       <li><a href="#ipads" onclick="showPage('storePage')">iPads</a></li>
+      <li><a href="#macs" onclick="showPage('storePage')">Mac</a></li>
       <li><a href="#accesorios" onclick="showPage('storePage')">Accesorios</a></li>
       <li><a href="#clientes" onclick="showPage('storePage')">Clientes</a></li>
       <li><a href="#ubicacion" onclick="showPage('storePage')">Ubicación</a></li>
@@ -611,7 +612,20 @@ footer p{font-size:.78rem;color:var(--gray)}
   </div>
 </section>
 
-<section id="accesorios" style="background:var(--bg2);">
+<!-- MACS -->
+<section id="macs" style="background:var(--bg2);">
+  <div class="sec-head">
+    <div class="hero-tag" style="margin:auto auto 20px;">🖥️ MacBook · iMac · Mac mini</div>
+    <h2><span>Mac</span> Store</h2>
+    <div class="violet-bar"></div>
+    <p>Potencia Apple para trabajar, crear y estudiar</p>
+  </div>
+  <div class="products-grid" id="gridMacs">
+    <div class="no-products">Cargando productos...</div>
+  </div>
+</section>
+
+<section id="accesorios" style="background:var(--bg);">
   <div class="sec-head"><h2>Acce<span>sorios</span></h2><div class="violet-bar"></div><p>Todo lo que necesitás para tu dispositivo</p></div>
   <div class="acc-grid">
     <div class="acc-card"><div class="ico">🎧</div><h3>AirPods Pro</h3><p>Toca para ver detalle</p></div>
@@ -847,6 +861,7 @@ function normalizeProductsFromSheets(products){
     if(category === 'usados') category = 'usado';
     if(category === 'ipads' || category === 'ipad') category = 'tablet';
     if(category === 'tablets') category = 'tablet';
+    if(category === 'macs' || category === 'macbook' || category === 'macbooks' || category === 'imac' || category === 'mac mini') category = 'mac';
     if(category === 'juegos' || category === 'consolas') category = 'gaming';
 
     const rawStock = String(p.stock ?? p.Stock ?? p.estadoStock ?? '').toLowerCase().trim();
@@ -918,10 +933,12 @@ function renderAllGrids(){
   const usados   = sortIphoneProducts(storeProducts.filter(p=>p.category==='usado'));
   const gaming   = storeProducts.filter(p=>p.category==='gaming'&&p.stock!==false);
   const tablets  = storeProducts.filter(p=>p.category==='tablet'&&p.stock!==false);
+  const macs      = storeProducts.filter(p=>p.category==='mac'&&p.stock!==false);
   renderGrid('gridSellados', sellados);
   renderUsadosGrid(usados);
   renderGrid('gridGaming', gaming);
   renderGrid('gridTablets', tablets);
+  renderGrid('gridMacs', macs);
   const newest = sellados[0] || usados[0] || storeProducts[0];
   if(newest) document.getElementById('heroNewest').textContent = newest.name + ' ' + (newest.storage||'');
 }
