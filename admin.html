@@ -381,7 +381,10 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2"/></svg>Cambiar tema
     </button>
     <button class="sf-btn" onclick="syncFromSheets()">
-      <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>Sincronizar Sheets
+      <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>Importar desde Sheets
+    </button>
+    <button class="sf-btn" onclick="pushToSheets(false)">
+      <svg viewBox="0 0 24 24"><path d="M12 3v12"/><polyline points="7 8 12 3 17 8"/><path d="M5 21h14"/></svg>Guardar en Sheets
     </button>
     <button class="sf-btn logout" onclick="doLogout()">
       <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Cerrar sesión
@@ -1275,7 +1278,7 @@ async function pushToSheets(silent=false){
   }
 }
 
-function autoPush(){ const cfg=loadCfg(); if(cfg.sheetsUrl) pushToSheets(true); }
+function autoPush(){ pushToSheets(true); }
 function updateSheetsBadge(connected){
   const b=document.getElementById('sheetsBadge'),t=document.getElementById('sheetsBadgeText');
   if(!b||!t) return;
