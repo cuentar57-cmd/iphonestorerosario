@@ -992,7 +992,7 @@ function buildProductCard(p){
 
   const badge = p.stock===false
     ? `<span class="prod-badge sin-stock">Sin Stock</span>`
-    : `<span class="prod-badge">${p.category==='sellado'?'Nuevo':p.category==='usado'?'Usado':p.category==='gaming'?'Gaming':'iPad'}</span>`;
+    : `<span class="prod-badge">${p.category==='sellado'?'Nuevo':p.category==='usado'?'Usado':p.category==='gaming'?'Gaming':p.category==='mac'?'Mac':'iPad'}</span>`;
 
   return `
     <div class="prod-card" onclick="openDetail('${p.id}')">
