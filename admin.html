@@ -135,6 +135,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
 .badge-gaming{background:rgba(0,188,212,.12);color:#00bcd4;}
 .badge-tablet{background:rgba(98,0,255,.12);color:var(--violet);}
 .badge-mac{background:rgba(0,122,255,.12);color:#007aff;}
+.badge-accesorio{background:rgba(255,159,10,.13);color:#d97706;}
 .price-cell{font-weight:700;color:var(--violet);font-size:.9rem;}
 .usd-cell{font-size:.72rem;color:var(--gray);}
 .actions{display:flex;gap:5px;align-items:center;}
@@ -236,6 +237,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
 .sidebar-overlay{display:none;position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);}
 .sidebar-overlay.show{display:block;}
 
+
 /* ── AUTO-IMAGE NUEVO ── */
 .img-auto-section{
   background:rgba(98,0,255,.04);border:1px solid rgba(98,0,255,.18);
@@ -276,6 +278,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
 .search-img-btn svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;}
 .search-img-btn.loading{opacity:.6;pointer-events:none;}
 
+
 @media(max-width:900px){
   .sidebar{transform:translateX(-100%);z-index:100;}
   .sidebar.open{transform:translateX(0);box-shadow:8px 0 40px rgba(0,0,0,.5);}
@@ -305,7 +308,9 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
 </head>
 <body>
 
+
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
 
 <div class="screen active" id="setupScreen">
   <div class="setup-box-init">
@@ -320,6 +325,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
     <button class="setup-init-btn" onclick="doSetup()">Conectar con Google Sheets →</button>
   </div>
 </div>
+
 
 <div class="screen" id="loginScreen">
   <div class="login-box">
@@ -351,6 +357,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
    
   </div>
 </div>
+
 
 <div id="app">
 <aside class="sidebar" id="sidebar">
@@ -393,6 +400,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
   </div>
 </aside>
 
+
 <div class="main">
   <header class="topbar">
     <div style="display:flex;align-items:center;gap:10px;">
@@ -411,6 +419,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
     </div>
   </header>
 
+
   <div class="content">
     <div class="page-view active" id="view-products">
       <div class="stats-grid" id="statsGrid"></div>
@@ -427,6 +436,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
             <option value="gaming">Gaming</option>
             <option value="tablet">iPad / Tablet</option>
             <option value="mac">Mac</option>
+            <option value="accesorio">Accesorios</option>
           </select>
           <select class="filter-select" id="stockFilter" onchange="renderTable()">
             <option value="">Todo el stock</option>
@@ -459,6 +469,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
       </div>
     </div>
 
+
     <div class="page-view" id="view-addProduct">
       <p style="color:var(--gray);margin-bottom:18px;font-size:.88rem;">Completá el formulario para agregar un producto al catálogo.</p>
       <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;">
@@ -475,6 +486,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
       </div>
     </div>
 
+
     <div class="page-view" id="view-settings">
       <div class="settings-section">
         <h3><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Credenciales de acceso</h3>
@@ -490,6 +502,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
 </div>
 </div>
 
+
 <div class="overlay" id="modalOverlay" onclick="closeModalOutside(event)">
   <div class="modal">
     <div class="modal-head">
@@ -504,13 +517,16 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
   </div>
 </div>
 
+
 <div class="toast" id="toast">
   <div class="toast-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
   <span id="toastMsg">Guardado</span>
 </div>
 
+
 <script>
 // ADMIN V3 SEGURO - login servidor + código por email
+
 
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGGmCePitQSQPoNT4_Wpu6mHkXAjaYI6_F2sRvYy6LbaAPpRg1mpeojO_4hO1vcPCRog/exec';
 const API_URL_KEY = 'isr_api_url';
@@ -518,6 +534,7 @@ const STORAGE_KEY = 'isr_products_v3';
 const CFG_KEY     = 'isr_config_v3';
 const SESSION_KEY = 'isr_session';
 let API_URL = SCRIPT_URL;
+
 
 // ══════════════════════════════════════════════════════════════
 //  IMÁGENES AUTOMÁTICAS POR MODELO
@@ -612,6 +629,7 @@ const MODEL_IMAGES = {
   ],
 };
 
+
 // Colores por modelo para etiquetas
 const MODEL_COLORS = {
   'iPhone 11': ['Negro','Blanco','Rojo','Amarillo'],
@@ -629,10 +647,12 @@ const MODEL_COLORS = {
   'iPhone 16 Pro Max': ['Titanio Negro','Titanio Natural','Titanio Blanco','Titanio Desierto'],
 };
 
+
 // ══════════════════════════════════════════════════════════════
 //  AUTO-IMAGEN: cargar thumbnails según modelo
 // ══════════════════════════════════════════════════════════════
 let autoImgTimeout = null;
+
 
 function triggerAutoImage(name) {
   clearTimeout(autoImgTimeout);
@@ -640,29 +660,36 @@ function triggerAutoImage(name) {
   autoImgTimeout = setTimeout(() => loadAutoImages(name), 600);
 }
 
+
 function clearAutoImagePanel() {
   const panel = document.getElementById('autoImgPanel');
   if (panel) { panel.innerHTML = ''; panel.style.display = 'none'; }
 }
 
+
 function loadAutoImages(name) {
   const panel = document.getElementById('autoImgPanel');
   if (!panel) return;
 
+
   const images = MODEL_IMAGES[name];
   const colors = MODEL_COLORS[name] || [];
+
 
   if (!images || !images.length) {
     panel.style.display = 'none';
     return;
   }
 
+
   panel.style.display = 'block';
   const status = document.getElementById('autoImgStatus');
   if (status) { status.textContent = `${images.length} colores disponibles`; status.className = 'img-auto-status found'; }
 
+
   const thumbs = document.getElementById('autoImgThumbs');
   if (!thumbs) return;
+
 
   thumbs.innerHTML = images.map((url, i) => `
     <div class="img-thumb-opt" id="thumb_${i}" onclick="selectAutoImage('${url}', ${i})" title="${colors[i] || 'Color ' + (i+1)}">
@@ -673,31 +700,38 @@ function loadAutoImages(name) {
   `).join('');
 }
 
+
 function selectAutoImage(url, idx) {
   // Marcar seleccionado
   document.querySelectorAll('.img-thumb-opt').forEach(t => t.classList.remove('selected'));
   const thumb = document.getElementById('thumb_' + idx);
   if (thumb) thumb.classList.add('selected');
 
+
   // Setear URL en el campo
   const fImage = document.getElementById('fImage');
   if (fImage) fImage.value = url;
 
+
   // Mostrar preview
   const preview = document.getElementById('imgPreview');
   if (preview) { preview.src = url; preview.classList.add('visible'); }
+
 
   // Mostrar readout
   const readout = document.getElementById('imgUrlReadout');
   const span = document.getElementById('imgUrlSpan');
   if (readout && span) { span.textContent = url; readout.classList.add('visible'); }
 
+
   // Status
   const status = document.getElementById('imgStatus');
   if (status) { status.className = 'upload-status show ok'; status.textContent = '✓ Imagen de la tienda Apple cargada'; }
 
+
   showToast('Imagen cargada automáticamente', 'success');
 }
+
 
 // ══════════════════════════════════════════════════════════════
 //  SETUP
@@ -716,6 +750,7 @@ function resetApiUrl(){
   showToast('URL fija restaurada correctamente','success');
 }
 
+
 // ══════════════════════════════════════════════════════════════
 //  CONFIG
 // ══════════════════════════════════════════════════════════════
@@ -726,6 +761,7 @@ function loadCfg(){
 }
 function saveCfg(c){ localStorage.setItem(CFG_KEY,JSON.stringify(c)); }
 function getCredentials(){ const c=loadCfg(); return {user:c.user||'admin',pass:c.pass||'isr2024'}; }
+
 
 // ══════════════════════════════════════════════════════════════
 //  AUTH SEGURO: contraseña en Apps Script + código por email
@@ -747,11 +783,13 @@ async function doLogin(){
   const err=document.getElementById('loginError');
   err.classList.remove('show');
 
+
   if(!u || !p){
     err.textContent='Completá usuario y contraseña';
     err.classList.add('show');
     return;
   }
+
 
   try{
     const res=await fetch(SCRIPT_URL,{
@@ -761,6 +799,7 @@ async function doLogin(){
     });
     const data=await res.json();
     if(!data.ok) throw new Error(data.error || data.message || 'Usuario o contraseña incorrectos');
+
 
     err.textContent='Código enviado al email. Revisá tu correo.';
     err.classList.add('show');
@@ -779,11 +818,13 @@ async function verifyLoginCode(){
   const err=document.getElementById('loginError');
   err.classList.remove('show');
 
+
   if(!code){
     err.textContent='Ingresá el código';
     err.classList.add('show');
     return;
   }
+
 
   try{
     const res=await fetch(SCRIPT_URL,{
@@ -793,6 +834,7 @@ async function verifyLoginCode(){
     });
     const data=await res.json();
     if(!data.ok) throw new Error(data.error || data.message || 'Código incorrecto');
+
 
     localStorage.setItem(SESSION_KEY,data.sessionToken);
     document.getElementById('loginScreen').classList.remove('active');
@@ -811,6 +853,7 @@ function enterApp(){
   updateStats(); renderTable(); updateSheetsBadge();
   const cfg=loadCfg(); if(cfg.sheetsUrl) syncFromSheets(true);
 }
+
 
 // ══════════════════════════════════════════════════════════════
 //  MODEL SPECS
@@ -840,6 +883,7 @@ const MODEL_SPECS = {
   'iPad Pro M5':{chip:'Apple M5',pantalla:'11" / 13" Ultra Retina XDR OLED 120Hz',camara:'12 MP + LiDAR',faceID:'Sí',bateria:'Hasta 10 hs',usb:'USB-C (Thunderbolt 4)'},
 };
 
+
 // ══════════════════════════════════════════════════════════════
 //  DATA
 // ══════════════════════════════════════════════════════════════
@@ -851,6 +895,7 @@ async function fetchDolar(){ try{ const r=await fetch('https://dolarapi.com/v1/d
 fetchDolar();
 function arsPrice(usd){ return Math.round(usd*currentDolar); }
 function moneyARS(n){ return '$'+Math.round(n).toLocaleString('es-AR'); }
+
 
 // ══════════════════════════════════════════════════════════════
 //  STATS
@@ -865,6 +910,7 @@ function updateStats(){
     <div class="stat-card" style="animation-delay:.24s"><div class="stat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="stat-value" style="color:${sinStock>0?'var(--amber)':'var(--green)'}">${sinStock}</div><div class="stat-label">Sin Stock</div></div>
   `;
 }
+
 
 // ══════════════════════════════════════════════════════════════
 //  TABLE
@@ -884,8 +930,8 @@ function renderTable(){
   const empty=document.getElementById('emptyState');
   if(!filtered.length){tbody.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
-  const cL={sellado:'Sellado',usado:'Usado',gaming:'Gaming',tablet:'iPad/Tablet',mac:'Mac'};
-  const cC={sellado:'badge-new',usado:'badge-used',gaming:'badge-gaming',tablet:'badge-tablet',mac:'badge-mac'};
+  const cL={sellado:'Sellado',usado:'Usado',gaming:'Gaming',tablet:'iPad/Tablet',mac:'Mac',accesorio:'Accesorio'};
+  const cC={sellado:'badge-new',usado:'badge-used',gaming:'badge-gaming',tablet:'badge-tablet',mac:'badge-mac',accesorio:'badge-accesorio'};
   tbody.innerHTML=filtered.map((p,i)=>`
     <tr style="animation-delay:${i*.04}s">
       <td>
@@ -912,6 +958,7 @@ function renderTable(){
   `).join('');
 }
 function sortBy(f){ if(sortField===f) sortAsc=!sortAsc; else{sortField=f;sortAsc=true;} renderTable(); }
+
 
 // ══════════════════════════════════════════════════════════════
 //  CLOUDINARY UPLOAD
@@ -946,6 +993,7 @@ async function uploadToCloudinary(file){
   }
 }
 
+
 // ══════════════════════════════════════════════════════════════
 //  FORM
 // ══════════════════════════════════════════════════════════════
@@ -954,6 +1002,7 @@ function buildExtraSpecs(specs){
   const fixed=['Pantalla','Chip','Camara','Cámara','Bateria','Batería','FaceID','Puerto','USB'];
   return Object.entries(specs).filter(([k])=>!fixed.includes(k)).map(([k,v])=>`${k}:${v}`).join('\n');
 }
+
 
 function buildFormHTML(p){
   p=p||{};
@@ -982,6 +1031,7 @@ function buildFormHTML(p){
           <option value="gaming" ${p.category==='gaming'?'selected':''}>Gaming</option>
           <option value="tablet" ${p.category==='tablet'?'selected':''}>iPad / Tablet</option>
           <option value="mac" ${p.category==='mac'?'selected':''}>Mac</option>
+          <option value="accesorio" ${p.category==='accesorio'?'selected':''}>Accesorios</option>
         </select>
       </div>
       <div class="form-col">
@@ -1090,6 +1140,7 @@ function buildFormHTML(p){
   `;
 }
 
+
 async function prepareSelectedImage(file){
   if(!file||!file.type.startsWith('image/')){
     showToast('Seleccioná una imagen válida','error');
@@ -1106,9 +1157,11 @@ async function prepareSelectedImage(file){
   await uploadToCloudinary(file);
 }
 
+
 function handleFileSelect(e){
   prepareSelectedImage(e.target.files[0]);
 }
+
 
 function handleDrop(e){
   e.preventDefault();
@@ -1116,11 +1169,13 @@ function handleDrop(e){
   prepareSelectedImage(e.dataTransfer.files[0]);
 }
 
+
 function updateARS(){
   const usd=parseFloat(document.getElementById('fPriceUsd')?.value)||0;
   const el=document.getElementById('fPriceArs');
   if(el) el.value=usd?moneyARS(arsPrice(usd)):'';
 }
+
 
 // ★ MODIFICADO: ahora también dispara auto-imágenes
 function handleNameChange(name){
@@ -1130,6 +1185,7 @@ function handleNameChange(name){
   }
   triggerAutoImage(name);
 }
+
 
 function autoFillSpecs(){
   const name=document.getElementById('fName').value.trim();
@@ -1143,6 +1199,7 @@ function autoFillSpecs(){
   if(found.usb)      document.getElementById('sUSB').value=found.usb;
   showToast('Specs cargadas para '+name,'success');
 }
+
 
 function collectFormData(){
   const name=(document.getElementById('fName').value||'').trim();
@@ -1174,6 +1231,7 @@ function collectFormData(){
     specs, benefits,
   };
 }
+
 
 // ══════════════════════════════════════════════════════════════
 //  MODAL
@@ -1221,6 +1279,7 @@ function saveProductInline(){
   showToast('Producto agregado','success'); autoPush(); showView('products');
 }
 
+
 // ══════════════════════════════════════════════════════════════
 //  GOOGLE SHEETS
 // ══════════════════════════════════════════════════════════════
@@ -1233,6 +1292,7 @@ function saveSheetsConfig(){
   saveCfg(c); updateSheetsBadge();
 }
 function setBadge(cls,text){ const b=document.getElementById('sheetsBadge'); b.className='sync-badge '+cls; document.getElementById('sheetsBadgeText').textContent=text; }
+
 
 async function testSheetsConn(){
   const cfg=loadCfg();
@@ -1251,6 +1311,7 @@ async function testSheetsConn(){
   }
 }
 
+
 async function syncFromSheets(silent=false){
   try{
     if(!silent) showToast('Importando desde Google Sheets...','info');
@@ -1265,6 +1326,7 @@ async function syncFromSheets(silent=false){
     if(!silent) showToast('Error al importar: '+err.message,'error');
   }
 }
+
 
 async function pushToSheets(silent=false){
   try{
@@ -1281,6 +1343,7 @@ async function pushToSheets(silent=false){
   }
 }
 
+
 function autoPush(){ pushToSheets(true); }
 function updateSheetsBadge(connected){
   const b=document.getElementById('sheetsBadge'),t=document.getElementById('sheetsBadgeText');
@@ -1290,6 +1353,7 @@ function updateSheetsBadge(connected){
   b.className='sync-badge '+(isConn?'connected':'disconnected');
   t.textContent=isConn?'Sheets: Conectado':'Sheets: No conectado';
 }
+
 
 // ══════════════════════════════════════════════════════════════
 //  CLOUDINARY TEST
@@ -1316,6 +1380,7 @@ async function testCloudinary(){
   },'image/png');
 }
 
+
 // ══════════════════════════════════════════════════════════════
 //  EXPORT
 // ══════════════════════════════════════════════════════════════
@@ -1331,6 +1396,7 @@ function downloadJSON(){
   const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='products.js'; a.click(); URL.revokeObjectURL(url);
   showToast('Archivo descargado','success');
 }
+
 
 // ══════════════════════════════════════════════════════════════
 //  VIEWS
@@ -1353,6 +1419,7 @@ function showView(name){
   }
 }
 
+
 // ══════════════════════════════════════════════════════════════
 //  TOAST
 // ══════════════════════════════════════════════════════════════
@@ -1366,6 +1433,7 @@ function showToast(msg,type='success'){
   clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'),3200);
 }
 
+
 // ══════════════════════════════════════════════════════════════
 //  THEME
 // ══════════════════════════════════════════════════════════════
@@ -1375,6 +1443,7 @@ function toggleTheme(){
 }
 (function(){ document.documentElement.setAttribute('data-theme',localStorage.getItem('isr_theme')||'dark'); })();
 
+
 // ══════════════════════════════════════════════════════════════
 //  SIDEBAR RESPONSIVE
 // ══════════════════════════════════════════════════════════════
@@ -1382,6 +1451,7 @@ function openSidebar(){ document.getElementById('sidebar').classList.add('open')
 function closeSidebar(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('show'); }
 document.querySelectorAll('.nav-item').forEach(item=>{ item.addEventListener('click',()=>{ if(window.innerWidth<=900) closeSidebar(); }); });
 if(window.innerWidth<=900) document.getElementById('menuBtn').style.display='flex';
+
 
 // ══════════════════════════════════════════════════════════════
 //  BOOT
@@ -1394,7 +1464,9 @@ if(window.innerWidth<=900) document.getElementById('menuBtn').style.display='fle
   c.sheetsUrl = SCRIPT_URL;
   saveCfg(c);
 
+
   document.getElementById('setupScreen').classList.remove('active');
+
 
   if(getSessionToken()){
     document.getElementById('loginScreen').classList.remove('active');
@@ -1404,6 +1476,7 @@ if(window.innerWidth<=900) document.getElementById('menuBtn').style.display='fle
     setTimeout(()=>document.getElementById('loginUser').focus(),80);
   }
 })();
+
 
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 </script>
