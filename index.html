@@ -1240,7 +1240,23 @@ function toggleTheme(){
 
 
 updateBadge();
-fetchDolar().then(()=>loadStoreProducts());
+
+// Carga inicial optimizada:
+// - productos y dólar arrancan en paralelo
+// - la tienda no espera a DolarAPI para empezar a traer el catálogo
+const initialDolarPromise = fetchDolar();
+const initialProductsPromise = loadStoreProducts();
+
+// Cuando termine el dólar, refresca precios si ya llegaron productos.
+initialDolarPromise.then(() => {
+  if (storeProducts.length) renderAllGrids();
+});
+
+// Protección: si una API tarda demasiado, el splash no bloquea toda la web.
+setTimeout(() => {
+  hideSplash();
+}, 1200);
+
 setInterval(()=>fetchDolar().then(()=>renderAllGrids()), 300000);
 
 
