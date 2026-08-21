@@ -1,0 +1,83 @@
+name: Admin Drive images one shot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/admin-drive-images-one-shot.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Patch admin image selector
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('admin.html')
+          text=p.read_text(encoding='utf-8')
+
+          # Load Drive image catalog in admin.
+          if '<script src="product-images.js"></script>' not in text:
+              marker='<script>\n'
+              pos=text.rfind(marker)
+              if pos < 0: raise SystemExit('admin main script marker not found')
+              text=text[:pos]+'<script src="product-images.js"></script>\n'+text[pos:]
+
+          # Helpers: Drive first, old Apple catalog as fallback.
+          helper=r'''
+function adminAutoVariants(name){
+  try{return (window.getProductVariants && window.getProductVariants(name)) || [];}catch(e){return [];}
+}
+function adminAutoImages(name){
+  const variants=adminAutoVariants(name);
+  if(variants.length) return variants.map(v=>window.productDriveImageUrl(v.id));
+  return (typeof MODEL_IMAGES!=='undefined' && MODEL_IMAGES[name]) || [];
+}
+function adminAutoColors(name){
+  const variants=adminAutoVariants(name);
+  if(variants.length) return variants.map(v=>v.color);
+  return (typeof MODEL_COLORS!=='undefined' && MODEL_COLORS[name]) || [];
+}
+'''
+          anchor='function loadAutoImages(name) {'
+          if 'function adminAutoImages(name)' not in text:
+              idx=text.find(anchor)
+              if idx<0: raise SystemExit('loadAutoImages not found')
+              text=text[:idx]+helper+'\n'+text[idx:]
+
+          # Replace loadAutoImages internals to read Drive-first helpers.
+          text=text.replace('  const images = MODEL_IMAGES[name];\n  const colors = MODEL_COLORS[name] || [];',
+                            '  const images = adminAutoImages(name);\n  const colors = adminAutoColors(name);')
+
+          # Build form must also render Drive thumbnails on initial open/edit.
+          text=text.replace('  const hasAutoImages = p.name && MODEL_IMAGES[p.name];',
+                            '  const autoImages = adminAutoImages(p.name);\n  const autoColors = adminAutoColors(p.name);\n  const hasAutoImages = autoImages.length > 0;')
+          text=text.replace("${hasAutoImages ? (MODEL_IMAGES[p.name]||[]).length + ' colores disponibles' : ''}",
+                            "${hasAutoImages ? autoImages.length + ' colores disponibles' : ''}")
+          text=text.replace("${hasAutoImages ? (MODEL_IMAGES[p.name]||[]).map((url,i)=>`",
+                            "${hasAutoImages ? autoImages.map((url,i)=>`")
+          text=text.replace("${(MODEL_COLORS[p.name]||[])[i]||'Color '+(i+1)}",
+                            "${autoColors[i]||'Color '+(i+1)}")
+          text=text.replace("${(MODEL_COLORS[p.name]||[])[i]||''}",
+                            "${autoColors[i]||''}")
+
+          # Slightly clearer panel label.
+          text=text.replace('Imágenes automáticas por color','Imágenes del Drive por color')
+          text=text.replace('Hacé clic en un color para usar esa imagen:','Elegí una foto del Drive para asignarla al producto:')
+
+          p.write_text(text,encoding='utf-8')
+          print('admin Drive image selector connected')
+
+      - name: Commit admin integration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add admin.html
+          git commit -m "Use Drive images in admin product selector"
+          git push
