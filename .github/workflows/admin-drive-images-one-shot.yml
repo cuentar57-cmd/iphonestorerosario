@@ -51,11 +51,9 @@ function adminAutoColors(name){
               if idx<0: raise SystemExit('loadAutoImages not found')
               text=text[:idx]+helper+'\n'+text[idx:]
 
-          # Replace loadAutoImages internals to read Drive-first helpers.
           text=text.replace('  const images = MODEL_IMAGES[name];\n  const colors = MODEL_COLORS[name] || [];',
                             '  const images = adminAutoImages(name);\n  const colors = adminAutoColors(name);')
 
-          # Build form must also render Drive thumbnails on initial open/edit.
           text=text.replace('  const hasAutoImages = p.name && MODEL_IMAGES[p.name];',
                             '  const autoImages = adminAutoImages(p.name);\n  const autoColors = adminAutoColors(p.name);\n  const hasAutoImages = autoImages.length > 0;')
           text=text.replace("${hasAutoImages ? (MODEL_IMAGES[p.name]||[]).length + ' colores disponibles' : ''}",
@@ -67,12 +65,13 @@ function adminAutoColors(name){
           text=text.replace("${(MODEL_COLORS[p.name]||[])[i]||''}",
                             "${autoColors[i]||''}")
 
-          # Slightly clearer panel label.
           text=text.replace('Imágenes automáticas por color','Imágenes del Drive por color')
           text=text.replace('Hacé clic en un color para usar esa imagen:','Elegí una foto del Drive para asignarla al producto:')
+          text=text.replace('✓ Imagen de la tienda Apple cargada','✓ Imagen del Drive asignada')
+          text=text.replace("showToast('Imagen cargada automáticamente', 'success');","showToast('Imagen del Drive asignada', 'success');")
 
           p.write_text(text,encoding='utf-8')
-          print('admin Drive image selector connected')
+          print('admin Drive image selector connected - retry 2')
 
       - name: Commit admin integration
         run: |
