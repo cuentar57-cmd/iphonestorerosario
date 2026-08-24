@@ -1,0 +1,38 @@
+name: Remove office photo
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/remove-office-photo.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  remove-photo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove office showcase block
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+          pattern = re.compile(r'\n?\s*<div class="hero-showcase[^>]*>\s*<img\s+src="data:image/webp;base64,[^"]+"\s+alt="Oficina de iPhone Store Rosario">\s*</div>\s*', re.S)
+          new_text, count = pattern.subn('\n', text, count=1)
+          if count != 1:
+              raise SystemExit(f'Expected to remove 1 office photo block, removed {count}')
+          path.write_text(new_text, encoding='utf-8')
+          PY
+      - name: Commit change
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Remove office photo from homepage'
+          git push
