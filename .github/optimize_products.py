@@ -180,9 +180,18 @@ wa_css = r'''
 @keyframes waHelpFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 @keyframes waHelpPulse{0%{box-shadow:0 0 0 0 rgba(37,211,102,.48)}70%{box-shadow:0 0 0 9px rgba(37,211,102,0)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}}
 @keyframes waHelpShine{0%,65%{left:-35%}85%,100%{left:125%}}
+@keyframes waHelpMobileExit{
+  0%{opacity:1;transform:translateX(0) scale(1);visibility:visible}
+  100%{opacity:0;transform:translateX(22px) scale(.96);visibility:hidden;pointer-events:none}
+}
 @media(max-width:600px){
   .wa-float{right:18px;bottom:20px}
-  .wa-help-bubble{right:84px;bottom:24px;max-width:185px;padding:9px 11px;border-radius:14px;font-size:.68rem}
+  .wa-help-bubble{
+    right:84px;bottom:24px;max-width:185px;padding:9px 11px;border-radius:14px;font-size:.68rem;
+    animation:waHelpEnter .45s cubic-bezier(.2,.8,.2,1) both,waHelpMobileExit .5s ease 4.5s forwards;
+  }
+  .wa-help-bubble::before{animation:waHelpPulse 1.8s ease-out 2}
+  .wa-help-bubble::after{animation:waHelpShine 3.8s ease-in-out .6s 1}
 }
 @media(max-width:390px){
   .wa-help-bubble{max-width:155px;font-size:.64rem;padding:8px 9px}
@@ -191,10 +200,14 @@ wa_css = r'''
   .wa-help-bubble,.wa-help-bubble::before,.wa-help-bubble::after{animation:none!important}
 }
 '''
-if '/* ===== WHATSAPP FLOATING HELP ===== */' not in text:
+
+# Replace the whole WhatsApp help CSS block when it already exists, so future tweaks deploy too.
+wa_css_pattern = re.compile(r'/\* ===== WHATSAPP FLOATING HELP ===== \*/.*?(?=</style>)', re.S)
+if '/* ===== WHATSAPP FLOATING HELP ===== */' in text:
+    text = wa_css_pattern.sub(wa_css.strip() + '\n', text, count=1)
+else:
     text = text.replace('</style>', wa_css + '\n</style>', 1)
 
-# Insert the visible bubble directly beside the floating WhatsApp button.
 if 'id="wa-static-help"' not in text:
     wa_match = re.search(r'(<a href="https://wa\.me/5493412521678" class="wa-float" target="_blank">.*?</a>)', text, re.S)
     if not wa_match:
