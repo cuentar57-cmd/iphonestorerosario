@@ -5,7 +5,6 @@ import urllib.request
 
 SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzGGmCePitQSQPoNT4_Wpu6mHkXAjaYI6_F2sRvYy6LbaAPpRg1mpeojO_4hO1vcPCRog/exec?action=getProducts'
 
-# 1) Refresh a same-origin static snapshot for fast first visits.
 try:
     req = urllib.request.Request(SHEETS_URL, headers={'User-Agent': 'Mozilla/5.0 ISR-Catalog-Cache/1.0'})
     with urllib.request.urlopen(req, timeout=20) as response:
@@ -22,7 +21,6 @@ try:
 except Exception as exc:
     print(f'WARNING: snapshot refresh failed: {exc}')
 
-# 2) Patch index.html so cached/snapshot data paints immediately and Sheets refreshes in background.
 path = Path('index.html')
 text = path.read_text(encoding='utf-8')
 original = text
@@ -144,13 +142,10 @@ if "const PRODUCT_CACHE_KEY = 'isr_products_cache_v2';" in text:
     if count != 1 and 'hideSplash(fast = false)' not in text:
         raise SystemExit(f'Expected one loader block, replaced {count}')
 
-# Keep product card images lightweight and non-blocking.
-# Card thumbnails do not need 1000px sources; 480px is enough for the rendered card size.
-text = re.sub(r'(https://drive\.google\.com/thumbnail\?id=[^\"\'\s&]+&sz=)w\d+', r'\1w480', text)
+text = re.sub(r'(https://drive\.google\.com/thumbnail\?id=[^"\s&]+&sz=)w\d+', r'\1w480', text)
 text = text.replace('class="product-image" loading="lazy">', 'class="product-image" loading="lazy" decoding="async">')
 text = text.replace('}, 1200);', '}, 900);', 1)
 
-# 3) Add a polished animated message beside the fixed green WhatsApp button.
 wa_css = r'''
 
 /* ===== WHATSAPP FLOATING HELP ===== */
@@ -199,56 +194,13 @@ wa_css = r'''
 if '/* ===== WHATSAPP FLOATING HELP ===== */' not in text:
     text = text.replace('</style>', wa_css + '\n</style>', 1)
 
-wa_js = r'''
-<script id="wa-floating-helper">
-(function(){
-  function optimizeCatalogImage(img){
-    if(!img || img.dataset.fastImageDone === '1') return;
-    img.dataset.fastImageDone = '1';
-    img.decoding = 'async';
-    if(!img.closest('.detail-modal,.modal')) img.loading = 'lazy';
-    const src = img.getAttribute('src') || '';
-    if(src.includes('drive.google.com/thumbnail')){
-      const optimized = src.match(/[?&]sz=w\d+/) ? src.replace(/([?&]sz=)w\d+/, '$1w480') : src + (src.includes('?') ? '&' : '?') + 'sz=w480';
-      if(optimized !== src) img.src = optimized;
-    }
-  }
-
-  function addWhatsAppMessage(){
-    const wa = document.querySelector('.wa-float');
-    if(!wa || document.querySelector('.wa-help-bubble')) return;
-    const help = document.createElement('a');
-    help.className = 'wa-help-bubble';
-    help.href = wa.href;
-    help.target = wa.target || '_blank';
-    help.rel = 'noopener';
-    help.setAttribute('aria-label', 'Tenés alguna duda? Hablános al WhatsApp');
-    help.innerHTML = '<span>¿Tenés alguna duda?<strong>Hablános al WhatsApp</strong></span>';
-    document.body.appendChild(help);
-  }
-
-  function enhance(root){
-    const scope = root && root.querySelectorAll ? root : document;
-    scope.querySelectorAll('img.product-image,.product-media img').forEach(optimizeCatalogImage);
-    addWhatsAppMessage();
-  }
-
-  enhance(document);
-  const observer = new MutationObserver(function(mutations){
-    mutations.forEach(function(m){
-      m.addedNodes.forEach(function(node){
-        if(node.nodeType !== 1) return;
-        if(node.matches && node.matches('img.product-image,.product-media img')) optimizeCatalogImage(node);
-        enhance(node);
-      });
-    });
-  });
-  observer.observe(document.body,{childList:true,subtree:true});
-})();
-</script>
-'''
-if 'id="wa-floating-helper"' not in text:
-    text = text.replace('</body>', wa_js + '\n</body>', 1)
+# Insert the visible bubble directly beside the floating WhatsApp button.
+if 'id="wa-static-help"' not in text:
+    wa_match = re.search(r'(<a href="https://wa\.me/5493412521678" class="wa-float" target="_blank">.*?</a>)', text, re.S)
+    if not wa_match:
+        raise SystemExit('Could not find floating WhatsApp button')
+    bubble = '''\n<a id="wa-static-help" class="wa-help-bubble" href="https://wa.me/5493412521678" target="_blank" rel="noopener" aria-label="Tenés alguna duda? Hablános al WhatsApp"><span>¿Tenés alguna duda?<strong>Hablános al WhatsApp</strong></span></a>'''
+    text = text[:wa_match.end()] + bubble + text[wa_match.end():]
 
 if text != original:
     path.write_text(text, encoding='utf-8')
