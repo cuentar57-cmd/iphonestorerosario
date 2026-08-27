@@ -20,6 +20,21 @@ jobs:
       - uses: actions/checkout@v4
       - name: Optimize catalog loading
         run: python .github/optimize_products.py
+      - name: Ensure WhatsApp floating prompt
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+          marker = 'id="wa-static-help"'
+          if marker not in text:
+              html = '''\n<a id="wa-static-help" class="wa-help-bubble" href="https://wa.me/5493412521678" target="_blank" rel="noopener" aria-label="Tenés alguna duda? Hablános al WhatsApp"><span>¿Tenés alguna duda?<strong>Hablános al WhatsApp</strong></span></a>\n'''
+              text = text.replace('</body>', html + '</body>', 1)
+              p.write_text(text, encoding='utf-8')
+              print('WhatsApp prompt inserted')
+          else:
+              print('WhatsApp prompt already present')
+          PY
       - name: Commit optimized storefront
         run: |
           git config user.name 'github-actions[bot]'
