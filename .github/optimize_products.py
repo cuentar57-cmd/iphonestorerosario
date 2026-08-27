@@ -144,54 +144,63 @@ if "const PRODUCT_CACHE_KEY = 'isr_products_cache_v2';" in text:
     if count != 1 and 'hideSplash(fast = false)' not in text:
         raise SystemExit(f'Expected one loader block, replaced {count}')
 
-# Keep card images lightweight and non-blocking.
+# Keep product card images lightweight and non-blocking.
+# Card thumbnails do not need 1000px sources; 480px is enough for the rendered card size.
 text = re.sub(r'(https://drive\.google\.com/thumbnail\?id=[^\"\'\s&]+&sz=)w\d+', r'\1w480', text)
 text = text.replace('class="product-image" loading="lazy">', 'class="product-image" loading="lazy" decoding="async">')
 text = text.replace('}, 1200);', '}, 900);', 1)
 
-# 3) Add an animated WhatsApp-help prompt beside every Consultar action.
+# 3) Add a polished animated message beside the fixed green WhatsApp button.
 wa_css = r'''
 
-/* ===== CONSULTAR + WHATSAPP HELP ===== */
-.consult-with-help{
-  display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;width:100%;
-}
+/* ===== WHATSAPP FLOATING HELP ===== */
 .wa-help-bubble{
-  appearance:none;border:1px solid rgba(37,211,102,.35);background:rgba(37,211,102,.10);
-  color:var(--text);border-radius:14px;padding:8px 11px;display:inline-flex;align-items:center;gap:8px;
-  font:600 .72rem/1.25 'DM Sans',sans-serif;cursor:pointer;transition:transform .22s ease,background .22s ease,border-color .22s ease,box-shadow .22s ease;
-  max-width:185px;text-align:left;position:relative;overflow:hidden;
-  animation:waHelpFloat 2.8s ease-in-out infinite;
+  position:fixed;right:98px;bottom:32px;z-index:998;
+  display:flex;align-items:center;gap:9px;
+  max-width:245px;padding:11px 14px;border-radius:16px;
+  background:var(--card);color:var(--text);text-decoration:none;
+  border:1px solid rgba(37,211,102,.34);
+  box-shadow:0 10px 28px rgba(0,0,0,.18),0 0 0 1px rgba(37,211,102,.05);
+  font:600 .78rem/1.3 'DM Sans',sans-serif;
+  transform-origin:right center;
+  animation:waHelpEnter .55s cubic-bezier(.2,.8,.2,1) both,waHelpFloat 3s ease-in-out .6s infinite;
+  transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,background .22s ease;
+  overflow:hidden;
 }
 .wa-help-bubble::before{
-  content:'';width:8px;height:8px;border-radius:50%;background:#25d366;flex:0 0 auto;
-  box-shadow:0 0 0 0 rgba(37,211,102,.45);animation:waHelpPulse 1.7s ease-out infinite;
+  content:'';width:9px;height:9px;border-radius:50%;background:#25d366;flex:0 0 auto;
+  box-shadow:0 0 0 0 rgba(37,211,102,.48);animation:waHelpPulse 1.8s ease-out infinite;
 }
 .wa-help-bubble::after{
-  content:'';position:absolute;inset:-30% auto -30% -45%;width:32%;transform:skewX(-18deg);
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.32),transparent);animation:waHelpShine 3.8s ease-in-out infinite;
+  content:'';position:absolute;top:-40%;bottom:-40%;left:-35%;width:28%;
+  transform:skewX(-18deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);
+  animation:waHelpShine 4.2s ease-in-out 1s infinite;
 }
+.wa-help-bubble strong{display:block;color:#20b858;font-weight:800}
 .wa-help-bubble:hover,.wa-help-bubble:focus-visible{
-  transform:translateY(-2px) scale(1.02);background:rgba(37,211,102,.16);border-color:rgba(37,211,102,.60);
-  box-shadow:0 10px 24px rgba(37,211,102,.14);outline:none;
+  transform:translateY(-3px) scale(1.02);border-color:rgba(37,211,102,.62);
+  box-shadow:0 14px 32px rgba(0,0,0,.20),0 0 22px rgba(37,211,102,.15);outline:none;
 }
-.wa-help-bubble strong{color:#20b858;font-weight:800}
-@keyframes waHelpFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-@keyframes waHelpPulse{0%{box-shadow:0 0 0 0 rgba(37,211,102,.45)}70%{box-shadow:0 0 0 8px rgba(37,211,102,0)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}}
-@keyframes waHelpShine{0%,62%{left:-45%}82%,100%{left:125%}}
+@keyframes waHelpEnter{from{opacity:0;transform:translateX(18px) scale(.96)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes waHelpFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes waHelpPulse{0%{box-shadow:0 0 0 0 rgba(37,211,102,.48)}70%{box-shadow:0 0 0 9px rgba(37,211,102,0)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}}
+@keyframes waHelpShine{0%,65%{left:-35%}85%,100%{left:125%}}
 @media(max-width:600px){
-  .consult-with-help{gap:6px}
-  .wa-help-bubble{font-size:.64rem;padding:7px 8px;max-width:145px;border-radius:12px}
+  .wa-float{right:18px;bottom:20px}
+  .wa-help-bubble{right:84px;bottom:24px;max-width:185px;padding:9px 11px;border-radius:14px;font-size:.68rem}
+}
+@media(max-width:390px){
+  .wa-help-bubble{max-width:155px;font-size:.64rem;padding:8px 9px}
 }
 @media(prefers-reduced-motion:reduce){
   .wa-help-bubble,.wa-help-bubble::before,.wa-help-bubble::after{animation:none!important}
 }
 '''
-if '/* ===== CONSULTAR + WHATSAPP HELP ===== */' not in text:
+if '/* ===== WHATSAPP FLOATING HELP ===== */' not in text:
     text = text.replace('</style>', wa_css + '\n</style>', 1)
 
 wa_js = r'''
-<script id="wa-consult-helper">
+<script id="wa-floating-helper">
 (function(){
   function optimizeCatalogImage(img){
     if(!img || img.dataset.fastImageDone === '1') return;
@@ -205,32 +214,23 @@ wa_js = r'''
     }
   }
 
-  function decorateConsultButtons(root){
-    const scope = root && root.querySelectorAll ? root : document;
-    scope.querySelectorAll('button,a').forEach(function(btn){
-      if((btn.textContent || '').trim().toLowerCase() !== 'consultar') return;
-      if(btn.closest('.consult-with-help')) return;
-      const parent = btn.parentNode;
-      if(!parent) return;
-      const wrap = document.createElement('div');
-      wrap.className = 'consult-with-help';
-      parent.insertBefore(wrap, btn);
-      wrap.appendChild(btn);
-
-      const help = document.createElement('button');
-      help.type = 'button';
-      help.className = 'wa-help-bubble';
-      help.setAttribute('aria-label', 'Tenés alguna duda? Hablános al WhatsApp');
-      help.innerHTML = '<span>¿Tenés alguna duda?<br><strong>Hablános al WhatsApp</strong></span>';
-      help.addEventListener('click', function(){ btn.click(); });
-      wrap.appendChild(help);
-    });
+  function addWhatsAppMessage(){
+    const wa = document.querySelector('.wa-float');
+    if(!wa || document.querySelector('.wa-help-bubble')) return;
+    const help = document.createElement('a');
+    help.className = 'wa-help-bubble';
+    help.href = wa.href;
+    help.target = wa.target || '_blank';
+    help.rel = 'noopener';
+    help.setAttribute('aria-label', 'Tenés alguna duda? Hablános al WhatsApp');
+    help.innerHTML = '<span>¿Tenés alguna duda?<strong>Hablános al WhatsApp</strong></span>';
+    document.body.appendChild(help);
   }
 
   function enhance(root){
     const scope = root && root.querySelectorAll ? root : document;
     scope.querySelectorAll('img.product-image,.product-media img').forEach(optimizeCatalogImage);
-    decorateConsultButtons(scope);
+    addWhatsAppMessage();
   }
 
   enhance(document);
@@ -247,7 +247,7 @@ wa_js = r'''
 })();
 </script>
 '''
-if 'id="wa-consult-helper"' not in text:
+if 'id="wa-floating-helper"' not in text:
     text = text.replace('</body>', wa_js + '\n</body>', 1)
 
 if text != original:
