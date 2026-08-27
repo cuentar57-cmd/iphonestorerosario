@@ -516,6 +516,51 @@ footer p{font-size:.78rem;color:var(--gray)}
 #promoClose:hover{ background:rgba(255,255,255,.28); }
 
 
+
+
+/* ===== WHATSAPP FLOATING HELP ===== */
+.wa-help-bubble{
+  position:fixed;right:98px;bottom:32px;z-index:998;
+  display:flex;align-items:center;gap:9px;
+  max-width:245px;padding:11px 14px;border-radius:16px;
+  background:var(--card);color:var(--text);text-decoration:none;
+  border:1px solid rgba(37,211,102,.34);
+  box-shadow:0 10px 28px rgba(0,0,0,.18),0 0 0 1px rgba(37,211,102,.05);
+  font:600 .78rem/1.3 'DM Sans',sans-serif;
+  transform-origin:right center;
+  animation:waHelpEnter .55s cubic-bezier(.2,.8,.2,1) both,waHelpFloat 3s ease-in-out .6s infinite;
+  transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,background .22s ease;
+  overflow:hidden;
+}
+.wa-help-bubble::before{
+  content:'';width:9px;height:9px;border-radius:50%;background:#25d366;flex:0 0 auto;
+  box-shadow:0 0 0 0 rgba(37,211,102,.48);animation:waHelpPulse 1.8s ease-out infinite;
+}
+.wa-help-bubble::after{
+  content:'';position:absolute;top:-40%;bottom:-40%;left:-35%;width:28%;
+  transform:skewX(-18deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);
+  animation:waHelpShine 4.2s ease-in-out 1s infinite;
+}
+.wa-help-bubble strong{display:block;color:#20b858;font-weight:800}
+.wa-help-bubble:hover,.wa-help-bubble:focus-visible{
+  transform:translateY(-3px) scale(1.02);border-color:rgba(37,211,102,.62);
+  box-shadow:0 14px 32px rgba(0,0,0,.20),0 0 22px rgba(37,211,102,.15);outline:none;
+}
+@keyframes waHelpEnter{from{opacity:0;transform:translateX(18px) scale(.96)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes waHelpFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes waHelpPulse{0%{box-shadow:0 0 0 0 rgba(37,211,102,.48)}70%{box-shadow:0 0 0 9px rgba(37,211,102,0)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}}
+@keyframes waHelpShine{0%,65%{left:-35%}85%,100%{left:125%}}
+@media(max-width:600px){
+  .wa-float{right:18px;bottom:20px}
+  .wa-help-bubble{right:84px;bottom:24px;max-width:185px;padding:9px 11px;border-radius:14px;font-size:.68rem}
+}
+@media(max-width:390px){
+  .wa-help-bubble{max-width:155px;font-size:.64rem;padding:8px 9px}
+}
+@media(prefers-reduced-motion:reduce){
+  .wa-help-bubble,.wa-help-bubble::before,.wa-help-bubble::after{animation:none!important}
+}
+
 </style>
 </head>
 
