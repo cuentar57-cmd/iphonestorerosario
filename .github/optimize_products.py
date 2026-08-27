@@ -144,8 +144,111 @@ if "const PRODUCT_CACHE_KEY = 'isr_products_cache_v2';" in text:
     if count != 1 and 'hideSplash(fast = false)' not in text:
         raise SystemExit(f'Expected one loader block, replaced {count}')
 
+# Keep card images lightweight and non-blocking.
+text = re.sub(r'(https://drive\.google\.com/thumbnail\?id=[^\"\'\s&]+&sz=)w\d+', r'\1w480', text)
 text = text.replace('class="product-image" loading="lazy">', 'class="product-image" loading="lazy" decoding="async">')
 text = text.replace('}, 1200);', '}, 900);', 1)
+
+# 3) Add an animated WhatsApp-help prompt beside every Consultar action.
+wa_css = r'''
+
+/* ===== CONSULTAR + WHATSAPP HELP ===== */
+.consult-with-help{
+  display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;width:100%;
+}
+.wa-help-bubble{
+  appearance:none;border:1px solid rgba(37,211,102,.35);background:rgba(37,211,102,.10);
+  color:var(--text);border-radius:14px;padding:8px 11px;display:inline-flex;align-items:center;gap:8px;
+  font:600 .72rem/1.25 'DM Sans',sans-serif;cursor:pointer;transition:transform .22s ease,background .22s ease,border-color .22s ease,box-shadow .22s ease;
+  max-width:185px;text-align:left;position:relative;overflow:hidden;
+  animation:waHelpFloat 2.8s ease-in-out infinite;
+}
+.wa-help-bubble::before{
+  content:'';width:8px;height:8px;border-radius:50%;background:#25d366;flex:0 0 auto;
+  box-shadow:0 0 0 0 rgba(37,211,102,.45);animation:waHelpPulse 1.7s ease-out infinite;
+}
+.wa-help-bubble::after{
+  content:'';position:absolute;inset:-30% auto -30% -45%;width:32%;transform:skewX(-18deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.32),transparent);animation:waHelpShine 3.8s ease-in-out infinite;
+}
+.wa-help-bubble:hover,.wa-help-bubble:focus-visible{
+  transform:translateY(-2px) scale(1.02);background:rgba(37,211,102,.16);border-color:rgba(37,211,102,.60);
+  box-shadow:0 10px 24px rgba(37,211,102,.14);outline:none;
+}
+.wa-help-bubble strong{color:#20b858;font-weight:800}
+@keyframes waHelpFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes waHelpPulse{0%{box-shadow:0 0 0 0 rgba(37,211,102,.45)}70%{box-shadow:0 0 0 8px rgba(37,211,102,0)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}}
+@keyframes waHelpShine{0%,62%{left:-45%}82%,100%{left:125%}}
+@media(max-width:600px){
+  .consult-with-help{gap:6px}
+  .wa-help-bubble{font-size:.64rem;padding:7px 8px;max-width:145px;border-radius:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  .wa-help-bubble,.wa-help-bubble::before,.wa-help-bubble::after{animation:none!important}
+}
+'''
+if '/* ===== CONSULTAR + WHATSAPP HELP ===== */' not in text:
+    text = text.replace('</style>', wa_css + '\n</style>', 1)
+
+wa_js = r'''
+<script id="wa-consult-helper">
+(function(){
+  function optimizeCatalogImage(img){
+    if(!img || img.dataset.fastImageDone === '1') return;
+    img.dataset.fastImageDone = '1';
+    img.decoding = 'async';
+    if(!img.closest('.detail-modal,.modal')) img.loading = 'lazy';
+    const src = img.getAttribute('src') || '';
+    if(src.includes('drive.google.com/thumbnail')){
+      const optimized = src.match(/[?&]sz=w\d+/) ? src.replace(/([?&]sz=)w\d+/, '$1w480') : src + (src.includes('?') ? '&' : '?') + 'sz=w480';
+      if(optimized !== src) img.src = optimized;
+    }
+  }
+
+  function decorateConsultButtons(root){
+    const scope = root && root.querySelectorAll ? root : document;
+    scope.querySelectorAll('button,a').forEach(function(btn){
+      if((btn.textContent || '').trim().toLowerCase() !== 'consultar') return;
+      if(btn.closest('.consult-with-help')) return;
+      const parent = btn.parentNode;
+      if(!parent) return;
+      const wrap = document.createElement('div');
+      wrap.className = 'consult-with-help';
+      parent.insertBefore(wrap, btn);
+      wrap.appendChild(btn);
+
+      const help = document.createElement('button');
+      help.type = 'button';
+      help.className = 'wa-help-bubble';
+      help.setAttribute('aria-label', 'Tenés alguna duda? Hablános al WhatsApp');
+      help.innerHTML = '<span>¿Tenés alguna duda?<br><strong>Hablános al WhatsApp</strong></span>';
+      help.addEventListener('click', function(){ btn.click(); });
+      wrap.appendChild(help);
+    });
+  }
+
+  function enhance(root){
+    const scope = root && root.querySelectorAll ? root : document;
+    scope.querySelectorAll('img.product-image,.product-media img').forEach(optimizeCatalogImage);
+    decorateConsultButtons(scope);
+  }
+
+  enhance(document);
+  const observer = new MutationObserver(function(mutations){
+    mutations.forEach(function(m){
+      m.addedNodes.forEach(function(node){
+        if(node.nodeType !== 1) return;
+        if(node.matches && node.matches('img.product-image,.product-media img')) optimizeCatalogImage(node);
+        enhance(node);
+      });
+    });
+  });
+  observer.observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+'''
+if 'id="wa-consult-helper"' not in text:
+    text = text.replace('</body>', wa_js + '\n</body>', 1)
 
 if text != original:
     path.write_text(text, encoding='utf-8')
