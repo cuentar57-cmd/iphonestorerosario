@@ -827,40 +827,103 @@ function arsPrice(usd){ return Math.round(usd * dolarBlue); }
 let storeProducts = [];
 
 
-async function loadStoreProducts(){
+const PRODUCT_CACHE_KEY = 'isr_products_cache_v2';
+const PRODUCTS_STATIC_URL = './products-cache.json';
+const PRODUCT_FETCH_TIMEOUT_MS = 7000;
+
+function readCachedProducts(){
   try{
-    const r = await fetch(`${SHEETS_URL}?action=getProducts`);
-    const d = await r.json();
-
-
-    if(d.ok && Array.isArray(d.products)){
-      storeProducts = normalizeProductsFromSheets(d.products);
-      hideSplash();
-      renderAllGrids();
-    
-      return;
-    }
-
-
-    throw new Error(d.error || 'Google Sheets no devolvió productos');
-
-
+    const cached = JSON.parse(localStorage.getItem(PRODUCT_CACHE_KEY) || '[]');
+    return Array.isArray(cached) ? normalizeProductsFromSheets(cached) : [];
   }catch(e){
-    console.error('[ISR] Error al cargar productos:', e);
-    storeProducts = [];
-    hideSplash();
+    console.warn('[ISR] No se pudo leer el cache local:', e);
+    return [];
+  }
+}
+
+function saveCachedProducts(products){
+  try{
+    localStorage.setItem(PRODUCT_CACHE_KEY, JSON.stringify(products));
+  }catch(e){
+    console.warn('[ISR] No se pudo guardar el cache local:', e);
+  }
+}
+
+function hydrateProductsFromCache(){
+  const cached = readCachedProducts();
+  if(!cached.length) return false;
+  storeProducts = cached;
+  renderAllGrids();
+  hideSplash(true);
+  return true;
+}
+
+async function loadStaticProductSnapshot(){
+  try{
+    const r = await fetch(PRODUCTS_STATIC_URL, { cache: 'force-cache' });
+    if(!r.ok) return false;
+    const d = await r.json();
+    const products = Array.isArray(d) ? d : d.products;
+    if(!Array.isArray(products) || !products.length || storeProducts.length) return false;
+    storeProducts = normalizeProductsFromSheets(products);
+    saveCachedProducts(storeProducts);
     renderAllGrids();
-    schedulePromo();
+    hideSplash(true);
+    return true;
+  }catch(e){
+    console.warn('[ISR] Snapshot estatico no disponible:', e);
+    return false;
   }
 }
 
 
-function hideSplash(){
+async function loadStoreProducts(){
+  const hadCachedProducts = hydrateProductsFromCache();
+  if(!hadCachedProducts) loadStaticProductSnapshot();
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), PRODUCT_FETCH_TIMEOUT_MS);
+
+  try{
+    const r = await fetch(`${SHEETS_URL}?action=getProducts&_=${Date.now()}`, {
+      signal: controller.signal,
+      cache: 'no-store'
+    });
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d = await r.json();
+
+    if(d.ok && Array.isArray(d.products) && d.products.length){
+      const freshProducts = normalizeProductsFromSheets(d.products);
+      if(!freshProducts.length) throw new Error('Google Sheets devolvio un catalogo vacio');
+      storeProducts = freshProducts;
+      saveCachedProducts(freshProducts);
+      renderAllGrids();
+      hideSplash(true);
+      return;
+    }
+
+    throw new Error(d.error || 'Google Sheets no devolvio productos');
+  }catch(e){
+    console.error('[ISR] Error al actualizar productos:', e);
+    if(!storeProducts.length){
+      const cached = readCachedProducts();
+      if(cached.length){
+        storeProducts = cached;
+        renderAllGrids();
+      }
+    }
+    hideSplash(storeProducts.length > 0);
+  }finally{
+    clearTimeout(timeout);
+  }
+}
+
+function hideSplash(fast = false){
   const bar = document.getElementById('splash-bar');
   const splash = document.getElementById('splash');
   if(!bar || !splash) return;
   bar.style.width = '100%';
-  setTimeout(() => { splash.classList.add('hidden'); }, 500);
+  setTimeout(() => { splash.classList.add('hidden'); }, fast ? 80 : 180);
 }
 
 
@@ -1063,7 +1126,7 @@ function buildProductCard(p){
     <div class="prod-card" onclick="openDetail('${p.id}')">
       ${badge}
       <div class="product-media">
-        ${imageUrl ? `<img src="${imageUrl}" alt="${p.name}" class="product-image" loading="lazy">` : `<div class="product-placeholder">${categoryIcon(p.category)}</div>`}
+        ${imageUrl ? `<img src="${imageUrl}" alt="${p.name}" class="product-image" loading="lazy" decoding="async">` : `<div class="product-placeholder">${categoryIcon(p.category)}</div>`}
       </div>
       <h3>${p.name}</h3>
       <div class="storage">${p.storage||'—'}</div>
@@ -1252,7 +1315,7 @@ initialDolarPromise.then(() => {
 // Protección: si una API tarda demasiado, el splash no bloquea toda la web.
 setTimeout(() => {
   hideSplash();
-}, 1200);
+}, 900);
 
 setInterval(()=>fetchDolar().then(()=>renderAllGrids()), 300000);
 
