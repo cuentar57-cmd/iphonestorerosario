@@ -16,26 +16,44 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Refine hero visual
+      - name: Force hero refinement in index
         run: |
           python - <<'PY'
           from pathlib import Path
-          p = Path('hero-redesign.css')
-          css = p.read_text(encoding='utf-8')
-          marker = '/* HERO REFINEMENT: REAL PHONE ONLY ON DESKTOP */'
-          if marker not in css:
-              css += '''\n\n/* HERO REFINEMENT: REAL PHONE ONLY ON DESKTOP */\n.hero-phone-back{display:none!important}\n@media(max-width:850px){\n  .hero-visual{display:none!important}\n  .hero.hero-redesign{min-height:auto;padding:105px 6% 40px}\n  .hero-redesign .hero-content{width:100%;max-width:100%}\n  .hero-trust{position:relative;left:auto;bottom:auto;width:100%;margin-top:24px}\n}\n'''
-              p.write_text(css, encoding='utf-8')
+
+          p = Path('index.html')
+          html = p.read_text(encoding='utf-8')
+
+          # Bust stylesheet cache.
+          html = html.replace('hero-redesign.css?v=20260830', 'hero-redesign.css?v=20260830b')
+
+          marker = '/* FORCE HERO REFINEMENT INLINE 20260830B */'
+          if marker not in html:
+              inline = '''
+<style>
+/* FORCE HERO REFINEMENT INLINE 20260830B */
+.hero-phone-back{display:none!important}
+@media(max-width:850px){
+  .hero-visual{display:none!important}
+  .hero.hero-redesign{min-height:auto!important;padding:105px 6% 40px!important}
+  .hero-redesign .hero-content{width:100%!important;max-width:100%!important}
+  .hero-trust{position:relative!important;left:auto!important;bottom:auto!important;width:100%!important;margin-top:24px!important}
+}
+</style>
+'''
+              html = html.replace('</head>', inline + '</head>', 1)
+
+          p.write_text(html, encoding='utf-8')
           PY
 
-      - name: Commit refinement
+      - name: Commit forced refinement
         run: |
-          if git diff --quiet -- hero-redesign.css; then
-            echo 'No hero refinement changes to commit.'
+          if git diff --quiet -- index.html; then
+            echo 'No index changes to commit.'
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add hero-redesign.css
-          git commit -m 'Refine hero: remove generated phone and hide visual on mobile'
+          git add index.html
+          git commit -m 'Force hero cleanup and mobile hide in index'
           git push
