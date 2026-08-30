@@ -1,0 +1,78 @@
+name: Refine homepage hero
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/refine-homepage-hero.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refine-hero:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove generated phone and hide hero visual on mobile
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('hero-redesign.css')
+          css = path.read_text(encoding='utf-8')
+          marker = '/* HERO REFINEMENT: REAL PHONE ONLY ON DESKTOP */'
+          if marker in css:
+              print('Hero refinement already applied.')
+              raise SystemExit(0)
+
+          override = r'''
+
+/* HERO REFINEMENT: REAL PHONE ONLY ON DESKTOP */
+/* Remove the CSS-generated rear phone. Keep only the real catalogue image on desktop. */
+.hero-phone-back{
+  display:none !important;
+}
+
+/* On phones/tablets, keep the hero clean: text + CTAs + trust strip, no phone composition. */
+@media (max-width:850px){
+  .hero-visual{
+    display:none !important;
+  }
+
+  .hero.hero-redesign{
+    min-height:auto;
+    padding:105px 6% 40px;
+  }
+
+  .hero-redesign .hero-content{
+    width:100%;
+    max-width:100%;
+  }
+
+  .hero-trust{
+    position:relative;
+    left:auto;
+    bottom:auto;
+    width:100%;
+    margin-top:24px;
+  }
+}
+'''
+          path.write_text(css.rstrip() + override + '\n', encoding='utf-8')
+          print('Hero refinement appended.')
+          PY
+
+      - name: Commit refinement
+        run: |
+          if git diff --quiet -- hero-redesign.css; then
+            echo 'No changes to commit.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add hero-redesign.css
+          git commit -m 'Refine hero: real phone only and hide visual on mobile'
+          git push
