@@ -20,6 +20,128 @@ jobs:
       - uses: actions/checkout@v4
       - name: Optimize catalog loading
         run: python .github/optimize_products.py
+      - name: Ensure animated hero visual
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+
+          css_marker = '/* ===== HERO DEVICE ANIMATION ===== */'
+          if css_marker not in text:
+              css = r'''
+
+/* ===== HERO DEVICE ANIMATION ===== */
+.hero-device-stage{
+  position:absolute;right:17%;top:52%;z-index:1;
+  width:clamp(330px,31vw,500px);height:clamp(390px,55vh,570px);
+  transform:translateY(-50%);pointer-events:none;
+}
+.hero-device-glow{
+  position:absolute;inset:11% 4% 8%;border-radius:50%;
+  background:radial-gradient(circle,rgba(98,0,255,.22) 0%,rgba(128,51,255,.10) 42%,transparent 72%);
+  filter:blur(10px);animation:heroGlow 4.8s ease-in-out infinite;
+}
+.hero-orbit{position:absolute;left:50%;top:50%;border:1px solid rgba(98,0,255,.16);border-radius:50%;transform:translate(-50%,-50%) rotate(-12deg)}
+.hero-orbit.o1{width:96%;height:67%;animation:heroOrbit 14s linear infinite}
+.hero-orbit.o2{width:75%;height:88%;transform:translate(-50%,-50%) rotate(28deg);animation:heroOrbitReverse 18s linear infinite}
+.hero-spark{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--violet);box-shadow:0 0 18px rgba(98,0,255,.65);animation:heroSpark 3.2s ease-in-out infinite}
+.hero-spark.s1{left:8%;top:36%}.hero-spark.s2{right:9%;top:24%;animation-delay:.8s}.hero-spark.s3{right:15%;bottom:18%;animation-delay:1.5s}
+.hero-phone{
+  position:absolute;left:50%;top:50%;border-radius:38px;
+  border:2px solid rgba(255,255,255,.78);overflow:hidden;
+  box-shadow:0 32px 75px rgba(39,12,91,.22),0 0 0 1px rgba(98,0,255,.16);
+}
+.hero-phone.back{
+  width:43%;height:69%;transform:translate(-72%,-48%) rotate(-13deg);
+  background:linear-gradient(145deg,#e9e1ff 0%,#a986ef 48%,#5c31b6 100%);
+  animation:heroPhoneBack 5.5s ease-in-out infinite;
+}
+.hero-phone.back::before{
+  content:'';position:absolute;left:9%;top:7%;width:39%;aspect-ratio:1;border-radius:25%;
+  background:
+    radial-gradient(circle at 29% 29%,#080810 0 16%,#242433 17% 23%,transparent 24%),
+    radial-gradient(circle at 71% 29%,#080810 0 16%,#242433 17% 23%,transparent 24%),
+    radial-gradient(circle at 29% 71%,#080810 0 16%,#242433 17% 23%,transparent 24%),
+    linear-gradient(145deg,rgba(255,255,255,.5),rgba(98,0,255,.22));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.45);
+}
+.hero-phone.back::after{content:'●';position:absolute;left:50%;top:53%;transform:translate(-50%,-50%);font-size:2.2rem;color:rgba(255,255,255,.36)}
+.hero-phone.front{
+  width:45%;height:72%;transform:translate(-27%,-42%) rotate(9deg);
+  background:linear-gradient(155deg,#111 0%,#19073d 20%,#6a00ff 45%,#160047 65%,#05050a 100%);
+  animation:heroPhoneFront 5.1s ease-in-out .25s infinite;
+}
+.hero-phone.front::before{
+  content:'';position:absolute;left:50%;top:3.2%;width:34%;height:3.7%;transform:translateX(-50%);
+  border-radius:999px;background:#050505;box-shadow:0 0 0 1px rgba(255,255,255,.05);
+}
+.hero-phone.front::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(125deg,transparent 0 38%,rgba(255,255,255,.16) 48%,transparent 58%),radial-gradient(circle at 65% 35%,rgba(183,111,255,.55),transparent 24%);
+  animation:heroScreenShine 4.6s ease-in-out infinite;
+}
+.hero-device-badge{
+  position:absolute;display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:14px;
+  background:var(--card);border:1px solid rgba(98,0,255,.18);box-shadow:0 12px 30px rgba(0,0,0,.12);
+  color:var(--text);font-size:.68rem;font-weight:700;line-height:1.15;backdrop-filter:blur(12px);
+  animation:heroBadgeFloat 4s ease-in-out infinite;
+}
+.hero-device-badge span{display:grid;place-items:center;width:25px;height:25px;border-radius:8px;background:rgba(98,0,255,.10);color:var(--violet);font-size:.9rem}
+.hero-device-badge.b1{left:0;top:31%}.hero-device-badge.b2{right:-2%;bottom:20%;animation-delay:.9s}.hero-device-badge.b3{left:5%;bottom:10%;animation-delay:1.6s}
+@keyframes heroPhoneFront{0%,100%{transform:translate(-27%,-42%) rotate(9deg)}50%{transform:translate(-27%,-46%) rotate(6deg)}}
+@keyframes heroPhoneBack{0%,100%{transform:translate(-72%,-48%) rotate(-13deg)}50%{transform:translate(-72%,-52%) rotate(-10deg)}}
+@keyframes heroGlow{0%,100%{opacity:.62;transform:scale(.96)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes heroOrbit{to{transform:translate(-50%,-50%) rotate(348deg)}}
+@keyframes heroOrbitReverse{to{transform:translate(-50%,-50%) rotate(-332deg)}}
+@keyframes heroSpark{0%,100%{opacity:.25;transform:scale(.7)}50%{opacity:1;transform:scale(1.35)}}
+@keyframes heroBadgeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes heroScreenShine{0%,100%{opacity:.55;transform:translateX(-8%)}50%{opacity:1;transform:translateX(8%)}}
+@media(max-width:1100px) and (min-width:851px){.hero-device-stage{right:9%;width:390px;height:470px}.hero-device-badge.b1{left:-2%}.hero-device-badge.b2{right:-4%}}
+@media(max-width:850px){
+  .hero-device-stage{position:relative;right:auto;top:auto;transform:none;width:min(92vw,430px);height:330px;align-self:center;margin:26px auto 6px;z-index:1}
+  .hero-phone{border-radius:30px}.hero-device-badge{font-size:.62rem;padding:7px 9px}.hero-device-badge span{width:22px;height:22px;font-size:.78rem}
+  .hero-device-badge.b1{left:2%;top:29%}.hero-device-badge.b2{right:1%;bottom:19%}.hero-device-badge.b3{left:8%;bottom:8%}
+}
+@media(max-width:480px){
+  .hero-device-stage{width:100%;height:270px;margin-top:20px}.hero-phone{border-radius:25px}
+  .hero-device-badge.b1{left:1%;top:27%}.hero-device-badge.b2{right:0;bottom:16%}.hero-device-badge.b3{display:none}
+  .hero-orbit.o2{display:none}.hero-spark.s3{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-device-stage *{animation:none!important}
+}
+'''
+              anchor = '/* ===== WHATSAPP FLOATING HELP ===== */'
+              if anchor in text:
+                  text = text.replace(anchor, css + '\n' + anchor, 1)
+              else:
+                  text = text.replace('</style>', css + '\n</style>', 1)
+              print('Hero animation CSS inserted')
+
+          html_marker = 'id="hero-device-stage"'
+          if html_marker not in text:
+              hero = '''
+  <div id="hero-device-stage" class="hero-device-stage" aria-hidden="true">
+    <div class="hero-device-glow"></div>
+    <div class="hero-orbit o1"></div>
+    <div class="hero-orbit o2"></div>
+    <div class="hero-spark s1"></div><div class="hero-spark s2"></div><div class="hero-spark s3"></div>
+    <div class="hero-phone back"></div>
+    <div class="hero-phone front"></div>
+    <div class="hero-device-badge b1"><span>✓</span><div>Garantía<br>incluida</div></div>
+    <div class="hero-device-badge b2"><span>12</span><div>Hasta 12<br>cuotas</div></div>
+    <div class="hero-device-badge b3"><span>↗</span><div>Envíos a<br>todo el país</div></div>
+  </div>
+'''
+              anchor = '<div class="hero-float">'
+              if anchor not in text:
+                  raise SystemExit('Could not find hero float anchor')
+              text = text.replace(anchor, hero + anchor, 1)
+              print('Hero animation HTML inserted')
+
+          p.write_text(text, encoding='utf-8')
+          PY
       - name: Ensure WhatsApp floating prompt
         run: |
           python - <<'PY'
