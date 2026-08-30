@@ -1,0 +1,272 @@
+name: Apply homepage hero redesign
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-hero-redesign.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-hero:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply animated hero redesign
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+
+          if 'HERO REDESIGN 2026' in text:
+              print('Hero redesign is already present; nothing to do.')
+              raise SystemExit(0)
+
+          hero_css = r'''
+          /* ===== HERO REDESIGN 2026 ===== */
+          .hero.hero-redesign{
+            min-height:calc(100vh - 20px);
+            padding:118px 5% 120px;
+            background:
+              radial-gradient(circle at 72% 46%,rgba(98,0,255,.11),transparent 34%),
+              radial-gradient(circle at 88% 24%,rgba(155,89,255,.08),transparent 26%),
+              linear-gradient(135deg,var(--bg) 0%,var(--bg) 38%,rgba(98,0,255,.035) 100%);
+            isolation:isolate;
+          }
+          [data-theme="light"] .hero.hero-redesign{background:
+            radial-gradient(circle at 72% 46%,rgba(119,64,255,.13),transparent 34%),
+            radial-gradient(circle at 88% 24%,rgba(155,89,255,.10),transparent 26%),
+            linear-gradient(135deg,#f8f8fc 0%,#f7f6fc 42%,#f5f1ff 100%);
+          }
+          .hero.hero-redesign::before{
+            content:'';position:absolute;inset:0;z-index:-3;pointer-events:none;
+            background:linear-gradient(90deg,rgba(255,255,255,.16),transparent 45%,rgba(98,0,255,.025));
+          }
+          .hero.hero-redesign::after{
+            content:'';position:absolute;width:760px;height:760px;right:-180px;top:100px;border-radius:50%;
+            background:radial-gradient(circle,rgba(98,0,255,.09) 0%,rgba(98,0,255,.035) 36%,transparent 70%);
+            filter:blur(2px);z-index:-2;pointer-events:none;
+          }
+          .hero-redesign .hero-content{position:relative;z-index:8;max-width:610px;width:44%;}
+          .hero-redesign .hero-tag{box-shadow:0 8px 28px rgba(98,0,255,.08);backdrop-filter:blur(10px)}
+          .hero-redesign h1{font-size:clamp(4rem,7vw,7.25rem);max-width:650px;text-wrap:balance;}
+          .hero-redesign h1 .vio{background:linear-gradient(180deg,#7d26ff,#4f00ff);-webkit-background-clip:text;background-clip:text;color:transparent;}
+          .hero-redesign .hero-btns .btn-ghost{background:rgba(255,255,255,.32);backdrop-filter:blur(12px)}
+          [data-theme="dark"] .hero-redesign .hero-btns .btn-ghost{background:rgba(255,255,255,.03)}
+
+          .hero-visual{
+            position:absolute;right:1.5%;top:51%;transform:translateY(-50%);
+            width:min(54vw,820px);height:min(76vh,690px);min-height:570px;
+            z-index:4;pointer-events:none;
+            animation:heroVisualEnter .9s cubic-bezier(.2,.75,.2,1) both;
+          }
+          .hero-orbit{position:absolute;left:50%;top:47%;border:2px solid rgba(126,70,255,.18);border-radius:50%;transform:translate(-50%,-50%) rotate(-12deg);}
+          .hero-orbit::after{content:'';position:absolute;width:9px;height:9px;border-radius:50%;background:#995dff;box-shadow:0 0 18px rgba(98,0,255,.8);top:12%;left:11%;}
+          .hero-orbit.o1{width:600px;height:500px;animation:heroOrbitSpin 18s linear infinite;}
+          .hero-orbit.o2{width:510px;height:610px;opacity:.75;transform:translate(-50%,-50%) rotate(34deg);animation:heroOrbitSpinReverse 24s linear infinite;}
+          .hero-orbit.o3{width:430px;height:430px;border-color:rgba(255,255,255,.72);box-shadow:0 0 32px rgba(98,0,255,.12);animation:heroOrbitPulse 5s ease-in-out infinite;}
+
+          .hero-pedestal{
+            position:absolute;left:50%;bottom:18px;transform:translateX(-50%);width:500px;height:94px;border-radius:50%;
+            background:linear-gradient(180deg,#fff 0%,#fbfaff 45%,#e9dfff 100%);
+            box-shadow:0 16px 34px rgba(59,31,120,.18),0 0 28px rgba(98,0,255,.24),inset 0 -8px 16px rgba(98,0,255,.08);
+          }
+          .hero-pedestal::before,.hero-pedestal::after{content:'';position:absolute;left:50%;transform:translateX(-50%);border-radius:50%;background:linear-gradient(180deg,#fff,#ede4ff);box-shadow:0 8px 20px rgba(98,0,255,.14);}
+          .hero-pedestal::before{width:455px;height:66px;top:-23px;}
+          .hero-pedestal::after{width:390px;height:48px;top:-41px;background:linear-gradient(180deg,#fff,#f5f1ff);}
+          [data-theme="dark"] .hero-pedestal{background:linear-gradient(180deg,#292630,#1a1722);box-shadow:0 16px 34px rgba(0,0,0,.4),0 0 28px rgba(98,0,255,.26)}
+          [data-theme="dark"] .hero-pedestal::before,[data-theme="dark"] .hero-pedestal::after{background:linear-gradient(180deg,#302c3a,#1e1a29)}
+
+          .hero-phone-back{
+            position:absolute;left:43%;top:43%;width:220px;height:425px;transform:translate(-50%,-50%) rotate(-16deg);
+            border-radius:39px;background:linear-gradient(145deg,#d8cbff 0%,#aa91ee 40%,#6e54b2 100%);
+            border:7px solid rgba(71,50,119,.55);box-shadow:0 35px 52px rgba(42,23,89,.3),inset 0 0 0 2px rgba(255,255,255,.35);
+            animation:heroBackFloat 5.5s ease-in-out infinite;z-index:5;
+          }
+          .hero-phone-back::after{content:'●';position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);font-size:54px;color:rgba(255,255,255,.24);text-shadow:0 2px 2px rgba(66,43,119,.15);}
+          .hero-camera-bump{position:absolute;top:22px;left:18px;width:96px;height:104px;border-radius:27px;background:linear-gradient(145deg,#ccbfff,#9a85db);box-shadow:inset 0 0 0 2px rgba(255,255,255,.25),0 5px 12px rgba(55,38,90,.22)}
+          .hero-lens{position:absolute;width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 38% 32%,#4a4263 0 8%,#15131b 24%,#030305 54%,#201938 70%,#08070c 100%);border:3px solid #59506f;box-shadow:0 3px 8px rgba(0,0,0,.45)}
+          .hero-lens.l1{left:9px;top:9px}.hero-lens.l2{right:9px;top:29px}.hero-lens.l3{left:12px;bottom:8px}.hero-camera-flash{position:absolute;width:14px;height:14px;border-radius:50%;right:12px;top:10px;background:#f8e7ba;box-shadow:0 0 7px rgba(255,224,147,.7)}
+
+          .hero-phone-image{
+            position:absolute;left:60%;top:45%;width:285px;height:520px;object-fit:contain;transform:translate(-50%,-50%) rotate(8deg);
+            filter:drop-shadow(0 32px 24px rgba(46,24,92,.32));z-index:7;
+            animation:heroPhoneFloat 5s ease-in-out infinite;will-change:transform;
+          }
+          .hero-phone-glow{position:absolute;left:54%;top:43%;width:330px;height:420px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(119,44,255,.28),rgba(85,17,255,.07) 45%,transparent 72%);filter:blur(18px);z-index:3;animation:heroGlowPulse 4s ease-in-out infinite;}
+
+          .hero-benefit,.hero-arrival{
+            position:absolute;z-index:10;display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.78);color:#17131d;
+            border:1px solid rgba(132,86,255,.12);box-shadow:0 12px 35px rgba(58,37,102,.13);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+          }
+          [data-theme="dark"] .hero-benefit,[data-theme="dark"] .hero-arrival{background:rgba(27,24,34,.82);color:#f7f4ff;border-color:rgba(151,112,255,.2)}
+          .hero-benefit{padding:14px 15px;border-radius:18px;font-size:.78rem;line-height:1.18;text-align:center;flex-direction:column;min-width:96px;animation:heroCardFloat 4s ease-in-out infinite;}
+          .hero-benefit svg,.hero-trust-icon svg{width:31px;height:31px;stroke:#8d49ff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+          .hero-benefit strong{display:block;font-weight:700;margin-top:2px}
+          .hero-benefit.warranty{left:11%;top:40%;}
+          .hero-benefit.shipping{left:5%;bottom:120px;animation-delay:-1.4s;}
+          .hero-benefit.payment{right:7%;bottom:115px;animation-delay:-2.1s;}
+          .hero-arrival{right:2%;top:2%;padding:15px 21px;border-radius:19px;min-width:205px;pointer-events:auto;animation:heroCardFloat 4.6s ease-in-out infinite -1s;}
+          .hero-arrival-dot{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,#b77aff,#7b36ff);box-shadow:0 0 18px rgba(98,0,255,.3);flex:0 0 auto;}
+          .hero-arrival small{display:block;color:var(--gray);font-size:.68rem;letter-spacing:.35px;margin-bottom:4px;}
+          .hero-arrival strong{display:block;font-size:.95rem;line-height:1.15;max-width:175px;}
+
+          .hero-trust{
+            position:absolute;left:4%;bottom:26px;z-index:12;width:min(66vw,1020px);display:grid;grid-template-columns:repeat(4,1fr);gap:4px;
+            padding:20px 24px;border-radius:22px;background:rgba(255,255,255,.74);border:1px solid rgba(103,56,200,.09);
+            box-shadow:0 16px 38px rgba(38,25,68,.08);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);animation:heroTrustEnter .8s ease .35s both;
+          }
+          [data-theme="dark"] .hero-trust{background:rgba(24,22,29,.78);border-color:rgba(151,112,255,.16);box-shadow:0 16px 38px rgba(0,0,0,.22)}
+          .hero-trust-item{display:flex;align-items:center;gap:12px;padding:2px 16px;border-right:1px solid var(--border);min-width:0;}
+          .hero-trust-item:last-child{border-right:none}.hero-trust-icon{width:40px;height:40px;flex:0 0 40px;border-radius:50%;display:grid;place-items:center;background:rgba(98,0,255,.07)}
+          .hero-trust-icon svg{width:25px;height:25px}.hero-trust-copy{font-size:.76rem;color:var(--gray);line-height:1.22}.hero-trust-copy strong{display:block;color:var(--text);font-size:.9rem;margin-top:2px;white-space:nowrap}
+
+          .hero-wa-guide{position:absolute;right:1.2%;bottom:18px;width:150px;height:130px;z-index:11;opacity:.78;pointer-events:none;}
+          .hero-wa-guide svg{width:100%;height:100%;overflow:visible;stroke:#985cff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+
+          @keyframes heroVisualEnter{from{opacity:0;transform:translateY(-46%) scale(.96)}to{opacity:1;transform:translateY(-50%) scale(1)}}
+          @keyframes heroPhoneFloat{0%,100%{transform:translate(-50%,-50%) rotate(8deg) translateY(0)}50%{transform:translate(-50%,-50%) rotate(6deg) translateY(-14px)}}
+          @keyframes heroBackFloat{0%,100%{transform:translate(-50%,-50%) rotate(-16deg) translateY(0)}50%{transform:translate(-50%,-50%) rotate(-13deg) translateY(10px)}}
+          @keyframes heroOrbitSpin{to{transform:translate(-50%,-50%) rotate(348deg)}}
+          @keyframes heroOrbitSpinReverse{to{transform:translate(-50%,-50%) rotate(-326deg)}}
+          @keyframes heroOrbitPulse{0%,100%{opacity:.5;transform:translate(-50%,-50%) rotate(6deg) scale(1)}50%{opacity:.9;transform:translate(-50%,-50%) rotate(11deg) scale(1.035)}}
+          @keyframes heroGlowPulse{0%,100%{opacity:.7;transform:translate(-50%,-50%) scale(.96)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}}
+          @keyframes heroCardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+          @keyframes heroTrustEnter{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+          @media(max-width:1180px){
+            .hero-redesign .hero-content{width:47%}.hero-visual{right:-5%;width:57vw;transform:translateY(-50%) scale(.9)}
+            .hero-redesign h1{font-size:clamp(3.8rem,6.8vw,6.4rem)}.hero-trust{width:72vw}.hero-wa-guide{display:none}
+          }
+          @media(max-width:850px){
+            .hero.hero-redesign{min-height:auto;display:flex;flex-direction:column;align-items:stretch;padding:105px 6% 36px;overflow:hidden;}
+            .hero-redesign .hero-content{width:100%;max-width:620px}.hero-redesign h1{font-size:clamp(3.25rem,14vw,5.3rem);}
+            .hero-visual{position:relative;right:auto;top:auto;width:100%;height:520px;min-height:0;transform:none;margin:20px auto 0;animation:heroVisualEnterMobile .8s ease both;}
+            .hero-orbit.o1{width:490px;height:400px}.hero-orbit.o2{width:390px;height:480px}.hero-orbit.o3{width:340px;height:340px}
+            .hero-pedestal{width:430px;bottom:15px}.hero-pedestal::before{width:390px}.hero-pedestal::after{width:335px}
+            .hero-phone-image{width:240px;height:430px;left:61%;top:44%}.hero-phone-back{width:185px;height:355px;left:42%;top:43%}
+            .hero-benefit.warranty{left:5%;top:37%}.hero-benefit.shipping{left:0;bottom:82px}.hero-benefit.payment{right:0;bottom:82px}.hero-arrival{right:0;top:4%;min-width:190px}
+            .hero-trust{position:relative;left:auto;bottom:auto;width:100%;margin-top:5px;grid-template-columns:repeat(2,1fr);gap:0;padding:12px 8px;}
+            .hero-trust-item{border-right:none;border-bottom:1px solid var(--border);padding:12px}.hero-trust-item:nth-last-child(-n+2){border-bottom:none}.hero-trust-copy strong{white-space:normal}
+            @keyframes heroVisualEnterMobile{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+          }
+          @media(max-width:560px){
+            .hero.hero-redesign{padding-left:5%;padding-right:5%}.hero-redesign .hero-tag{font-size:.64rem;letter-spacing:1.5px}.hero-redesign .hero-btns{gap:10px}.hero-redesign .btn-primary,.hero-redesign .btn-ghost{padding:12px 18px;font-size:.78rem}
+            .hero-visual{height:445px;margin-top:12px}.hero-orbit.o1{width:410px;height:330px}.hero-orbit.o2{width:330px;height:410px}.hero-orbit.o3{width:280px;height:280px}
+            .hero-pedestal{width:340px;height:76px;bottom:11px}.hero-pedestal::before{width:310px;height:52px;top:-18px}.hero-pedestal::after{width:270px;height:42px;top:-33px}
+            .hero-phone-image{width:205px;height:360px;left:61%;top:43%}.hero-phone-back{width:150px;height:290px;left:40%;top:42%;border-width:5px;border-radius:30px}.hero-camera-bump{transform:scale(.78);transform-origin:top left}
+            .hero-benefit{min-width:76px;padding:10px 8px;font-size:.64rem;border-radius:14px}.hero-benefit svg{width:25px;height:25px}.hero-benefit.warranty{left:1%;top:39%}.hero-benefit.shipping{left:-2%;bottom:66px}.hero-benefit.payment{right:-2%;bottom:66px}
+            .hero-arrival{right:0;top:1%;padding:11px 13px;min-width:160px}.hero-arrival strong{font-size:.78rem}.hero-arrival small{font-size:.59rem}
+            .hero-trust{grid-template-columns:1fr 1fr;border-radius:18px}.hero-trust-item{gap:8px;padding:10px 6px}.hero-trust-icon{width:34px;height:34px;flex-basis:34px}.hero-trust-copy{font-size:.65rem}.hero-trust-copy strong{font-size:.75rem}
+          }
+          @media(max-width:400px){.hero-benefit.warranty{display:none}.hero-benefit.shipping{left:0}.hero-benefit.payment{right:0}.hero-phone-image{left:60%}.hero-phone-back{left:39%}}
+          @media(prefers-reduced-motion:reduce){.hero-visual,.hero-orbit,.hero-phone-image,.hero-phone-back,.hero-phone-glow,.hero-benefit,.hero-arrival,.hero-trust{animation:none!important}}
+          '''
+
+          hero_html = r'''
+          <section class="hero hero-redesign">
+            <div class="hero-content">
+              <div class="hero-tag anim-fade-in"><span class="dot"></span>Tienda Oficial Rosario</div>
+              <h1 class="anim-fade-up delay-1"><span class="vio">iPhone</span><br>Seminuevos &<br>Sellados</h1>
+              <p class="anim-fade-up delay-2">La mejor opción para tu cambio. Todos los equipos con garantía, financiación y envío a todo el país.</p>
+              <div class="hero-btns anim-fade-up delay-3">
+                <a href="#sellados" class="btn-primary">Ver Productos</a>
+                <a href="https://wa.me/5493412521678" target="_blank" class="btn-ghost">Consultar por WhatsApp</a>
+              </div>
+            </div>
+
+            <div class="hero-visual">
+              <div class="hero-orbit o1" aria-hidden="true"></div>
+              <div class="hero-orbit o2" aria-hidden="true"></div>
+              <div class="hero-orbit o3" aria-hidden="true"></div>
+              <div class="hero-phone-glow" aria-hidden="true"></div>
+              <div class="hero-pedestal" aria-hidden="true"></div>
+
+              <div class="hero-phone-back" aria-hidden="true">
+                <div class="hero-camera-bump">
+                  <span class="hero-lens l1"></span><span class="hero-lens l2"></span><span class="hero-lens l3"></span><span class="hero-camera-flash"></span>
+                </div>
+              </div>
+              <img id="heroPhoneImage" class="hero-phone-image" src="https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-16-ultramarine-select-202409?wid=940&hei=1112&fmt=png-alpha" alt="iPhone destacado" loading="eager" decoding="async" fetchpriority="high">
+
+              <div class="hero-benefit warranty">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.8 8.2 7 10 4.2-1.8 7-5.4 7-10V6l-7-3Z"/><path d="m9.2 12 1.8 1.8 3.8-4"/></svg>
+                <span>Garantía<strong>Oficial</strong></span>
+              </div>
+              <div class="hero-benefit shipping">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v10H3z"/><path d="M14 9h4l3 3v4h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+                <span>Envíos a<strong>todo el país</strong></span>
+              </div>
+              <div class="hero-benefit payment">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M7 15h4"/></svg>
+                <span>Hasta<strong>12 cuotas</strong></span>
+              </div>
+              <div class="hero-arrival">
+                <span class="hero-arrival-dot"></span>
+                <div><small>NUEVO INGRESO</small><strong id="heroNewest">Cargando...</strong></div>
+              </div>
+            </div>
+
+            <div class="hero-trust" aria-label="Beneficios de compra">
+              <div class="hero-trust-item"><span class="hero-trust-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="m8 13-2 8 6-3 6 3-2-8"/></svg></span><span class="hero-trust-copy">Productos<strong>100% Originales</strong></span></div>
+              <div class="hero-trust-item"><span class="hero-trust-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg></span><span class="hero-trust-copy">Revisados por<strong>Expertos</strong></span></div>
+              <div class="hero-trust-item"><span class="hero-trust-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="9" width="12" height="11" rx="2"/><path d="M9 9V6a3 3 0 0 1 6 0v3M12 13v3"/></svg></span><span class="hero-trust-copy">Compra 100%<strong>Segura</strong></span></div>
+              <div class="hero-trust-item"><span class="hero-trust-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/></svg></span><span class="hero-trust-copy">+1000 Clientes<strong>Satisfechos</strong></span></div>
+            </div>
+
+            <div class="hero-wa-guide" aria-hidden="true">
+              <svg viewBox="0 0 150 130"><path d="M10 12c35 9 51 31 55 60 3 21 17 29 44 28"/><path d="m99 90 12 10-12 10"/><path d="M120 61l5-12M132 67l10-7M137 80h12"/></svg>
+            </div>
+          </section>
+          '''
+
+          css_anchor = '/* ===== PROMO MODAL ===== */'
+          if css_anchor not in text:
+              raise SystemExit('Could not find CSS insertion anchor')
+          text = text.replace(css_anchor, hero_css + '\n\n' + css_anchor, 1)
+
+          hero_pattern = re.compile(r'<section class="hero">.*?</section>', re.S)
+          text, hero_count = hero_pattern.subn(hero_html.strip(), text, count=1)
+          if hero_count != 1:
+              raise SystemExit(f'Expected to replace exactly one hero section, replaced {hero_count}')
+
+          old_js = """  const newest = sellados[0] || usados[0] || storeProducts[0];
+  if(newest) document.getElementById('heroNewest').textContent = newest.name + ' ' + (newest.storage||'');"""
+          new_js = """  const newest = sellados[0] || usados[0] || storeProducts[0];
+  const heroNewestEl = document.getElementById('heroNewest');
+  if(newest && heroNewestEl) heroNewestEl.textContent = newest.name + ' ' + (newest.storage||'');
+
+  // Hero visual: usa una imagen real del catálogo y se actualiza junto con los productos.
+  const heroImageEl = document.getElementById('heroPhoneImage');
+  const showcaseProducts = sortIphoneProducts([...sellados, ...usados].filter(p => p.image));
+  const showcaseProduct = showcaseProducts[showcaseProducts.length - 1] || newest;
+  if(heroImageEl && showcaseProduct && showcaseProduct.image){
+    heroImageEl.src = normalizeProductImageUrl(showcaseProduct.image);
+    heroImageEl.alt = (showcaseProduct.name || 'iPhone') + ' destacado';
+  }"""
+          if old_js not in text:
+              raise SystemExit('Could not find heroNewest JS block')
+          text = text.replace(old_js, new_js, 1)
+
+          path.write_text(text, encoding='utf-8')
+          print('Animated homepage hero redesign applied successfully.')
+          PY
+
+      - name: Commit homepage redesign
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'No index.html changes to commit.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Redesign homepage hero with animated iPhone showcase'
+          git push
