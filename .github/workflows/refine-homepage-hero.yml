@@ -31,12 +31,10 @@ jobs:
           override = r'''
 
 /* HERO REFINEMENT: REAL PHONE ONLY ON DESKTOP */
-/* Remove the CSS-generated rear phone. Keep only the real catalogue image on desktop. */
 .hero-phone-back{
   display:none !important;
 }
 
-/* On phones/tablets, keep the hero clean: text + CTAs + trust strip, no phone composition. */
 @media (max-width:850px){
   .hero-visual{
     display:none !important;
@@ -76,3 +74,5 @@ jobs:
           git add hero-redesign.css
           git commit -m 'Refine hero: real phone only and hide visual on mobile'
           git push
+
+# trigger 2
