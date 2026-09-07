@@ -1,0 +1,94 @@
+(function(){
+  const frame=document.getElementById('adminFrame');
+  if(!frame) return;
+  frame.addEventListener('load',()=>{
+    const w=frame.contentWindow;
+    const d=frame.contentDocument;
+    if(!w||!d||w.__driveImagesPatched) return;
+    w.__driveImagesPatched=true;
+
+    const originalLoad=w.loadAutoImages;
+    const originalSelect=w.selectAutoImage;
+    const originalOpen=w.openModal;
+    const originalInline=w.initInlineForm;
+
+    function variantsFor(name){
+      try{return window.getProductVariants(name)||[];}catch(e){return [];}
+    }
+    function urlFor(id){
+      try{return window.productDriveImageUrl(id);}catch(e){return '';}
+    }
+    function esc(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+    w.loadAutoImages=function(name){
+      const variants=variantsFor(name);
+      if(!variants.length){
+        if(typeof originalLoad==='function') return originalLoad.call(w,name);
+        return;
+      }
+      const panel=d.getElementById('autoImgPanel');
+      if(!panel) return;
+      panel.style.display='block';
+
+      const title=panel.querySelector('.img-auto-title');
+      if(title){
+        const svg=title.querySelector('svg');
+        title.innerHTML='';
+        if(svg) title.appendChild(svg);
+        title.appendChild(d.createTextNode(' Imágenes del Drive por color'));
+      }
+      const info=panel.querySelector('p');
+      if(info) info.textContent='Elegí una foto del Drive para asignarla al producto:';
+
+      const status=d.getElementById('autoImgStatus');
+      if(status){status.textContent=variants.length+' colores disponibles';status.className='img-auto-status found';}
+      const thumbs=d.getElementById('autoImgThumbs');
+      if(!thumbs) return;
+      thumbs.innerHTML=variants.map((v,i)=>{
+        const url=urlFor(v.id);
+        return `<div class="img-thumb-opt" id="thumb_${i}" onclick="selectAutoImage('${esc(url)}',${i})" title="${esc(v.color)}"><img src="${url}" alt="${esc(v.color)}" loading="lazy" onerror="this.closest('.img-thumb-opt').style.display='none'"><div class="thumb-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div style="position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:.5rem;color:var(--gray);background:rgba(0,0,0,.5);border-radius:0 0 8px 8px;padding:1px 2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${esc(v.color)}</div></div>`;
+      }).join('');
+
+      const current=d.getElementById('fImage')?.value||'';
+      variants.forEach((v,i)=>{
+        if(urlFor(v.id)===current) d.getElementById('thumb_'+i)?.classList.add('selected');
+      });
+    };
+
+    w.selectAutoImage=function(url,idx){
+      if(typeof originalSelect==='function') originalSelect.call(w,url,idx);
+      const st=d.getElementById('imgStatus');
+      if(st){st.className='upload-status show ok';st.textContent='✓ Imagen del Drive asignada';}
+    };
+
+    w.triggerAutoImage=function(name){
+      if(!name||name.length<4){
+        if(typeof w.clearAutoImagePanel==='function') w.clearAutoImagePanel();
+        return;
+      }
+      clearTimeout(w.__driveImgTimer);
+      w.__driveImgTimer=setTimeout(()=>w.loadAutoImages(name),180);
+    };
+
+    if(typeof originalOpen==='function'){
+      w.openModal=function(id){
+        const r=originalOpen.call(w,id);
+        setTimeout(()=>{
+          const name=d.getElementById('fName')?.value?.trim();
+          if(name) w.loadAutoImages(name);
+        },0);
+        return r;
+      };
+    }
+    if(typeof originalInline==='function'){
+      w.initInlineForm=function(){
+        const r=originalInline.call(w);
+        setTimeout(()=>{
+          const name=d.getElementById('fName')?.value?.trim();
+          if(name) w.loadAutoImages(name);
+        },0);
+        return r;
+      };
+    }
+  });
+})();
