@@ -1,0 +1,45 @@
+name: Fix catalog visibility
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-catalog-visibility.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix-catalog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Keep saved products visible in storefront
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+          old = "const sellados = sortIphoneProducts(storeProducts.filter(p=>p.category==='sellado'&&p.stock!==false));"
+          new = "const sellados = sortIphoneProducts(storeProducts.filter(p=>p.category==='sellado'));"
+          if old in text:
+              text = text.replace(old, new, 1)
+              p.write_text(text, encoding='utf-8')
+              print('Sellados visibility fixed')
+          elif new in text:
+              print('Visibility fix already applied')
+          else:
+              raise SystemExit('Could not find sellados filter')
+          PY
+      - name: Commit fix
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          if git diff --cached --quiet; then
+            echo 'No changes to commit'
+            exit 0
+          fi
+          git commit -m 'Show saved sellados even when out of stock'
+          git push
