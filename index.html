@@ -1118,7 +1118,7 @@ function sortIphoneProducts(items){
 
 
 function renderAllGrids(){
-  const sellados = sortIphoneProducts(storeProducts.filter(p=>p.category==='sellado'&&p.stock!==false));
+  const sellados = sortIphoneProducts(storeProducts.filter(p=>p.category==='sellado'));
   const usados   = sortIphoneProducts(storeProducts.filter(p=>p.category==='usado'));
   const gaming   = storeProducts.filter(p=>p.category==='gaming'&&p.stock!==false);
   const tablets  = storeProducts.filter(p=>p.category==='tablet'&&p.stock!==false);
