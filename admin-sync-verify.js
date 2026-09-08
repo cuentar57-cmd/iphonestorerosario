@@ -10,7 +10,19 @@
 
     const originalSaveProducts=typeof w.saveProducts==='function'?w.saveProducts.bind(w):null;
     const originalSyncFromSheets=typeof w.syncFromSheets==='function'?w.syncFromSheets.bind(w):null;
+    const originalPushToSheets=typeof w.pushToSheets==='function'?w.pushToSheets.bind(w):null;
     if(!originalSaveProducts) return;
+
+    // Never hide Google Sheets write errors. The original admin used silent=true,
+    // which made a failed POST look like a successful local save.
+    if(originalPushToSheets){
+      w.pushToSheets=function(){
+        return originalPushToSheets(false);
+      };
+      w.autoPush=function(){
+        return w.pushToSheets(false);
+      };
+    }
 
     let pendingProduct=null;
 
@@ -37,7 +49,7 @@
         }
 
         if(typeof w.updateSheetsBadge==='function') w.updateSheetsBadge(false);
-        if(typeof w.showToast==='function') w.showToast('⚠️ El producto todavía NO está guardado en Google Sheets. No sincronices todavía.','error');
+        if(typeof w.showToast==='function') w.showToast('⚠️ El producto NO quedó guardado en Google Sheets. Revisá el error de exportación.','error');
         return false;
       }catch(err){
         if(typeof w.updateSheetsBadge==='function') w.updateSheetsBadge(false);
@@ -48,7 +60,6 @@
 
     w.saveProducts=function(p){
       if(Array.isArray(p)&&p.length){
-        // New products are inserted at the beginning of the array.
         pendingProduct={...p[0]};
       }
       const result=originalSaveProducts(p);
@@ -62,7 +73,7 @@
         if(pendingProduct){
           const confirmed=await verifyPublished();
           if(!confirmed){
-            if(!silent&&typeof w.showToast==='function') w.showToast('Sincronización bloqueada: hay un producto pendiente que aún no está en Google Sheets.','error');
+            if(typeof w.showToast==='function') w.showToast('Sincronización bloqueada: el producto pendiente todavía no está en Google Sheets.','error');
             return false;
           }
         }
