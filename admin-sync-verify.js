@@ -9,44 +9,65 @@
     w.__syncVerifyPatched=true;
 
     const originalSaveProducts=typeof w.saveProducts==='function'?w.saveProducts.bind(w):null;
+    const originalSyncFromSheets=typeof w.syncFromSheets==='function'?w.syncFromSheets.bind(w):null;
     if(!originalSaveProducts) return;
 
-    async function verifyPublished(savedProducts){
-      try{
-        const res=await fetch(API+'?action=getProducts&_='+Date.now(),{cache:'no-store'});
-        if(!res.ok) throw new Error('HTTP '+res.status+' al verificar catálogo');
-        const data=await res.json();
-        if(!data||!data.ok||!Array.isArray(data.products)) throw new Error((data&&data.error)||'Respuesta inválida de Apps Script');
+    let pendingProduct=null;
 
-        const remote=data.products;
-        const latest=Array.isArray(savedProducts)&&savedProducts.length?savedProducts[savedProducts.length-1]:null;
-        let found=true;
-        if(latest){
-          const id=String(latest.id||'');
-          const name=String(latest.name||'').trim().toLowerCase();
-          found=remote.some(p=>{
-            if(id&&String(p.id||'')===id) return true;
-            return name&&String(p.name||'').trim().toLowerCase()===name;
-          });
-        }
+    async function fetchRemote(){
+      const res=await fetch(API+'?action=getProducts&_='+Date.now(),{cache:'no-store'});
+      if(!res.ok) throw new Error('HTTP '+res.status+' al verificar catálogo');
+      const data=await res.json();
+      if(!data||!data.ok||!Array.isArray(data.products)) throw new Error((data&&data.error)||'Respuesta inválida de Apps Script');
+      return data.products;
+    }
+
+    async function verifyPublished(){
+      if(!pendingProduct) return false;
+      try{
+        const remote=await fetchRemote();
+        const targetId=String(pendingProduct.id||'');
+        const found=targetId && remote.some(p=>String(p.id||'')===targetId);
 
         if(found){
+          pendingProduct=null;
           if(typeof w.updateSheetsBadge==='function') w.updateSheetsBadge(true);
-          if(typeof w.showToast==='function') w.showToast('✓ Guardado en Google Sheets y visible para la web','success');
-        }else{
-          if(typeof w.updateSheetsBadge==='function') w.updateSheetsBadge(false);
-          if(typeof w.showToast==='function') w.showToast('El producto quedó en el panel, pero Apps Script todavía no lo devolvió desde Google Sheets','error');
+          if(typeof w.showToast==='function') w.showToast('✓ Producto confirmado en Google Sheets','success');
+          return true;
         }
+
+        if(typeof w.updateSheetsBadge==='function') w.updateSheetsBadge(false);
+        if(typeof w.showToast==='function') w.showToast('⚠️ El producto todavía NO está guardado en Google Sheets. No sincronices todavía.','error');
+        return false;
       }catch(err){
         if(typeof w.updateSheetsBadge==='function') w.updateSheetsBadge(false);
-        if(typeof w.showToast==='function') w.showToast('No se pudo verificar la publicación: '+(err.message||err),'error');
+        if(typeof w.showToast==='function') w.showToast('No se pudo confirmar el guardado real: '+(err.message||err),'error');
+        return false;
       }
     }
 
     w.saveProducts=function(p){
+      if(Array.isArray(p)&&p.length){
+        // New products are inserted at the beginning of the array.
+        pendingProduct={...p[0]};
+      }
       const result=originalSaveProducts(p);
-      setTimeout(()=>verifyPublished(p),1400);
+      setTimeout(verifyPublished,1800);
+      setTimeout(verifyPublished,4200);
       return result;
     };
+
+    if(originalSyncFromSheets){
+      w.syncFromSheets=async function(silent=false){
+        if(pendingProduct){
+          const confirmed=await verifyPublished();
+          if(!confirmed){
+            if(!silent&&typeof w.showToast==='function') w.showToast('Sincronización bloqueada: hay un producto pendiente que aún no está en Google Sheets.','error');
+            return false;
+          }
+        }
+        return originalSyncFromSheets(silent);
+      };
+    }
   });
 })();
