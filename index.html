@@ -594,6 +594,33 @@ footer p{font-size:.78rem;color:var(--gray)}
   from{opacity:.12;transform:scaleX(.86)}
   to{opacity:.28;transform:scaleX(1)}
 }
+
+/* ISR live catalog skeleton */
+.catalog-skeleton-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:18px;
+  width:100%;
+}
+.catalog-skeleton-card{
+  min-height:340px;
+  border-radius:20px;
+  background:var(--card);
+  border:1px solid var(--border);
+  padding:18px;
+  overflow:hidden;
+}
+.catalog-skeleton-block{
+  border-radius:12px;
+  background:linear-gradient(90deg,rgba(128,128,128,.10),rgba(128,128,128,.22),rgba(128,128,128,.10));
+  background-size:200% 100%;
+  animation:catalogSkeleton 1.15s linear infinite;
+}
+.catalog-skeleton-media{height:190px;margin-bottom:18px}
+.catalog-skeleton-line{height:14px;margin:10px 0}
+.catalog-skeleton-line.short{width:48%}
+.catalog-skeleton-line.mid{width:72%}
+@keyframes catalogSkeleton{to{background-position:-200% 0}}
 </style>
 <link rel="stylesheet" href="hero-redesign.css?v=20260830c">
 <style>.hero-phone-back{display:none!important}@media(max-width:850px){.hero-visual{display:none!important}.hero.hero-redesign{min-height:auto!important;padding:105px 6% 40px!important}.hero-redesign .hero-content{width:100%!important;max-width:100%!important}.hero-trust{position:relative!important;left:auto!important;bottom:auto!important;width:100%!important;margin-top:24px!important}}</style></head>
@@ -1058,9 +1085,8 @@ async function refreshPublishedCatalog(){
 
 async function refreshCatalogNow(){
   const liveOk = await refreshLiveCatalog();
-  if(!liveOk){
-    await refreshPublishedCatalog();
-  }
+  if(liveOk) return true;
+  return await refreshPublishedCatalog();
 }
 
 function bindCatalogRefresh(){
@@ -1083,19 +1109,43 @@ function bindCatalogRefresh(){
   }, 5000);
 }
 
+function renderCatalogSkeletons(){
+  const html=`<div class="catalog-skeleton-grid">${Array.from({length:4},()=>`
+    <div class="catalog-skeleton-card">
+      <div class="catalog-skeleton-block catalog-skeleton-media"></div>
+      <div class="catalog-skeleton-block catalog-skeleton-line mid"></div>
+      <div class="catalog-skeleton-block catalog-skeleton-line short"></div>
+      <div class="catalog-skeleton-block catalog-skeleton-line"></div>
+    </div>`).join('')}</div>`;
+
+  ['gridSellados','gridUsados','gridGaming','gridTablets','gridMacs','gridAccesorios'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.innerHTML=html;
+  });
+}
+
 function loadStoreProducts(){
-  // Primera pintura instantánea desde el catálogo embebido.
-  if(Array.isArray(INITIAL_PRODUCTS)){
-    storeProducts = normalizeProductsFromSheets(INITIAL_PRODUCTS);
-    currentCatalogSignature = catalogSignature(storeProducts);
-    renderAllGrids();
-    hideSplash(true);
-  }
+  // No renderizar INITIAL_PRODUCTS: puede estar unos minutos desactualizado.
+  // Mostrar placeholders y esperar primero al catálogo vivo.
+  renderCatalogSkeletons();
+  hideSplash(true);
 
-  // Inmediatamente después consulta Google Sheets sin bloquear la interfaz.
-  refreshCatalogNow().catch(()=>{});
+  refreshCatalogNow().then(ok=>{
+    if(!ok && Array.isArray(INITIAL_PRODUCTS) && !storeProducts.length){
+      // Último recurso solamente si Apps Script y el catálogo publicado fallan.
+      storeProducts = normalizeProductsFromSheets(INITIAL_PRODUCTS);
+      currentCatalogSignature = catalogSignature(storeProducts);
+      renderAllGrids();
+    }
+  }).catch(()=>{
+    if(Array.isArray(INITIAL_PRODUCTS) && !storeProducts.length){
+      storeProducts = normalizeProductsFromSheets(INITIAL_PRODUCTS);
+      currentCatalogSignature = catalogSignature(storeProducts);
+      renderAllGrids();
+    }
+  });
+
   bindCatalogRefresh();
-
   return Promise.resolve(true);
 }
 
