@@ -569,6 +569,31 @@ footer p{font-size:.78rem;color:var(--gray)}
 @media(prefers-reduced-motion:reduce){
   .wa-help-bubble,.wa-help-bubble::before,.wa-help-bubble::after{animation:none!important}
 }
+
+/* Prevent stale-price flash while live catalog is loading */
+.price-loading{
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  color:var(--muted);
+  font-size:.82rem;
+  font-weight:600;
+  opacity:.8;
+}
+.price-loading::after{
+  content:'';
+  width:42px;
+  height:8px;
+  margin-left:8px;
+  border-radius:999px;
+  background:currentColor;
+  opacity:.18;
+  animation:priceLoadingPulse 1s ease-in-out infinite alternate;
+}
+@keyframes priceLoadingPulse{
+  from{opacity:.12;transform:scaleX(.86)}
+  to{opacity:.28;transform:scaleX(1)}
+}
 </style>
 <link rel="stylesheet" href="hero-redesign.css?v=20260830c">
 <style>.hero-phone-back{display:none!important}@media(max-width:850px){.hero-visual{display:none!important}.hero.hero-redesign{min-height:auto!important;padding:105px 6% 40px!important}.hero-redesign .hero-content{width:100%!important;max-width:100%!important}.hero-trust{position:relative!important;left:auto!important;bottom:auto!important;width:100%!important;margin-top:24px!important}}</style></head>
@@ -1277,9 +1302,11 @@ function buildProductCard(p){
   const priceArs = arsPrice(usdValue);
 
 
-  const stockBtn = p.stock===false
-    ? `<button class="add-cart-btn disabled-btn" disabled>Sin Stock</button>`
-    : `<button class="add-cart-btn" onclick="event.stopPropagation();addToCart('${escQ(p.name)} ${escQ(p.storage||'')}','${categoryIcon(p.category)}',${priceArs})">🛒 Agregar</button>`;
+  const stockBtn = !liveCatalogSucceeded
+    ? `<button class="add-cart-btn disabled-btn" disabled>Actualizando...</button>`
+    : p.stock===false
+      ? `<button class="add-cart-btn disabled-btn" disabled>Sin Stock</button>`
+      : `<button class="add-cart-btn" onclick="event.stopPropagation();addToCart('${escQ(p.name)} ${escQ(p.storage||'')}','${categoryIcon(p.category)}',${priceArs})">🛒 Agregar</button>`;
 
 
   const badge = p.stock===false
@@ -1288,7 +1315,7 @@ function buildProductCard(p){
 
 
   return `
-    <div class="prod-card" onclick="openDetail('${p.id}')">
+    <div class="prod-card" ${liveCatalogSucceeded ? `onclick="openDetail('${p.id}')"` : ''}>
       ${badge}
       <div class="product-media">
         ${imageUrl ? `<img src="${imageUrl}" alt="${p.name}" class="product-image" loading="lazy" decoding="async">` : `<div class="product-placeholder">${categoryIcon(p.category)}</div>`}
@@ -1296,9 +1323,10 @@ function buildProductCard(p){
       <h3>${p.name}</h3>
       <div class="storage">${p.storage||'—'}</div>
       <div class="price-label">Precio</div>
-      <div class="price">${money(priceArs)}</div>
-      <div class="usd-price">USD ${usdValue}</div>
-      <button class="detail-btn" onclick="event.stopPropagation();openDetail('${p.id}')">Ver detalles</button>
+      ${liveCatalogSucceeded
+        ? `<div class="price">${money(priceArs)}</div><div class="usd-price">USD ${usdValue}</div>`
+        : `<div class="price-loading">Actualizando precio</div><div class="usd-price">&nbsp;</div>`}
+      <button class="detail-btn" ${liveCatalogSucceeded ? `onclick="event.stopPropagation();openDetail('${p.id}')"` : 'disabled'}>Ver detalles</button>
       ${stockBtn}
     </div>
   `;
@@ -1315,6 +1343,7 @@ let selectedProduct = null;
 
 
 function openDetail(id){
+  if(!liveCatalogSucceeded) return;
   const p = storeProducts.find(x=>x.id===id);
   if(!p) return;
   selectedProduct = p;
