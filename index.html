@@ -948,45 +948,120 @@ async function loadStaticProductSnapshot(){
 }
 
 
-async function loadStoreProducts(){
-  const hadCachedProducts = hydrateProductsFromCache();
-  if(!hadCachedProducts) loadStaticProductSnapshot();
+let liveCatalogRefreshTimer = null;
+let liveCatalogRefreshInFlight = false;
+let liveCatalogListenersBound = false;
+let liveCatalogSignature = '';
+
+function catalogSignature(products){
+  return JSON.stringify((products || []).map(p => ({
+    id: String(p.id || ''),
+    name: String(p.name || ''),
+    category: String(p.category || ''),
+    storage: String(p.storage || ''),
+    condition: String(p.condition || ''),
+    battery: String(p.battery || ''),
+    color: String(p.color || ''),
+    priceUsd: Number(p.priceUsd || p.usd || p.price || 0),
+    stock: p.stock !== false,
+    active: p.active !== false,
+    image: String(p.image || ''),
+    badge: String(p.badge || ''),
+    description: String(p.description || '')
+  })));
+}
+
+async function refreshStoreProductsFromLiveSource({silent=false} = {}){
+  if(liveCatalogRefreshInFlight) return true;
+  liveCatalogRefreshInFlight = true;
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), PRODUCT_FETCH_TIMEOUT_MS);
+  const timeout = setTimeout(() => controller.abort(), 12000);
 
   try{
-    const r = await fetch(`${SHEETS_URL}?action=getProducts&_=${Date.now()}`, {
+    const separator = SHEETS_URL.includes('?') ? '&' : '?';
+    const r = await fetch(`${SHEETS_URL}${separator}action=getProducts&_=${Date.now()}`, {
       signal: controller.signal,
-      cache: 'no-store'
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, max-age=0',
+        'Pragma': 'no-cache'
+      }
     });
-    if(!r.ok) throw new Error(`HTTP ${r.status}`);
-    const d = await r.json();
 
-    if(d.ok && Array.isArray(d.products) && d.products.length){
-      const freshProducts = normalizeProductsFromSheets(d.products);
-      if(!freshProducts.length) throw new Error('Google Sheets devolvio un catalogo vacio');
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+
+    const d = await r.json();
+    if(!d || !d.ok || !Array.isArray(d.products)){
+      throw new Error((d && d.error) || 'Google Sheets no devolvió un catálogo válido');
+    }
+
+    const freshProducts = normalizeProductsFromSheets(d.products);
+    if(!freshProducts.length){
+      throw new Error('Google Sheets devolvió un catálogo vacío');
+    }
+
+    const signature = catalogSignature(freshProducts);
+    if(signature !== liveCatalogSignature){
       storeProducts = freshProducts;
+      liveCatalogSignature = signature;
       saveCachedProducts(freshProducts);
       renderAllGrids();
-      hideSplash(true);
-      return;
     }
 
-    throw new Error(d.error || 'Google Sheets no devolvio productos');
+    hideSplash(true);
+    return true;
   }catch(e){
-    console.error('[ISR] Error al actualizar productos:', e);
-    if(!storeProducts.length){
-      const cached = readCachedProducts();
-      if(cached.length){
-        storeProducts = cached;
-        renderAllGrids();
-      }
+    console.error('[ISR] No se pudo obtener el catálogo en vivo:', e);
+
+    // Importante: no mostramos precios/productos viejos del navegador.
+    // Si la fuente en vivo falla, preferimos no publicar información desactualizada.
+    if(!silent && !storeProducts.length){
+      storeProducts = [];
+      renderAllGrids();
+      hideSplash(false);
     }
-    hideSplash(storeProducts.length > 0);
+    return false;
   }finally{
     clearTimeout(timeout);
+    liveCatalogRefreshInFlight = false;
   }
+}
+
+function bindLiveCatalogRefresh(){
+  if(liveCatalogListenersBound) return;
+  liveCatalogListenersBound = true;
+
+  window.addEventListener('focus', () => {
+    refreshStoreProductsFromLiveSource({silent:true});
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible'){
+      refreshStoreProductsFromLiveSource({silent:true});
+    }
+  });
+
+  // Mantiene abierta la tienda sincronizada sin necesidad de recargar.
+  liveCatalogRefreshTimer = setInterval(() => {
+    if(document.visibilityState === 'visible'){
+      refreshStoreProductsFromLiveSource({silent:true});
+    }
+  }, 60000);
+}
+
+async function loadStoreProducts(){
+  // Fuente de verdad: Google Sheets. No se hidrata primero desde localStorage
+  // ni desde products-cache.json, para evitar mostrar precios o stock viejos.
+  const firstTry = await refreshStoreProductsFromLiveSource({silent:false});
+
+  // Un segundo intento corto cubre fallos transitorios del Apps Script.
+  if(!firstTry){
+    await new Promise(resolve => setTimeout(resolve, 1200));
+    await refreshStoreProductsFromLiveSource({silent:false});
+  }
+
+  bindLiveCatalogRefresh();
 }
 
 function hideSplash(fast = false){
