@@ -997,10 +997,9 @@ async function refreshStoreProductsFromLiveSource({silent=false} = {}){
     }
 
     const freshProducts = normalizeProductsFromSheets(d.products);
-    if(!freshProducts.length){
-      throw new Error('Google Sheets devolvió un catálogo vacío');
-    }
 
+    // Un catálogo vacío también es un estado válido: por ejemplo, si el
+    // administrador eliminó todos los productos.
     const signature = catalogSignature(freshProducts);
     if(signature !== liveCatalogSignature){
       storeProducts = freshProducts;
@@ -1047,7 +1046,7 @@ function bindLiveCatalogRefresh(){
     if(document.visibilityState === 'visible'){
       refreshStoreProductsFromLiveSource({silent:true});
     }
-  }, 60000);
+  }, 30000);
 }
 
 async function loadStoreProducts(){
