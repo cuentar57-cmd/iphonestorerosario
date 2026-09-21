@@ -948,10 +948,8 @@ async function loadStaticProductSnapshot(){
 }
 
 
-let liveCatalogRefreshTimer = null;
-let liveCatalogRefreshInFlight = false;
-let liveCatalogListenersBound = false;
-let liveCatalogSignature = '';
+let publishedCatalogRefreshTimer = null;
+let publishedCatalogSignature = '';
 
 function catalogSignature(products){
   return JSON.stringify((products || []).map(p => ({
@@ -971,102 +969,63 @@ function catalogSignature(products){
   })));
 }
 
-async function refreshStoreProductsFromLiveSource({silent=false} = {}){
-  if(liveCatalogRefreshInFlight) return true;
-  liveCatalogRefreshInFlight = true;
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 12000);
-
+async function refreshPublishedCatalog(){
   try{
-    const separator = SHEETS_URL.includes('?') ? '&' : '?';
-    const r = await fetch(`${SHEETS_URL}${separator}action=getProducts&_=${Date.now()}`, {
-      signal: controller.signal,
+    const r = await fetch(`${PRODUCTS_STATIC_URL}?_=${Date.now()}`, {
       cache: 'no-store'
     });
-
     if(!r.ok) throw new Error(`HTTP ${r.status}`);
 
     const d = await r.json();
-    if(!d || !d.ok || !Array.isArray(d.products)){
-      throw new Error((d && d.error) || 'Google Sheets no devolvió un catálogo válido');
-    }
+    const products = Array.isArray(d) ? d : d.products;
+    if(!Array.isArray(products)) throw new Error('Catálogo publicado inválido');
 
-    const freshProducts = normalizeProductsFromSheets(d.products);
+    const normalized = normalizeProductsFromSheets(products);
+    const signature = catalogSignature(normalized);
 
-    // Un catálogo vacío también es un estado válido: por ejemplo, si el
-    // administrador eliminó todos los productos.
-    const signature = catalogSignature(freshProducts);
-    if(signature !== liveCatalogSignature){
-      storeProducts = freshProducts;
-      liveCatalogSignature = signature;
-      saveCachedProducts(freshProducts);
+    if(signature !== publishedCatalogSignature){
+      storeProducts = normalized;
+      publishedCatalogSignature = signature;
       renderAllGrids();
     }
 
     hideSplash(true);
     return true;
   }catch(e){
-    console.error('[ISR] No se pudo obtener el catálogo en vivo:', e);
-
-    // Si Apps Script falla de forma transitoria, usar el snapshot del servidor
-    // (nunca el localStorage viejo del visitante) para no dejar la tienda vacía.
+    console.error('[ISR] No se pudo leer el catálogo publicado:', e);
     if(!storeProducts.length){
-      await loadStaticProductSnapshot();
-    }
-    if(!storeProducts.length && !silent){
       renderAllGrids();
       hideSplash(false);
     }
     return false;
-  }finally{
-    clearTimeout(timeout);
-    liveCatalogRefreshInFlight = false;
   }
 }
 
-function bindLiveCatalogRefresh(){
-  if(liveCatalogListenersBound) return;
-  liveCatalogListenersBound = true;
+function bindPublishedCatalogRefresh(){
+  if(publishedCatalogRefreshTimer) return;
 
   window.addEventListener('focus', () => {
-    refreshStoreProductsFromLiveSource({silent:true});
+    refreshPublishedCatalog();
   });
 
   document.addEventListener('visibilitychange', () => {
     if(document.visibilityState === 'visible'){
-      refreshStoreProductsFromLiveSource({silent:true});
+      refreshPublishedCatalog();
     }
   });
 
-  // Mantiene abierta la tienda sincronizada sin necesidad de recargar.
-  liveCatalogRefreshTimer = setInterval(() => {
+  publishedCatalogRefreshTimer = setInterval(() => {
     if(document.visibilityState === 'visible'){
-      refreshStoreProductsFromLiveSource({silent:true});
+      refreshPublishedCatalog();
     }
-  }, 15000);
+  }, 30000);
 }
 
 async function loadStoreProducts(){
-  // Mostrar el snapshot del servidor cuanto antes para evitar una pantalla vacía.
-  // En paralelo se consulta Google Sheets y, si hay cambios, se reemplaza el catálogo.
-  const snapshotPromise = loadStaticProductSnapshot();
-  const livePromise = refreshStoreProductsFromLiveSource({silent:true});
-
-  await Promise.race([
-    snapshotPromise,
-    livePromise
-  ]);
-
-  // Si ninguna fuente pintó todavía, esperar al snapshot para asegurar contenido visible.
-  if(!storeProducts.length){
-    await snapshotPromise;
-  }
-
-  // No bloquear la interfaz esperando Apps Script: la respuesta viva actualiza después.
-  livePromise.catch(()=>{});
-
-  bindLiveCatalogRefresh();
+  // Una sola fuente pública para todos los dispositivos.
+  // Esto evita que un celular vea Apps Script en vivo y otro vea un respaldo viejo.
+  await refreshPublishedCatalog();
+  bindPublishedCatalogRefresh();
 }
 
 function hideSplash(fast = false){
