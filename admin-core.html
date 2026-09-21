@@ -850,8 +850,15 @@ function saveCredentials(){
 }
 function enterApp(){
   document.getElementById('app').style.display='flex';
-  updateStats(); renderTable(); updateSheetsBadge();
-  const cfg=loadCfg(); if(cfg.sheetsUrl) syncFromSheets(true);
+  updateStats();
+  renderTable();
+  updateSheetsBadge();
+
+  // No sobrescribir automáticamente el catálogo local al entrar.
+  // Esto preserva cambios que pudieron quedar pendientes durante fallos de sincronización.
+  // La importación desde Sheets queda disponible de forma manual.
+  const cfg=loadCfg();
+  if(cfg.sheetsUrl && !products.length) syncFromSheets(true);
 }
 
 
