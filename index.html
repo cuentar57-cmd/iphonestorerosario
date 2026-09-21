@@ -1109,43 +1109,19 @@ function bindCatalogRefresh(){
   }, 2000);
 }
 
-function renderCatalogSkeletons(){
-  const html=`<div class="catalog-skeleton-grid">${Array.from({length:4},()=>`
-    <div class="catalog-skeleton-card">
-      <div class="catalog-skeleton-block catalog-skeleton-media"></div>
-      <div class="catalog-skeleton-block catalog-skeleton-line mid"></div>
-      <div class="catalog-skeleton-block catalog-skeleton-line short"></div>
-      <div class="catalog-skeleton-block catalog-skeleton-line"></div>
-    </div>`).join('')}</div>`;
-
-  ['gridSellados','gridUsados','gridGaming','gridTablets','gridMacs','gridAccesorios'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.innerHTML=html;
-  });
-}
-
 function loadStoreProducts(){
-  // No renderizar INITIAL_PRODUCTS: puede estar unos minutos desactualizado.
-  // Mostrar placeholders y esperar primero al catálogo vivo.
-  renderCatalogSkeletons();
-  hideSplash(true);
+  // Mostrar productos inmediatamente como antes.
+  if(Array.isArray(INITIAL_PRODUCTS)){
+    storeProducts = normalizeProductsFromSheets(INITIAL_PRODUCTS);
+    currentCatalogSignature = catalogSignature(storeProducts);
+    renderAllGrids();
+    hideSplash(true);
+  }
 
-  refreshCatalogNow().then(ok=>{
-    if(!ok && Array.isArray(INITIAL_PRODUCTS) && !storeProducts.length){
-      // Último recurso solamente si Apps Script y el catálogo publicado fallan.
-      storeProducts = normalizeProductsFromSheets(INITIAL_PRODUCTS);
-      currentCatalogSignature = catalogSignature(storeProducts);
-      renderAllGrids();
-    }
-  }).catch(()=>{
-    if(Array.isArray(INITIAL_PRODUCTS) && !storeProducts.length){
-      storeProducts = normalizeProductsFromSheets(INITIAL_PRODUCTS);
-      currentCatalogSignature = catalogSignature(storeProducts);
-      renderAllGrids();
-    }
-  });
-
+  // Consultar el catálogo vivo enseguida y luego cada 2 segundos.
+  refreshCatalogNow().catch(()=>{});
   bindCatalogRefresh();
+
   return Promise.resolve(true);
 }
 
@@ -1352,11 +1328,9 @@ function buildProductCard(p){
   const priceArs = arsPrice(usdValue);
 
 
-  const stockBtn = !liveCatalogSucceeded
-    ? `<button class="add-cart-btn disabled-btn" disabled>Actualizando...</button>`
-    : p.stock===false
-      ? `<button class="add-cart-btn disabled-btn" disabled>Sin Stock</button>`
-      : `<button class="add-cart-btn" onclick="event.stopPropagation();addToCart('${escQ(p.name)} ${escQ(p.storage||'')}','${categoryIcon(p.category)}',${priceArs})">🛒 Agregar</button>`;
+  const stockBtn = p.stock===false
+    ? `<button class="add-cart-btn disabled-btn" disabled>Sin Stock</button>`
+    : `<button class="add-cart-btn" onclick="event.stopPropagation();addToCart('${escQ(p.name)} ${escQ(p.storage||'')}','${categoryIcon(p.category)}',${priceArs})">🛒 Agregar</button>`;
 
 
   const badge = p.stock===false
@@ -1365,7 +1339,7 @@ function buildProductCard(p){
 
 
   return `
-    <div class="prod-card" ${liveCatalogSucceeded ? `onclick="openDetail('${p.id}')"` : ''}>
+    <div class="prod-card" onclick="openDetail('${p.id}')">
       ${badge}
       <div class="product-media">
         ${imageUrl ? `<img src="${imageUrl}" alt="${p.name}" class="product-image" loading="lazy" decoding="async">` : `<div class="product-placeholder">${categoryIcon(p.category)}</div>`}
@@ -1373,10 +1347,9 @@ function buildProductCard(p){
       <h3>${p.name}</h3>
       <div class="storage">${p.storage||'—'}</div>
       <div class="price-label">Precio</div>
-      ${liveCatalogSucceeded
-        ? `<div class="price">${money(priceArs)}</div><div class="usd-price">USD ${usdValue}</div>`
-        : `<div class="price-loading">Actualizando precio</div><div class="usd-price">&nbsp;</div>`}
-      <button class="detail-btn" ${liveCatalogSucceeded ? `onclick="event.stopPropagation();openDetail('${p.id}')"` : 'disabled'}>Ver detalles</button>
+      <div class="price">${money(priceArs)}</div>
+      <div class="usd-price">USD ${usdValue}</div>
+      <button class="detail-btn" onclick="event.stopPropagation();openDetail('${p.id}')">Ver detalles</button>
       ${stockBtn}
     </div>
   `;
@@ -1393,7 +1366,6 @@ let selectedProduct = null;
 
 
 function openDetail(id){
-  if(!liveCatalogSucceeded) return;
   const p = storeProducts.find(x=>x.id===id);
   if(!p) return;
   selectedProduct = p;
