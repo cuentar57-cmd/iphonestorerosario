@@ -931,7 +931,7 @@ function hydrateProductsFromCache(){
 
 async function loadStaticProductSnapshot(){
   try{
-    const r = await fetch(PRODUCTS_STATIC_URL, { cache: 'force-cache' });
+    const r = await fetch(`${PRODUCTS_STATIC_URL}?_=${Date.now()}`, { cache: 'no-store' });
     if(!r.ok) return false;
     const d = await r.json();
     const products = Array.isArray(d) ? d : d.products;
@@ -982,11 +982,7 @@ async function refreshStoreProductsFromLiveSource({silent=false} = {}){
     const separator = SHEETS_URL.includes('?') ? '&' : '?';
     const r = await fetch(`${SHEETS_URL}${separator}action=getProducts&_=${Date.now()}`, {
       signal: controller.signal,
-      cache: 'no-store',
-      headers: {
-        'Cache-Control': 'no-cache, no-store, max-age=0',
-        'Pragma': 'no-cache'
-      }
+      cache: 'no-store'
     });
 
     if(!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -1013,10 +1009,12 @@ async function refreshStoreProductsFromLiveSource({silent=false} = {}){
   }catch(e){
     console.error('[ISR] No se pudo obtener el catálogo en vivo:', e);
 
-    // Importante: no mostramos precios/productos viejos del navegador.
-    // Si la fuente en vivo falla, preferimos no publicar información desactualizada.
-    if(!silent && !storeProducts.length){
-      storeProducts = [];
+    // Si Apps Script falla de forma transitoria, usar el snapshot del servidor
+    // (nunca el localStorage viejo del visitante) para no dejar la tienda vacía.
+    if(!storeProducts.length){
+      await loadStaticProductSnapshot();
+    }
+    if(!storeProducts.length && !silent){
       renderAllGrids();
       hideSplash(false);
     }
