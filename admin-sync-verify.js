@@ -25,6 +25,15 @@
       }));
     }
 
+    function asBoolean(value, defaultValue=true){
+      if(value === true || value === 1) return true;
+      if(value === false || value === 0) return false;
+      const raw=String(value ?? '').toLowerCase().trim();
+      if(['true','1','si','sí','activo','disponible','con stock','verdadero'].includes(raw)) return true;
+      if(['false','0','no','inactivo','sin stock','agotado','falso'].includes(raw)) return false;
+      return defaultValue;
+    }
+
     function canonicalCatalog(catalog){
       return normalizeCatalog(catalog)
         .map(p=>({
@@ -40,8 +49,8 @@
           priceUsd:Number(p.priceUsd||0),
           image:String(p.image||''),
           badge:String(p.badge||''),
-          stock:p.stock!==false,
-          active:p.active!==false,
+          stock:asBoolean(p.stock,true),
+          active:asBoolean(p.active,true),
           description:String(p.description||'')
         }))
         .sort((a,b)=>a.id.localeCompare(b.id));
