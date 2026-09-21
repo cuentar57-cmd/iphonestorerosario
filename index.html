@@ -1044,19 +1044,27 @@ function bindLiveCatalogRefresh(){
     if(document.visibilityState === 'visible'){
       refreshStoreProductsFromLiveSource({silent:true});
     }
-  }, 30000);
+  }, 15000);
 }
 
 async function loadStoreProducts(){
-  // Fuente de verdad: Google Sheets. No se hidrata primero desde localStorage
-  // ni desde products-cache.json, para evitar mostrar precios o stock viejos.
-  const firstTry = await refreshStoreProductsFromLiveSource({silent:false});
+  // Mostrar el snapshot del servidor cuanto antes para evitar una pantalla vacía.
+  // En paralelo se consulta Google Sheets y, si hay cambios, se reemplaza el catálogo.
+  const snapshotPromise = loadStaticProductSnapshot();
+  const livePromise = refreshStoreProductsFromLiveSource({silent:true});
 
-  // Un segundo intento corto cubre fallos transitorios del Apps Script.
-  if(!firstTry){
-    await new Promise(resolve => setTimeout(resolve, 1200));
-    await refreshStoreProductsFromLiveSource({silent:false});
+  await Promise.race([
+    snapshotPromise,
+    livePromise
+  ]);
+
+  // Si ninguna fuente pintó todavía, esperar al snapshot para asegurar contenido visible.
+  if(!storeProducts.length){
+    await snapshotPromise;
   }
+
+  // No bloquear la interfaz esperando Apps Script: la respuesta viva actualiza después.
+  livePromise.catch(()=>{});
 
   bindLiveCatalogRefresh();
 }
