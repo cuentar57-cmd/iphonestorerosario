@@ -888,7 +888,10 @@ const MODEL_SPECS = {
 //  DATA
 // ══════════════════════════════════════════════════════════════
 function loadProducts(){ try{ const r=localStorage.getItem(STORAGE_KEY); if(r) return JSON.parse(r); }catch(e){} return []; }
-function saveProducts(p){ localStorage.setItem(STORAGE_KEY,JSON.stringify(p)); updateStats(); pushToSheets(true); }
+function saveProducts(p){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(p));
+  updateStats();
+}
 let products=loadProducts();
 let editingId=null, sortField=null, sortAsc=true, currentDolar=1450;
 async function fetchDolar(){ try{ const r=await fetch('https://dolarapi.com/v1/dolares/blue'); const d=await r.json(); currentDolar=(d.venta||1425)+25; }catch(e){ currentDolar=1450; } }
@@ -1245,38 +1248,54 @@ function openModal(id){
 }
 function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); editingId=null; }
 function closeModalOutside(e){ if(e.target===document.getElementById('modalOverlay')) closeModal(); }
-function saveProduct(){
+async function saveProduct(){
   const data=collectFormData();
   if(!data.name){showToast('El nombre es obligatorio','error');return;}
   const wasEditing=Boolean(editingId);
   if(wasEditing){
     const i=products.findIndex(p=>String(p.id)===String(editingId));
     if(i<0){showToast('No se encontró el producto original. Recargá el panel.','error');return;}
-    // Conserva la identidad y cualquier dato que el formulario no edite.
     data.id=products[i].id;
     products[i]={...products[i],...data,id:products[i].id};
   } else {
     if(products.find(p=>String(p.id)===String(data.id))) data.id=data.id+'_'+Date.now();
     products.unshift(data);
   }
-  saveProducts(products); renderTable(); closeModal();
-  showToast(wasEditing?'Producto actualizado':'Producto agregado','success'); autoPush();
+
+  saveProducts(products);
+  renderTable();
+  closeModal();
+
+  const published=await pushToSheets(false);
+  if(published){
+    showToast(wasEditing?'✓ Producto actualizado y publicado':'✓ Producto agregado y publicado','success');
+  }
 }
 function editProduct(id){ openModal(id); }
-function deleteProduct(id){
+async function deleteProduct(id){
   const p=products.find(x=>x.id===id);
   if(!confirm(`¿Eliminar "${p?.name||id}"?`)) return;
-  products=products.filter(x=>x.id!==id); saveProducts(products); renderTable();
-  showToast('Producto eliminado','info'); autoPush();
+  products=products.filter(x=>x.id!==id);
+  saveProducts(products);
+  renderTable();
+
+  const published=await pushToSheets(false);
+  if(published) showToast('✓ Producto eliminado y cambio publicado','success');
 }
 function initInlineForm(){ document.getElementById('inlineFormBody').innerHTML=buildFormHTML(); }
-function saveProductInline(){
+async function saveProductInline(){
   editingId=null;
   const data=collectFormData();
   if(!data.name){showToast('El nombre es obligatorio','error');return;}
   if(products.find(p=>p.id===data.id)) data.id=data.id+'_'+Date.now();
-  products.unshift(data); saveProducts(products); renderTable();
-  showToast('Producto agregado','success'); autoPush(); showView('products');
+
+  products.unshift(data);
+  saveProducts(products);
+  renderTable();
+  showView('products');
+
+  const published=await pushToSheets(false);
+  if(published) showToast('✓ Producto agregado y publicado','success');
 }
 
 
@@ -1301,7 +1320,7 @@ async function testSheetsConn(){
   if(res) res.classList.add('show');
   if(icon) icon.className='ct-icon loading'; if(title) title.textContent='Probando...'; if(msg) msg.textContent='Conectando...';
   try{
-    const r=await fetch(SCRIPT_URL+'?action=getProducts'); const d=await r.json();
+    const r=await fetch(SCRIPT_URL+'?action=getProducts&_='+Date.now(),{cache:'no-store'}); const d=await r.json();
     if(!d.ok) throw new Error(d.error||'Respuesta inválida');
     if(icon) icon.className='ct-icon ok'; if(title) title.textContent='Conexión correcta'; if(msg) msg.textContent='Google Sheets respondió bien';
     updateSheetsBadge(true);
@@ -1315,7 +1334,7 @@ async function testSheetsConn(){
 async function syncFromSheets(silent=false){
   try{
     if(!silent) showToast('Importando desde Google Sheets...','info');
-    const res=await fetch(SCRIPT_URL+'?action=getProducts'); const data=await res.json();
+    const res=await fetch(SCRIPT_URL+'?action=getProducts&_='+Date.now(),{cache:'no-store'}); const data=await res.json();
     if(!data.ok) throw new Error(data.error||'No se pudieron importar productos');
     products=Array.isArray(data.products)?data.products:[];
     renderTable(); updateStats(); localStorage.setItem(STORAGE_KEY,JSON.stringify(products));
@@ -1330,16 +1349,43 @@ async function syncFromSheets(silent=false){
 
 async function pushToSheets(silent=false){
   try{
-    if(!silent) showToast('Exportando a Google Sheets...','info');
-    const productsForSheets=products.map(p=>({...p,priceUsd:Number(p.priceUsd||p.usd||p.price||0),usd:Number(p.priceUsd||p.usd||p.price||0),price:Number(p.priceUsd||p.usd||p.price||0)}));
-    const res=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'saveProducts',sessionToken:getSessionToken(),products:productsForSheets})});
-    const data=await res.json();
-    if(!data.ok) throw new Error(data.error||'No se pudieron exportar productos');
+    if(!silent) showToast('Publicando cambios...','info');
+
+    const sessionToken=getSessionToken();
+    if(!sessionToken) throw new Error('La sesión venció. Cerrá sesión e ingresá nuevamente.');
+
+    const productsForSheets=products.map(p=>({
+      ...p,
+      priceUsd:Number(p.priceUsd||p.usd||p.price||0),
+      usd:Number(p.priceUsd||p.usd||p.price||0),
+      price:Number(p.priceUsd||p.usd||p.price||0)
+    }));
+
+    const res=await fetch(SCRIPT_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({
+        action:'saveProducts',
+        sessionToken,
+        products:productsForSheets
+      })
+    });
+
+    const raw=await res.text();
+    let data;
+    try{ data=JSON.parse(raw); }
+    catch(e){ throw new Error('El servidor devolvió una respuesta inválida'); }
+
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    if(!data.ok) throw new Error(data.error||data.message||'No se pudieron publicar los productos');
+
     updateSheetsBadge(true);
-    if(!silent) showToast('Exportado correctamente','success');
+    return true;
   }catch(err){
     updateSheetsBadge(false);
-    if(!silent) showToast('Error al exportar: '+err.message,'error');
+    const message=err&&err.message?err.message:String(err);
+    showToast('NO PUBLICADO: '+message,'error');
+    return false;
   }
 }
 
