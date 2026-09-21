@@ -952,8 +952,10 @@ async function loadStaticProductSnapshot(){
 }
 
 
+let liveCatalogRefreshTimer = null;
 let publishedCatalogRefreshTimer = null;
-let publishedCatalogSignature = '';
+let currentCatalogSignature = '';
+let liveCatalogSucceeded = false;
 
 function catalogSignature(products){
   return JSON.stringify((products || []).map(p => ({
@@ -973,71 +975,101 @@ function catalogSignature(products){
   })));
 }
 
+function applyCatalog(products){
+  const normalized = normalizeProductsFromSheets(products);
+  const signature = catalogSignature(normalized);
+
+  if(signature !== currentCatalogSignature){
+    storeProducts = normalized;
+    currentCatalogSignature = signature;
+    renderAllGrids();
+  }
+
+  hideSplash(true);
+  return true;
+}
+
+async function refreshLiveCatalog(){
+  try{
+    const separator = SHEETS_URL.includes('?') ? '&' : '?';
+    const r = await fetch(`${SHEETS_URL}${separator}action=getProducts&_=${Date.now()}`, {
+      cache: 'no-store'
+    });
+
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+
+    const d = await r.json();
+    if(!d || !d.ok || !Array.isArray(d.products)){
+      throw new Error((d && d.error) || 'Respuesta inválida de Google Sheets');
+    }
+
+    liveCatalogSucceeded = true;
+    return applyCatalog(d.products);
+  }catch(e){
+    liveCatalogSucceeded = false;
+    console.warn('[ISR] Catálogo en vivo no disponible:', e);
+    return false;
+  }
+}
+
 async function refreshPublishedCatalog(){
   try{
     const r = await fetch(`${PRODUCTS_STATIC_URL}?_=${Date.now()}`, {
       cache: 'no-store'
     });
+
     if(!r.ok) throw new Error(`HTTP ${r.status}`);
 
     const d = await r.json();
     const products = Array.isArray(d) ? d : d.products;
     if(!Array.isArray(products)) throw new Error('Catálogo publicado inválido');
 
-    const normalized = normalizeProductsFromSheets(products);
-    const signature = catalogSignature(normalized);
-
-    if(signature !== publishedCatalogSignature){
-      storeProducts = normalized;
-      publishedCatalogSignature = signature;
-      renderAllGrids();
-    }
-
-    hideSplash(true);
-    return true;
+    return applyCatalog(products);
   }catch(e){
-    console.error('[ISR] No se pudo leer el catálogo publicado:', e);
-    if(!storeProducts.length){
-      renderAllGrids();
-      hideSplash(false);
-    }
+    console.warn('[ISR] Catálogo publicado no disponible:', e);
     return false;
   }
 }
 
-function bindPublishedCatalogRefresh(){
-  if(publishedCatalogRefreshTimer) return;
+async function refreshCatalogNow(){
+  const liveOk = await refreshLiveCatalog();
+  if(!liveOk){
+    await refreshPublishedCatalog();
+  }
+}
+
+function bindCatalogRefresh(){
+  if(liveCatalogRefreshTimer) return;
 
   window.addEventListener('focus', () => {
-    refreshPublishedCatalog();
+    refreshCatalogNow();
   });
 
   document.addEventListener('visibilitychange', () => {
     if(document.visibilityState === 'visible'){
-      refreshPublishedCatalog();
+      refreshCatalogNow();
     }
   });
 
-  publishedCatalogRefreshTimer = setInterval(() => {
+  liveCatalogRefreshTimer = setInterval(() => {
     if(document.visibilityState === 'visible'){
-      refreshPublishedCatalog();
+      refreshCatalogNow();
     }
-  }, 30000);
+  }, 5000);
 }
 
 function loadStoreProducts(){
-  // Render instantáneo: el catálogo viene embebido en este mismo HTML.
-  // No se espera Apps Script, JSON externo ni localStorage para mostrar productos.
+  // Primera pintura instantánea desde el catálogo embebido.
   if(Array.isArray(INITIAL_PRODUCTS)){
     storeProducts = normalizeProductsFromSheets(INITIAL_PRODUCTS);
-    publishedCatalogSignature = catalogSignature(storeProducts);
+    currentCatalogSignature = catalogSignature(storeProducts);
     renderAllGrids();
     hideSplash(true);
   }
 
-  // En segundo plano se comprueba si GitHub ya publicó una versión más nueva.
-  refreshPublishedCatalog().catch(()=>{});
-  bindPublishedCatalogRefresh();
+  // Inmediatamente después consulta Google Sheets sin bloquear la interfaz.
+  refreshCatalogNow().catch(()=>{});
+  bindCatalogRefresh();
 
   return Promise.resolve(true);
 }
