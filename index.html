@@ -4,16 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>iPhone Store Rosario</title>
-<link rel="preconnect" href="https://script.google.com" crossorigin>
-<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<script>
-window.__ISR_CATALOG_URL = 'https://script.google.com/macros/s/AKfycbzGGmCePitQSQPoNT4_Wpu6mHkXAjaYI6_F2sRvYy6LbaAPpRg1mpeojO_4hO1vcPCRog/exec';
-window.__ISR_CATALOG_BOOT = fetch(window.__ISR_CATALOG_URL + '?action=getProducts&_=' + Date.now(), {cache:'no-store'})
-  .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-  .catch(function(){ return null; });
-</script>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
 <style>
@@ -902,8 +894,6 @@ footer p{font-size:.78rem;color:var(--gray)}
 
 
 <script>
-const SHEETS_URL = window.__ISR_CATALOG_URL || 'https://script.google.com/macros/s/AKfycbzGGmCePitQSQPoNT4_Wpu6mHkXAjaYI6_F2sRvYy6LbaAPpRg1mpeojO_4hO1vcPCRog/exec';
-
 
 let dolarBlue = 1450;
 async function fetchDolar(){
@@ -933,7 +923,7 @@ const PRODUCT_FETCH_TIMEOUT_MS = 7000;
 function readCachedProducts(){
   try{
     const cached = JSON.parse(localStorage.getItem(PRODUCT_CACHE_KEY) || '[]');
-    return Array.isArray(cached) ? normalizeProductsFromSheets(cached) : [];
+    return Array.isArray(cached) ? normalizeProducts(cached) : [];
   }catch(e){
     console.warn('[ISR] No se pudo leer el cache local:', e);
     return [];
@@ -964,7 +954,7 @@ async function loadStaticProductSnapshot(){
     const d = await r.json();
     const products = Array.isArray(d) ? d : d.products;
     if(!Array.isArray(products) || !products.length || storeProducts.length) return false;
-    storeProducts = normalizeProductsFromSheets(products);
+    storeProducts = normalizeProducts(products);
     saveCachedProducts(storeProducts);
     renderAllGrids();
     hideSplash(true);
@@ -1000,7 +990,7 @@ function catalogSignature(products){
 }
 
 function applyCatalog(products){
-  const normalized = normalizeProductsFromSheets(products);
+  const normalized = normalizeProducts(products);
   const signature = catalogSignature(normalized);
 
   if(signature !== currentCatalogSignature){
@@ -1110,8 +1100,7 @@ function loadStoreProducts(){
   // No mostrar ningún catálogo incrustado ni respaldo viejo al abrir.
   storeProducts = [];
 
-  // Consulta inmediata a Google Sheets. Los productos aparecen únicamente
-  // cuando esta fuente viva confirma el catálogo actual.
+  // Consulta inmediata a Supabase.
   refreshCatalogNow().catch(()=>{});
   bindCatalogRefresh();
 
@@ -1127,7 +1116,7 @@ function hideSplash(fast = false){
 }
 
 
-function normalizeProductsFromSheets(products){
+function normalizeProducts(products){
   return products.map(p => {
     const rawUsd =
       p.priceUsd ||
