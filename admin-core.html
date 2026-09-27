@@ -322,7 +322,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
       placeholder="https://script.google.com/macros/s/.../exec"
       oninput="this.value=this.value.trim()"
       onkeydown="if(event.key==='Enter')doSetup()">
-    <button class="setup-init-btn" onclick="doSetup()">Conectar con Google Sheets →</button>
+    <button class="setup-init-btn" onclick="doSetup()">Conectar con Supabase →</button>
   </div>
 </div>
 
@@ -370,7 +370,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
     <div class="logo-sub">Admin Panel</div>
     <div class="admin-badge"><span class="dot"></span>Panel Activo</div>
     <div class="sync-badge disconnected" id="sheetsBadge">
-      <span class="sdot"></span><span id="sheetsBadgeText">Sheets: No conectado</span>
+      <span class="sdot"></span><span id="sheetsBadgeText">Supabase: Sin conexión</span>
     </div>
   </div>
   <div class="nav-section">Gestión</div>
@@ -389,10 +389,10 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2"/></svg>Cambiar tema
     </button>
     <button class="sf-btn" onclick="syncFromSheets()">
-      <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>Importar desde Sheets
+      <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>Actualizar desde Supabase
     </button>
     <button class="sf-btn" onclick="pushToSheets(false)">
-      <svg viewBox="0 0 24 24"><path d="M12 3v12"/><polyline points="7 8 12 3 17 8"/><path d="M5 21h14"/></svg>Guardar en Sheets
+      <svg viewBox="0 0 24 24"><path d="M12 3v12"/><polyline points="7 8 12 3 17 8"/><path d="M5 21h14"/></svg>Guardado directo en Supabase
     </button>
     <button class="sf-btn logout" onclick="doLogout()">
       <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Cerrar sesión
@@ -410,7 +410,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
       <div class="topbar-title" id="topbarTitle">Todos los <span>Productos</span></div>
     </div>
     <div class="topbar-right">
-      <button class="icon-btn" onclick="syncFromSheets()" title="Sincronizar Sheets">
+      <button class="icon-btn" onclick="syncFromSheets()" title="Sincronizar Supabase">
         <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
       </button>
       <button class="icon-btn" onclick="toggleTheme()" title="Tema">
@@ -528,12 +528,14 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
 // ADMIN V3 SEGURO - login servidor + código por email
 
 
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGGmCePitQSQPoNT4_Wpu6mHkXAjaYI6_F2sRvYy6LbaAPpRg1mpeojO_4hO1vcPCRog/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGGmCePitQSQPoNT4_Wpu6mHkXAjaYI6_F2sRvYy6LbaAPpRg1mpeojO_4hO1vcPCRog/exec'; // respaldo temporal
+const SUPABASE_URL = 'https://ttqtekwlumtnoxlidmtl.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_PH07DP7agilU_rGS5RZzsg_uIESlkIr';
 const API_URL_KEY = 'isr_api_url';
 const STORAGE_KEY = 'isr_products_v3';
 const CFG_KEY     = 'isr_config_v3';
-const SESSION_KEY = 'isr_session';
-let API_URL = SCRIPT_URL;
+const SESSION_KEY = 'isr_supabase_session';
+let API_URL = SUPABASE_URL;
 
 
 // ══════════════════════════════════════════════════════════════
@@ -766,9 +768,14 @@ function getCredentials(){ const c=loadCfg(); return {user:c.user||'admin',pass:
 // ══════════════════════════════════════════════════════════════
 //  AUTH SEGURO: contraseña en Apps Script + código por email
 // ══════════════════════════════════════════════════════════════
-function getSessionToken(){
-  return localStorage.getItem(SESSION_KEY) || '';
+function getSession(){
+  try{ return JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); }catch(e){ return null; }
 }
+function saveSession(s){
+  if(s) localStorage.setItem(SESSION_KEY,JSON.stringify(s));
+  else localStorage.removeItem(SESSION_KEY);
+}
+function getSessionToken(){ return getSession()?.access_token || ''; }
 function clearLoginErrorSoon(){
   setTimeout(()=>{
     const err=document.getElementById('loginError');
@@ -777,90 +784,72 @@ function clearLoginErrorSoon(){
     document.getElementById('loginPass')?.classList.remove('error');
   },3500);
 }
+async function supabaseAuth(path, body){
+  const res=await fetch(SUPABASE_URL+'/auth/v1/'+path,{
+    method:'POST',
+    headers:{'apikey':SUPABASE_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify(body||{})
+  });
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(data.msg||data.error_description||data.message||'Error de autenticación');
+  return data;
+}
+async function refreshAdminSession(){
+  const s=getSession();
+  if(!s?.refresh_token) return null;
+  if(s.expires_at && Date.now() < (Number(s.expires_at)*1000-60000)) return s;
+  try{
+    const data=await supabaseAuth('token?grant_type=refresh_token',{refresh_token:s.refresh_token});
+    saveSession(data);
+    return data;
+  }catch(e){
+    saveSession(null);
+    return null;
+  }
+}
 async function doLogin(){
-  const u=document.getElementById('loginUser').value.trim();
-  const p=document.getElementById('loginPass').value;
+  const email=document.getElementById('loginUser').value.trim();
+  const password=document.getElementById('loginPass').value;
   const err=document.getElementById('loginError');
   err.classList.remove('show');
-
-
-  if(!u || !p){
-    err.textContent='Completá usuario y contraseña';
+  if(!email || !password){
+    err.textContent='Completá correo y contraseña';
     err.classList.add('show');
     return;
   }
-
-
   try{
-    const res=await fetch(SCRIPT_URL,{
-      method:'POST',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify({action:'loginStep1',user:u,pass:p})
-    });
-    const data=await res.json();
-    if(!data.ok) throw new Error(data.error || data.message || 'Usuario o contraseña incorrectos');
-
-
-    err.textContent='Código enviado al email. Revisá tu correo.';
-    err.classList.add('show');
-    document.getElementById('codeBox').style.display='block';
-    setTimeout(()=>document.getElementById('loginCode').focus(),100);
+    const data=await supabaseAuth('token?grant_type=password',{email,password});
+    saveSession(data);
+    document.getElementById('loginScreen').classList.remove('active');
+    await enterApp();
   }catch(e){
-    err.textContent=e.message || 'No se pudo iniciar sesión';
+    saveSession(null);
+    err.textContent=e.message||'Correo o contraseña incorrectos';
     err.classList.add('show');
     document.getElementById('loginUser')?.classList.add('error');
     document.getElementById('loginPass')?.classList.add('error');
     clearLoginErrorSoon();
   }
 }
-async function verifyLoginCode(){
-  const code=document.getElementById('loginCode').value.trim();
-  const err=document.getElementById('loginError');
-  err.classList.remove('show');
-
-
-  if(!code){
-    err.textContent='Ingresá el código';
-    err.classList.add('show');
-    return;
+async function verifyLoginCode(){ return doLogin(); }
+async function doLogout(){
+  const token=getSessionToken();
+  if(token){
+    try{ await fetch(SUPABASE_URL+'/auth/v1/logout',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+token}}); }catch(e){}
   }
-
-
-  try{
-    const res=await fetch(SCRIPT_URL,{
-      method:'POST',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify({action:'verifyCode',code:code})
-    });
-    const data=await res.json();
-    if(!data.ok) throw new Error(data.error || data.message || 'Código incorrecto');
-
-
-    localStorage.setItem(SESSION_KEY,data.sessionToken);
-    document.getElementById('loginScreen').classList.remove('active');
-    enterApp();
-  }catch(e){
-    err.textContent=e.message || 'No se pudo verificar el código';
-    err.classList.add('show');
-  }
+  saveSession(null);
+  location.reload();
 }
-function doLogout(){ localStorage.removeItem(SESSION_KEY); location.reload(); }
 function saveCredentials(){
-  showToast('Ahora las credenciales se cambian desde Apps Script, no desde este panel.','info');
+  showToast('Los accesos se administran desde Supabase Auth.','info');
 }
-function enterApp(){
+async function enterApp(){
   document.getElementById('app').style.display='flex';
   updateStats();
   renderTable();
   updateSheetsBadge();
-
-  // No sobrescribir automáticamente el catálogo local al entrar.
-  // Esto preserva cambios que pudieron quedar pendientes durante fallos de sincronización.
-  // La importación desde Sheets queda disponible de forma manual.
-  const cfg=loadCfg();
-  if(cfg.sheetsUrl && !products.length) syncFromSheets(true);
+  await syncFromSupabase(true);
 }
-
 
 // ══════════════════════════════════════════════════════════════
 //  MODEL SPECS
@@ -898,6 +887,88 @@ function loadProducts(){ try{ const r=localStorage.getItem(STORAGE_KEY); if(r) r
 function saveProducts(p){
   localStorage.setItem(STORAGE_KEY,JSON.stringify(p));
   updateStats();
+}
+function rowToProduct(row){
+  return {
+    _dbId:row.id,
+    _sourceIndex:row.source_index,
+    id:row.source_id||'',
+    name:row.nombre||'',
+    category:row.categoria||'',
+    brand:row.brand||'',
+    model:row.modelo||'',
+    storage:row.capacidad||'',
+    condition:row.condicion||'',
+    battery:row.bateria||'',
+    color:row.color||'',
+    priceUsd:Number(row.precio_usd||row.price||0),
+    usd:Number(row.precio_usd||row.price||0),
+    price:Number(row.price||row.precio_usd||0),
+    image:row.imagen||'',
+    badge:row.badge||'',
+    stock:Number(row.stock||0)>0,
+    active:row.activo!==false,
+    description:row.descripcion||'',
+    specs:row.specs&&typeof row.specs==='object'?row.specs:{},
+    benefits:Array.isArray(row.benefits)?row.benefits:[]
+  };
+}
+function productToRow(p){
+  return {
+    source_id:p.id||'',
+    nombre:p.name||'',
+    categoria:p.category||'',
+    brand:p.brand||'',
+    modelo:p.model||'',
+    capacidad:p.storage||'',
+    condicion:p.condition||'',
+    bateria:p.battery||'',
+    color:p.color||'',
+    precio_usd:Number(p.priceUsd||p.usd||p.price||0),
+    price:Number(p.priceUsd||p.usd||p.price||0),
+    stock:p.stock===false?0:1,
+    imagen:p.image||'',
+    badge:p.badge||'',
+    descripcion:p.description||'',
+    activo:p.active!==false,
+    specs:p.specs||{},
+    benefits:Array.isArray(p.benefits)?p.benefits:[]
+  };
+}
+async function supabaseRequest(path, options={}){
+  let s=await refreshAdminSession();
+  if(!s?.access_token) throw new Error('La sesión venció. Ingresá nuevamente.');
+  const headers=Object.assign({
+    'apikey':SUPABASE_KEY,
+    'Authorization':'Bearer '+s.access_token,
+    'Content-Type':'application/json'
+  },options.headers||{});
+  const res=await fetch(SUPABASE_URL+'/rest/v1/'+path,Object.assign({},options,{headers}));
+  const raw=await res.text();
+  let data=null;
+  if(raw){ try{data=JSON.parse(raw);}catch(e){data=raw;} }
+  if(!res.ok){
+    const msg=(data&&typeof data==='object'&&(data.message||data.hint||data.details))||('HTTP '+res.status);
+    throw new Error(msg);
+  }
+  return data;
+}
+async function syncFromSupabase(silent=false){
+  try{
+    if(!silent) showToast('Actualizando desde Supabase...','info');
+    const rows=await supabaseRequest('products?select=*&order=source_index.asc.nullslast,created_at.asc',{method:'GET'});
+    products=(Array.isArray(rows)?rows:[]).map(rowToProduct);
+    saveProducts(products);
+    renderTable();
+    updateStats();
+    updateSheetsBadge(true);
+    if(!silent) showToast('✓ '+products.length+' productos cargados desde Supabase','success');
+    return true;
+  }catch(err){
+    updateSheetsBadge(false);
+    if(!silent) showToast('Error Supabase: '+err.message,'error');
+    return false;
+  }
 }
 let products=loadProducts();
 let editingId=null, sortField=null, sortAsc=true, currentDolar=1450;
@@ -956,10 +1027,10 @@ function renderTable(){
       <td><span class="badge ${p.stock?'badge-new':'badge-nostock'}">${p.stock?'✓ Stock':'Sin Stock'}</span></td>
       <td>
         <div class="actions">
-          <button class="act-btn act-edit" onclick="editProduct('${p.id}')" title="Editar">
+          <button class="act-btn act-edit" onclick="editProduct('${p._dbId||p.id}')" title="Editar">
             <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </button>
-          <button class="act-btn act-del" onclick="deleteProduct('${p.id}')" title="Eliminar">
+          <button class="act-btn act-del" onclick="deleteProduct('${p._dbId||p.id}')" title="Eliminar">
             <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
           </button>
         </div>
@@ -1189,7 +1260,7 @@ function updateARS(){
 
 // ★ MODIFICADO: ahora también dispara auto-imágenes
 function handleNameChange(name){
-  // El ID identifica al producto en Google Sheets: no debe cambiar durante una edición.
+  // El ID identifica al producto en Supabase: no debe cambiar durante una edición.
   if(!editingId){
     document.getElementById('fId').value=name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
   }
@@ -1248,7 +1319,7 @@ function collectFormData(){
 // ══════════════════════════════════════════════════════════════
 function openModal(id){
   editingId=id||null;
-  const p=id?products.find(x=>x.id===id):null;
+  const p=id?products.find(x=>String(x._dbId||x.id)===String(id)):null;
   document.getElementById('modalTitle').innerHTML=id?'Editar <span>Producto</span>':'Nuevo <span>Producto</span>';
   document.getElementById('modalFormBody').innerHTML=buildFormHTML(p);
   document.getElementById('modalOverlay').classList.add('open');
@@ -1259,52 +1330,73 @@ async function saveProduct(){
   const data=collectFormData();
   if(!data.name){showToast('El nombre es obligatorio','error');return;}
   const wasEditing=Boolean(editingId);
-  if(wasEditing){
-    const i=products.findIndex(p=>String(p.id)===String(editingId));
-    if(i<0){showToast('No se encontró el producto original. Recargá el panel.','error');return;}
-    data.id=products[i].id;
-    products[i]={...products[i],...data,id:products[i].id};
-  } else {
-    if(products.find(p=>String(p.id)===String(data.id))) data.id=data.id+'_'+Date.now();
-    products.unshift(data);
-  }
-
-  saveProducts(products);
-  renderTable();
-  closeModal();
-
-  const published=await pushToSheets(false);
-  if(published){
+  try{
+    if(wasEditing){
+      const current=products.find(p=>String(p._dbId||p.id)===String(editingId));
+      if(!current?._dbId) throw new Error('No se encontró el registro original en Supabase.');
+      data.id=current.id;
+      const rows=await supabaseRequest('products?id=eq.'+encodeURIComponent(current._dbId),{
+        method:'PATCH',
+        headers:{'Prefer':'return=representation'},
+        body:JSON.stringify(productToRow({...current,...data,id:current.id}))
+      });
+      if(!Array.isArray(rows)||!rows.length) throw new Error('Supabase no devolvió el producto actualizado.');
+    }else{
+      if(products.some(p=>String(p.id)===String(data.id))) data.id=data.id+'_'+Date.now();
+      const maxIndex=products.reduce((m,p)=>Math.max(m,Number(p._sourceIndex)||0),0);
+      const row={...productToRow(data),source_index:maxIndex+1};
+      const rows=await supabaseRequest('products',{
+        method:'POST',
+        headers:{'Prefer':'return=representation'},
+        body:JSON.stringify(row)
+      });
+      if(!Array.isArray(rows)||!rows.length) throw new Error('Supabase no devolvió el producto creado.');
+    }
+    closeModal();
+    await syncFromSupabase(true);
     showToast(wasEditing?'✓ Producto actualizado y publicado':'✓ Producto agregado y publicado','success');
+  }catch(err){
+    showToast('NO PUBLICADO: '+err.message,'error');
   }
 }
 function editProduct(id){ openModal(id); }
 async function deleteProduct(id){
-  const p=products.find(x=>x.id===id);
-  if(!confirm(`¿Eliminar "${p?.name||id}"?`)) return;
-  products=products.filter(x=>x.id!==id);
-  saveProducts(products);
-  renderTable();
-
-  const published=await pushToSheets(false);
-  if(published) showToast('✓ Producto eliminado y cambio publicado','success');
+  const p=products.find(x=>String(x._dbId||x.id)===String(id));
+  if(!p) return showToast('Producto no encontrado','error');
+  if(!confirm(`¿Eliminar "${p.name||p.id}"?`)) return;
+  try{
+    if(!p._dbId) throw new Error('El producto no tiene identificador de Supabase.');
+    await supabaseRequest('products?id=eq.'+encodeURIComponent(p._dbId),{
+      method:'DELETE',
+      headers:{'Prefer':'return=minimal'}
+    });
+    await syncFromSupabase(true);
+    showToast('✓ Producto eliminado y cambio publicado','success');
+  }catch(err){
+    showToast('NO ELIMINADO: '+err.message,'error');
+  }
 }
 function initInlineForm(){ document.getElementById('inlineFormBody').innerHTML=buildFormHTML(); }
 async function saveProductInline(){
   editingId=null;
   const data=collectFormData();
   if(!data.name){showToast('El nombre es obligatorio','error');return;}
-  if(products.find(p=>p.id===data.id)) data.id=data.id+'_'+Date.now();
-
-  products.unshift(data);
-  saveProducts(products);
-  renderTable();
-  showView('products');
-
-  const published=await pushToSheets(false);
-  if(published) showToast('✓ Producto agregado y publicado','success');
+  if(products.some(p=>String(p.id)===String(data.id))) data.id=data.id+'_'+Date.now();
+  try{
+    const maxIndex=products.reduce((m,p)=>Math.max(m,Number(p._sourceIndex)||0),0);
+    const rows=await supabaseRequest('products',{
+      method:'POST',
+      headers:{'Prefer':'return=representation'},
+      body:JSON.stringify({...productToRow(data),source_index:maxIndex+1})
+    });
+    if(!Array.isArray(rows)||!rows.length) throw new Error('Supabase no devolvió el producto creado.');
+    await syncFromSupabase(true);
+    showView('products');
+    showToast('✓ Producto agregado y publicado','success');
+  }catch(err){
+    showToast('NO PUBLICADO: '+err.message,'error');
+  }
 }
-
 
 // ══════════════════════════════════════════════════════════════
 //  GOOGLE SHEETS
@@ -1329,7 +1421,7 @@ async function testSheetsConn(){
   try{
     const r=await fetch(SCRIPT_URL+'?action=getProducts&_='+Date.now(),{cache:'no-store'}); const d=await r.json();
     if(!d.ok) throw new Error(d.error||'Respuesta inválida');
-    if(icon) icon.className='ct-icon ok'; if(title) title.textContent='Conexión correcta'; if(msg) msg.textContent='Google Sheets respondió bien';
+    if(icon) icon.className='ct-icon ok'; if(title) title.textContent='Conexión correcta'; if(msg) msg.textContent='Supabase respondió bien';
     updateSheetsBadge(true);
   }catch(err){
     if(icon) icon.className='ct-icon err'; if(title) title.textContent='Error de conexión'; if(msg) msg.textContent=err.message;
@@ -1338,75 +1430,20 @@ async function testSheetsConn(){
 }
 
 
-async function syncFromSheets(silent=false){
-  try{
-    if(!silent) showToast('Importando desde Google Sheets...','info');
-    const res=await fetch(SCRIPT_URL+'?action=getProducts&_='+Date.now(),{cache:'no-store'}); const data=await res.json();
-    if(!data.ok) throw new Error(data.error||'No se pudieron importar productos');
-    products=Array.isArray(data.products)?data.products:[];
-    renderTable(); updateStats(); localStorage.setItem(STORAGE_KEY,JSON.stringify(products));
-    updateSheetsBadge(true);
-    if(!silent) showToast(`✓ ${products.length} productos importados`,'success');
-  }catch(err){
-    updateSheetsBadge(false);
-    if(!silent) showToast('Error al importar: '+err.message,'error');
-  }
-}
-
-
+async function syncFromSheets(silent=false){ return syncFromSupabase(silent); }
 async function pushToSheets(silent=false){
-  try{
-    if(!silent) showToast('Publicando cambios...','info');
-
-    const sessionToken=getSessionToken();
-    if(!sessionToken) throw new Error('La sesión venció. Cerrá sesión e ingresá nuevamente.');
-
-    const productsForSheets=products.map(p=>({
-      ...p,
-      priceUsd:Number(p.priceUsd||p.usd||p.price||0),
-      usd:Number(p.priceUsd||p.usd||p.price||0),
-      price:Number(p.priceUsd||p.usd||p.price||0)
-    }));
-
-    const res=await fetch(SCRIPT_URL,{
-      method:'POST',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify({
-        action:'saveProducts',
-        sessionToken,
-        products:productsForSheets
-      })
-    });
-
-    const raw=await res.text();
-    let data;
-    try{ data=JSON.parse(raw); }
-    catch(e){ throw new Error('El servidor devolvió una respuesta inválida'); }
-
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    if(!data.ok) throw new Error(data.error||data.message||'No se pudieron publicar los productos');
-
-    updateSheetsBadge(true);
-    return true;
-  }catch(err){
-    updateSheetsBadge(false);
-    const message=err&&err.message?err.message:String(err);
-    showToast('NO PUBLICADO: '+message,'error');
-    return false;
-  }
+  if(!silent) showToast('Los cambios ahora se guardan directamente en Supabase.','info');
+  return true;
 }
-
 
 function autoPush(){ pushToSheets(true); }
 function updateSheetsBadge(connected){
   const b=document.getElementById('sheetsBadge'),t=document.getElementById('sheetsBadgeText');
   if(!b||!t) return;
-  const cfg=loadCfg();
-  const isConn = connected !== undefined ? connected : (cfg.sheetsUrl&&cfg.sheetsUrl.includes('script.google.com'));
-  b.className='sync-badge '+(isConn?'connected':'disconnected');
-  t.textContent=isConn?'Sheets: Conectado':'Sheets: No conectado';
+  const ok=connected!==false;
+  b.className='sync-badge '+(ok?'connected':'disconnected');
+  t.textContent=ok?'Supabase: Conectado':'Supabase: Sin conexión';
 }
-
 
 // ══════════════════════════════════════════════════════════════
 //  CLOUDINARY TEST
@@ -1509,22 +1546,15 @@ if(window.innerWidth<=900) document.getElementById('menuBtn').style.display='fle
 // ══════════════════════════════════════════════════════════════
 //  BOOT
 // ══════════════════════════════════════════════════════════════
-(function boot(){
-  // URL fija para evitar que el navegador use una implementación vieja guardada en localStorage.
-  API_URL = SCRIPT_URL;
-  localStorage.setItem(API_URL_KEY, SCRIPT_URL);
-  const c = loadCfg();
-  c.sheetsUrl = SCRIPT_URL;
-  saveCfg(c);
-
-
+(async function boot(){
+  API_URL = SUPABASE_URL;
   document.getElementById('setupScreen').classList.remove('active');
-
-
-  if(getSessionToken()){
+  const session=await refreshAdminSession();
+  if(session?.access_token){
     document.getElementById('loginScreen').classList.remove('active');
-    enterApp();
-  } else {
+    await enterApp();
+  }else{
+    saveSession(null);
     document.getElementById('loginScreen').classList.add('active');
     setTimeout(()=>document.getElementById('loginUser').focus(),80);
   }
