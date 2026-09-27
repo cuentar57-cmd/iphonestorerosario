@@ -1015,34 +1015,48 @@ function applyCatalog(products){
 
 async function refreshLiveCatalog(){
   try{
-    let d = null;
+    const SUPABASE_URL = 'https://ttqtekwlumtnoxlidmtl.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_PH07DP7agilU_rGS5RZzsg_uIESlkIr';
+    const r = await fetch(
+      `${SUPABASE_URL}/rest/v1/products?select=source_id,nombre,categoria,brand,modelo,capacidad,color,condicion,bateria,precio_usd,stock,imagen,badge,descripcion,activo,price,source_index&activo=eq.true&order=source_index.asc`,
+      {
+        cache: 'no-store',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        }
+      }
+    );
 
-    // La primera consulta ya arrancó en <head>, mientras el HTML seguía descargándose.
-    if(window.__ISR_CATALOG_BOOT){
-      const boot = window.__ISR_CATALOG_BOOT;
-      window.__ISR_CATALOG_BOOT = null;
-      d = await boot;
-    }
+    if(!r.ok) throw new Error(`Supabase HTTP ${r.status}`);
+    const rows = await r.json();
+    if(!Array.isArray(rows)) throw new Error('Respuesta inválida de Supabase');
 
-    // Si el arranque temprano falló, reintentar de forma normal.
-    if(!d){
-      const separator = SHEETS_URL.includes('?') ? '&' : '?';
-      const r = await fetch(`${SHEETS_URL}${separator}action=getProducts&_=${Date.now()}`, {
-        cache: 'no-store'
-      });
-      if(!r.ok) throw new Error(`HTTP ${r.status}`);
-      d = await r.json();
-    }
-
-    if(!d || !d.ok || !Array.isArray(d.products)){
-      throw new Error((d && d.error) || 'Respuesta inválida de Google Sheets');
-    }
+    const products = rows.map(row => ({
+      id: row.source_id || '',
+      name: row.nombre || '',
+      category: row.categoria || '',
+      brand: row.brand || '',
+      model: row.modelo || '',
+      storage: row.capacidad || '',
+      condition: row.condicion || '',
+      battery: row.bateria || '',
+      color: row.color || '',
+      usd: Number(row.precio_usd || row.price || 0),
+      price: Number(row.price || row.precio_usd || 0),
+      priceUsd: Number(row.precio_usd || row.price || 0),
+      image: row.imagen || '',
+      badge: row.badge || '',
+      stock: Number(row.stock || 0) > 0,
+      active: row.activo !== false,
+      description: row.descripcion || ''
+    }));
 
     liveCatalogSucceeded = true;
-    return applyCatalog(d.products);
+    return applyCatalog(products);
   }catch(e){
     liveCatalogSucceeded = false;
-    console.warn('[ISR] Catálogo en vivo no disponible:', e);
+    console.warn('[ISR] Catálogo Supabase no disponible:', e);
     return false;
   }
 }
