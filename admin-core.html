@@ -338,10 +338,10 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
       <div class="ll-sub">Admin Panel</div>
       <div class="ll-badge"><span class="dot"></span>Acceso Seguro</div>
     </div>
-    <div class="login-error" id="loginError">Usuario o contraseña incorrectos</div>
+    <div class="login-error" id="loginError">Correo o contraseña incorrectos</div>
     <div class="login-field">
-      <label class="login-label">Usuario</label>
-      <input class="login-input" id="loginUser" type="text" placeholder="admin" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()">
+      <label class="login-label">Correo electrónico</label>
+      <input class="login-input" id="loginUser" type="email" placeholder="tu@email.com" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()">
     </div>
     <div class="login-field">
       <label class="login-label">Contraseña</label>
@@ -766,7 +766,7 @@ function getCredentials(){ const c=loadCfg(); return {user:c.user||'admin',pass:
 
 
 // ══════════════════════════════════════════════════════════════
-//  AUTH SEGURO: contraseña en Apps Script + código por email
+//  AUTH SEGURO: Supabase Auth
 // ══════════════════════════════════════════════════════════════
 function getSession(){
   try{ return JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); }catch(e){ return null; }
