@@ -1052,7 +1052,7 @@ function buildFormHTML(p){
   p=p||{};
   const cfg=loadCfg();
   const hasCld=cfg.cloudName&&cfg.uploadPreset;
-  const models=Object.keys(MODEL_SPECS);
+  const models=[...new Set([...Object.keys(MODEL_SPECS),'iPhone 18 Pro','iPhone 18 Pro Max'])];
   const hasAutoImages = p.name && MODEL_IMAGES[p.name];
   return `
     <div class="form-grid">
