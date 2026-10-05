@@ -88,9 +88,14 @@ window.PRODUCT_IMAGE_VARIANTS = {
 'iphone 17 pro max':[
 {color:'Silver',hex:'#d4d5d5',id:'1e-Mhgykozx3rIM-KjXG1UJMzyrwGNylZ'},
 {color:'Azul',hex:'#476681',id:'1VSVRJwYR4CQWkQ5bEMR8IH94A-9WCjeD'},
-{color:'Orange',hex:'#d16f3d',id:'1zQa32dEYwLC7Qh5BdwnV-tPaXqsMF3dh'}]
+{color:'Orange',hex:'#d16f3d',id:'1zQa32dEYwLC7Qh5BdwnV-tPaXqsMF3dh'}],
+'iphone 18 pro max':[
+{color:'Negro',hex:'#202020',id:'11uqTbq47ylwGLbFO4pyf4YJ350ajf3Bk'},
+{color:'Borgoña',hex:'#7d3744',id:'1FWC-47j6VxQvAbqgWegN3M1NnMDIqOxT'},
+{color:'Plata',hex:'#e5e5e3',id:'1JfJAILFHS7R-TiOzoTZsBmXdL9F7Ikdx'},
+{color:'Azul claro',hex:'#b9c9db',id:'1z7puE1uc4SbWdWMVtcFM8IN9-OWPe9Q6'}]
 };
 window.PRODUCT_IMAGE_VARIANTS['iphone 14 plus']=window.PRODUCT_IMAGE_VARIANTS['iphone 14'];
 window.productDriveImageUrl=function(id){return id?`https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w1000`:'';};
-window.getProductVariantKey=function(name){const n=String(name||'').toLowerCase().replace(/\s+/g,' ').trim();const keys=['iphone 17 pro max','iphone 17 air','iphone 17e','iphone 17','iphone 16 pro max','iphone 16','iphone 15 pro max','iphone 15','iphone 14 pro max','iphone 14 plus','iphone 14','iphone 13 pro max','iphone 13','iphone 12 pro max','iphone 12','iphone 11 pro max','iphone 11'];return keys.find(k=>n.includes(k))||'';};
+window.getProductVariantKey=function(name){const n=String(name||'').toLowerCase().replace(/\s+/g,' ').trim();const keys=['iphone 18 pro max','iphone 17 pro max','iphone 17 air','iphone 17e','iphone 17','iphone 16 pro max','iphone 16','iphone 15 pro max','iphone 15','iphone 14 pro max','iphone 14 plus','iphone 14','iphone 13 pro max','iphone 13','iphone 12 pro max','iphone 12','iphone 11 pro max','iphone 11'];return keys.find(k=>n.includes(k))||'';};
 window.getProductVariants=function(name){const key=window.getProductVariantKey(name);return key&&window.PRODUCT_IMAGE_VARIANTS[key]?window.PRODUCT_IMAGE_VARIANTS[key]:[];};
