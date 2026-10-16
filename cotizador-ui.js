@@ -79,7 +79,6 @@
       host.innerHTML = `<div class="ti-shell">
         <div class="ti-topline"><button type="button" class="ti-text-btn" data-ti-action="store">← Volver a la tienda</button></div>
         <header class="ti-heading"><span class="ti-eyebrow">IPHONE STORE ROSARIO · PLAN CANJE</span><h1>Cotizá tu <span>iPhone.</span></h1><p>Entregá el que tenés. Acercate al que querés.</p></header>
-        <p class="ti-rule">Valor de toma: precio publicado del mismo modelo y capacidad, menos USD ${config.discountUsd}.</p>
         <ol class="ti-steps" aria-label="Pasos del cotizador">${names.map((name,index)=>'<li'+(index===state.step?' aria-current="step"':'')+'><button type="button" data-ti-action="step" data-value="'+index+'"'+(index>state.step?' disabled':'')+'><span>'+(index<state.step?'✓':index+1)+'</span>'+name+'</button></li>').join('')}</ol>
         <div class="ti-layout"><main class="ti-main">${state.errors.length?'<div class="ti-errors" role="alert">'+state.errors.map(error=>'<p>'+escape(error)+'</p>').join('')+'</div>':''}${state.step===0?deviceStep():state.step===1?conditionStep():resultStep()}</main>${summary()}</div>
       </div>`;
