@@ -581,6 +581,11 @@ footer p{font-size:.78rem;color:var(--gray)}
 
 </style>
 <link rel="stylesheet" href="hero-redesign.css?v=20260830c">
+<link rel="stylesheet" href="cotizador.css?v=20261015c">
+<script defer src="cotizador-config.js?v=20261015c"></script>
+<script defer src="cotizador-engine.js?v=20261015c"></script>
+<script defer src="cotizador-ui.js?v=20261015c"></script>
+<script defer src="cotizador-integracion.js?v=20261015c"></script>
 <style>.hero-phone-back{display:none!important}@media(max-width:850px){.hero-visual{display:none!important}.hero.hero-redesign{min-height:auto!important;padding:105px 6% 40px!important}.hero-redesign .hero-content{width:100%!important;max-width:100%!important}.hero-trust{position:relative!important;left:auto!important;bottom:auto!important;width:100%!important;margin-top:24px!important}}</style></head>
 
 
@@ -624,6 +629,7 @@ footer p{font-size:.78rem;color:var(--gray)}
       <li><a href="#ubicacion" onclick="showPage('storePage')">Ubicación</a></li>
     </ul>
     <div class="nav-right">
+      <button class="isr-quote-nav" type="button" data-isr-tradein>Cotizá tu iPhone</button>
       <a href="https://www.instagram.com/iphone.store.rosario_?igsh=MWw1aDM5ZTZ2N25mYw==" target="_blank" class="nav-icon-btn" title="Instagram">
         <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
       </a>
@@ -654,6 +660,7 @@ footer p{font-size:.78rem;color:var(--gray)}
     <p class="anim-fade-up delay-2">La mejor opción para tu cambio. Todos los equipos con garantía, financiación y envío a todo el país.</p>
     <div class="hero-btns anim-fade-up delay-3">
       <a href="#sellados" class="btn-primary">Ver Productos</a>
+      <button type="button" class="btn-ghost" data-isr-tradein>Cotizá tu iPhone</button>
       <a href="https://wa.me/5493412521678" target="_blank" class="btn-ghost">Consultar por WhatsApp</a>
     </div>
   </div>
@@ -681,6 +688,10 @@ footer p{font-size:.78rem;color:var(--gray)}
 
 
 <!-- SELLADOS -->
+<div class="isr-canje-banner">
+  <div><h2>Tu iPhone también es parte del cambio.</h2><p>Cotizá tu usado y conocé la diferencia para llevarte tu próximo equipo.</p></div>
+  <button type="button" class="btn-primary" data-isr-tradein>Empezar mi cotización →</button>
+</div>
 <section id="sellados" style="background:var(--bg);">
   <div class="sec-head">
     <h2>iPhone <span>Sellados</span></h2>
@@ -803,6 +814,7 @@ footer p{font-size:.78rem;color:var(--gray)}
 
 
 <!-- DETAIL PAGE -->
+<div id="tradeInPage" class="page isr-tradein"></div>
 <div id="detailPage" class="page">
   <div class="inner-page">
     <div class="page-head"><h1>Detalle del <span>Producto</span></h1><div class="violet-bar"></div><p>Conocé las características antes de comprar</p></div>
@@ -827,6 +839,7 @@ footer p{font-size:.78rem;color:var(--gray)}
         <div class="installments" id="installmentsBox"></div>
         <p>Agregalo al carrito y finalizá la compra por WhatsApp. El total es estimado — coordinamos financiación, envío o retiro en persona.</p>
         <button class="btn-checkout" id="detailAddBtn">Agregar al carrito</button>
+        <button type="button" class="isr-quote-detail" id="detailTradeInBtn" data-isr-tradein hidden>Entregá tu usado y calculá la diferencia</button>
         <button class="btn-back" onclick="showPage('storePage')">Volver a la tienda</button>
         <button class="btn-back" onclick="openCartPage()">Ir al carrito</button>
       </div>
@@ -1139,7 +1152,7 @@ function normalizeProducts(products){
       0;
 
 
-    const priceUsd = Number(
+    const priceUsd = typeof rawUsd === 'number' ? rawUsd : Number(
       String(rawUsd)
         .replace('USD', '')
         .replace('usd', '')
