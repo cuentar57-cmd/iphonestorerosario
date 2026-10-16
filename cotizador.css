@@ -128,3 +128,8 @@
 
 .isr-tradein .ti-rule{font-size:13px;line-height:1.7;color:var(--text-muted);margin:0 0 24px;padding:12px 16px;border-left:3px solid var(--violet);background:var(--card);border-radius:8px}
 .isr-tradein .ti-reference{font-size:12px;line-height:1.8;color:var(--text-muted);padding-top:12px}
+.isr-tradein .ti-heading{scroll-margin-top:88px}
+.isr-tradein [data-ti-quote]>.ti-manual{margin-bottom:18px}
+.isr-tradein .ti-steps button,.isr-tradein .ti-tabs button,.isr-tradein .ti-text-btn,.isr-tradein .ti-check-field{min-height:44px}
+@media(max-width:860px){.isr-tradein .ti-layout:not([data-ti-step="2"]) .ti-summary{order:0}.isr-tradein .ti-field select,.isr-tradein .ti-field input,.isr-tradein .ti-search input{font-size:16px}}
+@media(max-width:520px){.isr-tradein .ti-steps{gap:8px}.isr-tradein .ti-steps li{flex:1;min-width:0}.isr-tradein .ti-steps button{white-space:normal;text-align:left}.isr-tradein .ti-steps button>span{flex-shrink:0}}
