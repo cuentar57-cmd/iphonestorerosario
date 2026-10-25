@@ -1,0 +1,52 @@
+/* Catálogo Samsung y Xiaomi: comparte tema, tarjetas y carrito de la tienda. */
+nav ul { gap: clamp(12px, 1.5vw, 26px); }
+nav a[aria-current="page"] { color: var(--violet); }
+.android-shortcut {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 440px;
+  margin-top: 24px;
+  padding: 17px 20px;
+  border: 1px solid rgba(98, 0, 255, .24);
+  border-radius: 18px;
+  background: var(--card);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color .2s, transform .2s;
+}
+.android-shortcut:hover { border-color: var(--violet); transform: translateY(-2px); }
+.android-shortcut svg { width: 26px; height: 32px; flex-shrink: 0; stroke: var(--violet); fill: none; stroke-width: 1.8; }
+.android-shortcut-copy { display: grid; gap: 4px; }
+.android-shortcut strong { font-size: .95rem; }
+.android-shortcut small { color: var(--gray); font-size: .78rem; }
+.android-shortcut-arrow { margin-left: auto; color: var(--violet); font-size: 1.4rem; }
+.android-catalog { max-width: 1280px; }
+.catalog-back { display: inline-flex; align-items: center; min-height: 44px; margin-bottom: 28px; color: var(--violet); font-size: .9rem; font-weight: 600; text-decoration: none; }
+.android-catalog .page-head { margin-bottom: 30px; }
+.android-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+.android-toolbar .filter-bar { margin-bottom: 0; }
+.android-toolbar .filter-bar button { min-height: 44px; }
+.android-condition { display: flex; align-items: center; gap: 10px; font-size: .85rem; color: var(--gray); }
+.android-condition select { min-height: 44px; border: 1px solid var(--input-border); border-radius: 12px; padding: 10px 14px; background: var(--input-bg); color: var(--text); font: inherit; }
+.android-count { margin-bottom: 20px; color: var(--gray); font-size: .85rem; }
+.android-empty { grid-column: 1 / -1; padding: 50px 24px; border: 1px solid var(--border); border-radius: 24px; background: var(--card); text-align: center; }
+.android-empty h2 { margin-bottom: 12px; font-size: 1.25rem; }
+.android-empty p { max-width: 440px; margin: 0 auto 24px; color: var(--gray); line-height: 1.6; font-size: .95rem; }
+.android-shortcut:focus-visible, .catalog-back:focus-visible, .android-toolbar button:focus-visible, .android-condition select:focus-visible { outline: 3px solid var(--violet); outline-offset: 4px; }
+@media (max-width: 1280px) { nav ul { display: none; } }
+@media (max-width: 560px) {
+  .android-shortcut { max-width: 100%; padding: 15px; gap: 12px; }
+  .android-toolbar { align-items: stretch; }
+  .android-toolbar .filter-bar { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; gap: 8px; }
+  .android-toolbar .filter-bar button { padding: 10px 12px; font-size: .82rem; }
+  .android-condition { justify-content: space-between; width: 100%; }
+  .android-condition select { flex: 1; max-width: 230px; }
+  .android-empty { padding: 32px 20px; }
+}
+@media (max-width: 380px) {
+  .nav-inner { padding-left: 4%; padding-right: 4%; }
+  .logo-svg { width: 137px; height: 56px; }
+  .nav-right { gap: 6px; }
+  .nav-icon-btn, .theme-btn { width: 34px; height: 34px; }
+}

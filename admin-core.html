@@ -426,6 +426,12 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
             <option value="mac">Mac</option>
             <option value="accesorio">Accesorios</option>
           </select>
+          <select class="filter-select" id="brandFilter" onchange="renderTable()" aria-label="Filtrar por marca">
+            <option value="">Todas las marcas</option>
+            <option value="apple">Apple</option>
+            <option value="samsung">Samsung</option>
+            <option value="xiaomi">Xiaomi / Redmi / POCO</option>
+          </select>
           <select class="filter-select" id="stockFilter" onchange="renderTable()">
             <option value="">Todo el stock</option>
             <option value="disponible">Con stock</option>
@@ -511,6 +517,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
 </div>
 
 
+<script src="product-brands.js?v=20261025a"></script>
 <script>
 // ADMIN V3 SEGURO - login servidor + código por email
 
@@ -962,12 +969,14 @@ function updateStats(){
 function renderTable(){
   const q=(document.getElementById('searchInput').value||'').toLowerCase();
   const cat=document.getElementById('categoryFilter').value;
+  const brand=document.getElementById('brandFilter').value;
   const stock=document.getElementById('stockFilter').value;
   let filtered=products.filter(p=>{
     const mq=!q||p.name.toLowerCase().includes(q)||(p.storage||'').toLowerCase().includes(q);
     const mc=!cat||p.category===cat;
     const ms=!stock||(stock==='disponible'?p.stock:!p.stock);
-    return mq&&mc&&ms;
+    const mb=!brand||ISRCatalogBrands.detectBrand(p)===brand;
+    return mq&&mc&&ms&&mb;
   });
   if(sortField) filtered.sort((a,b)=>{ let va=a[sortField]||0,vb=b[sortField]||0; if(typeof va==='string'){va=va.toLowerCase();vb=vb.toLowerCase();} return sortAsc?(va>vb?1:-1):(va<vb?1:-1); });
   const tbody=document.getElementById('productsTableBody');
@@ -1050,6 +1059,8 @@ function buildExtraSpecs(specs){
 
 function buildFormHTML(p){
   p=p||{};
+  const brand=ISRCatalogBrands.detectBrand(p);
+  const escapedBrand=brand.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const cfg=loadCfg();
   const hasCld=cfg.cloudName&&cfg.uploadPreset;
   const models=[...new Set([...Object.keys(MODEL_SPECS),'iPhone 18 Pro','iPhone 18 Pro Max'])];
@@ -1076,6 +1087,16 @@ function buildFormHTML(p){
           <option value="tablet" ${p.category==='tablet'?'selected':''}>iPad / Tablet</option>
           <option value="mac" ${p.category==='mac'?'selected':''}>Mac</option>
           <option value="accesorio" ${p.category==='accesorio'?'selected':''}>Accesorios</option>
+        </select>
+      </div>
+      <div class="form-col">
+        <label class="form-label" for="fBrand">Marca</label>
+        <select class="form-select" id="fBrand">
+          <option value="" ${!brand?'selected':''}>Detectar por el nombre</option>
+          <option value="apple" ${brand==='apple'?'selected':''}>Apple</option>
+          <option value="samsung" ${brand==='samsung'?'selected':''}>Samsung</option>
+          <option value="xiaomi" ${brand==='xiaomi'?'selected':''}>Xiaomi / Redmi / POCO</option>
+          ${brand&&!['apple','samsung','xiaomi'].includes(brand)?`<option value="${escapedBrand}" selected>${escapedBrand}</option>`:''}
         </select>
       </div>
       <div class="form-col">
@@ -1265,6 +1286,7 @@ function collectFormData(){
   return {
     id:document.getElementById('fId').value.trim()||name.toLowerCase().replace(/\s+/g,'_'),
     name, category:document.getElementById('fCategory').value,
+    brand:ISRCatalogBrands.detectBrand({name,brand:document.getElementById('fBrand').value}),
     storage:document.getElementById('fStorage').value.trim(),
     priceUsd, usd:parseFloat(document.getElementById('fPriceUsd').value)||0,
     price:parseFloat(document.getElementById('fPriceUsd').value)||0,
@@ -1520,3 +1542,4 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 </script>
 </body>
 </html>
+
