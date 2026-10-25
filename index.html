@@ -583,6 +583,7 @@ footer p{font-size:.78rem;color:var(--gray)}
 <link rel="stylesheet" href="hero-redesign.css?v=20260830c">
 <link rel="stylesheet" href="cotizador.css?v=20261015f">
 <link rel="stylesheet" href="android-catalog.css?v=20261025a">
+<link rel="stylesheet" href="catalog-search.css?v=20261025b">
 <script defer src="cotizador-config.js?v=20261015c"></script>
 <script defer src="cotizador-engine.js?v=20261015c"></script>
 <script defer src="cotizador-ui.js?v=20261015f"></script>
@@ -661,7 +662,7 @@ footer p{font-size:.78rem;color:var(--gray)}
     <h1 class="anim-fade-up delay-1"><span class="vio">iPhone</span><br>Seminuevos &<br>Sellados</h1>
     <p class="anim-fade-up delay-2">La mejor opción para tu cambio. Todos los equipos con garantía, financiación y envío a todo el país.</p>
     <div class="hero-btns anim-fade-up delay-3">
-      <a href="#sellados" class="btn-primary">Ver Productos</a>
+      <a href="#buscar" class="btn-primary">Ver Productos</a>
       <button type="button" class="btn-ghost" data-isr-tradein>Cotizá tu iPhone</button>
       <a href="https://wa.me/5493412521678" target="_blank" class="btn-ghost">Consultar por WhatsApp</a>
     </div>
@@ -694,7 +695,26 @@ footer p{font-size:.78rem;color:var(--gray)}
 </section>
 
 
+<!-- BUSCADOR DEL CATÁLOGO -->
+<section id="buscar" class="catalog-search" aria-labelledby="storeSearchHeading">
+  <div class="catalog-search-heading">
+    <h2 id="storeSearchHeading">Buscá tu equipo</h2>
+    <p>Encontrá productos por modelo, marca, capacidad o color.</p>
+  </div>
+  <form role="search" aria-label="Buscar en todo el catálogo" onsubmit="event.preventDefault();renderStoreSearch();">
+    <label class="catalog-search-label" for="storeSearchInput">Buscar en todo el catálogo</label>
+    <div class="catalog-search-box">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
+      <input id="storeSearchInput" type="search" placeholder="Ej.: iPhone 15, Samsung, 256 GB" autocomplete="off" aria-controls="storeSearchResults" oninput="renderStoreSearch();">
+      <button class="catalog-search-clear" id="storeSearchClear" type="button" onclick="clearStoreSearch();" hidden>Limpiar</button>
+    </div>
+  </form>
+  <p class="catalog-search-status" id="storeSearchStatus" role="status" aria-live="polite"></p>
+  <div class="products-grid catalog-search-results" id="storeSearchResults" hidden></div>
+</section>
+
 <!-- SELLADOS -->
+<div id="storeCatalogContent">
 <div class="isr-canje-banner">
   <div><h2>Tu iPhone también es parte del cambio.</h2><p>Cotizá tu usado y conocé la diferencia para llevarte tu próximo equipo.</p></div>
   <button type="button" class="btn-primary" data-isr-tradein>Empezar mi cotización →</button>
@@ -773,6 +793,8 @@ footer p{font-size:.78rem;color:var(--gray)}
 </section>
 
 
+</div>
+
 <section id="clientes">
   <div class="sec-head"><h2>Qué dicen nuestros <span>Clientes</span></h2><div class="violet-bar"></div><p>Más de 500 clientes satisfechos en Rosario</p></div>
   <div class="reviews-grid">
@@ -829,6 +851,14 @@ footer p{font-size:.78rem;color:var(--gray)}
       <div class="violet-bar"></div>
       <p>Elegí la marca y encontrá tu próximo equipo</p>
     </div>
+    <form class="android-search" role="search" aria-label="Buscar Samsung y Xiaomi" onsubmit="event.preventDefault();renderAndroidGrid();">
+      <label class="catalog-search-label" for="androidSearchInput">Buscar en Samsung y Xiaomi</label>
+      <div class="catalog-search-box">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
+        <input id="androidSearchInput" type="search" placeholder="Ej.: Galaxy, Redmi, 256 GB" autocomplete="off" aria-controls="gridAndroid" oninput="renderAndroidGrid();">
+        <button class="catalog-search-clear" id="androidSearchClear" type="button" onclick="clearAndroidSearch();" hidden>Limpiar</button>
+      </div>
+    </form>
     <div class="android-toolbar">
       <div class="filter-bar" aria-label="Filtrar por marca">
         <button type="button" class="active-filter" data-android-brand="all" aria-pressed="true" onclick="setAndroidBrand('all')">Todos</button>
@@ -942,6 +972,7 @@ footer p{font-size:.78rem;color:var(--gray)}
 
 
 <script src="product-brands.js?v=20261025a"></script>
+<script src="catalog-search.js?v=20261025b"></script>
 <script>
 
 let dolarBlue = 1450;
@@ -1300,6 +1331,7 @@ function renderAllGrids(){
   // Priorizar el contenido que el cliente ve primero.
   renderGrid('gridSellados', sellados);
   renderAndroidGrid();
+  renderStoreSearch();
 
   const newest = sellados[0] || usados[0];
   const heroNewestEl = document.getElementById('heroNewest');
@@ -1330,6 +1362,51 @@ function renderGrid(gridId, items){
   el.innerHTML = items.map(p => buildProductCard(p)).join('');
 }
 
+function renderStoreSearch(){
+  const query = document.getElementById('storeSearchInput').value.trim();
+  const results = document.getElementById('storeSearchResults');
+  document.getElementById('storeCatalogContent').hidden = Boolean(query);
+  document.getElementById('storeSearchClear').hidden = !query;
+  results.hidden = !query;
+  const status = document.getElementById('storeSearchStatus');
+  if(!query){ status.textContent = ''; results.innerHTML = ''; return; }
+  const items = storeProducts.filter(p => ISRCatalogSearch.matches(p, query));
+  status.textContent = items.length + (items.length === 1 ? ' producto encontrado' : ' productos encontrados');
+  if(items.length){ renderGrid('storeSearchResults', items); return; }
+  results.innerHTML = `<div class="catalog-search-empty">
+    <h3>No encontramos productos con esa búsqueda</h3>
+    <p>Probá con otro modelo, una marca o una capacidad.</p>
+    <button type="button" class="btn-ghost" onclick="clearStoreSearch();">Ver todo el catálogo</button>
+  </div>`;
+}
+
+function clearStoreSearch(){
+  const input = document.getElementById('storeSearchInput');
+  input.value = '';
+  renderStoreSearch();
+  input.focus({preventScroll:true});
+}
+
+function clearAndroidSearch(){
+  const input = document.getElementById('androidSearchInput');
+  input.value = '';
+  renderAndroidGrid();
+  input.focus({preventScroll:true});
+}
+
+function restoreCatalogForTarget(target){
+  const catalog = document.getElementById('storeCatalogContent');
+  if(target && catalog.hidden && catalog.contains(target)){
+    document.getElementById('storeSearchInput').value = '';
+    renderStoreSearch();
+  }
+}
+
+document.addEventListener('click', event => {
+  const link = event.target.closest('a[href^="#"]');
+  if(link) restoreCatalogForTarget(document.getElementById(link.getAttribute('href').slice(1)));
+});
+
 let androidBrandFilter = 'all';
 
 function setAndroidBrand(brand){
@@ -1339,9 +1416,11 @@ function setAndroidBrand(brand){
 
 function renderAndroidGrid(){
   const condition = document.getElementById('androidCondition').value;
+  const query = document.getElementById('androidSearchInput').value.trim();
+  document.getElementById('androidSearchClear').hidden = !query;
   const items = storeProducts.filter(p => ISRCatalogBrands.isAndroidPhone(p) &&
     (androidBrandFilter === 'all' || p.brand === androidBrandFilter) &&
-    (condition === 'all' || p.category === condition));
+    (condition === 'all' || p.category === condition) && ISRCatalogSearch.matches(p, query));
   document.querySelectorAll('[data-android-brand]').forEach(button => {
     const active = button.dataset.androidBrand === androidBrandFilter;
     button.classList.toggle('active-filter', active);
@@ -1572,7 +1651,15 @@ function openCatalogPage(id){
   showPage(id);
 }
 
-function returnToCatalog(){ openCatalogPage(currentCatalogPage); }
+function returnToCatalog(){
+  if(currentCatalogPage === 'storePage' && document.getElementById('storeSearchInput').value.trim()){
+    if(window.location.hash !== '#buscar') window.location.hash = '#buscar';
+    showPage('storePage');
+    requestAnimationFrame(() => document.getElementById('buscar').scrollIntoView({behavior:'instant',block:'start'}));
+    return;
+  }
+  openCatalogPage(currentCatalogPage);
+}
 
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1595,9 +1682,10 @@ function showPage(id){
 }
 
 window.addEventListener('hashchange', () => {
-  showPage(window.location.hash === '#samsung-xiaomi' ? 'androidPage' : 'storePage');
   const target = document.getElementById(window.location.hash.slice(1));
-  if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+  restoreCatalogForTarget(target);
+  showPage(window.location.hash === '#samsung-xiaomi' ? 'androidPage' : 'storePage');
+  if(target) requestAnimationFrame(() => target.scrollIntoView({behavior:'instant', block:'start'}));
 });
 if(window.location.hash === '#samsung-xiaomi') showPage('androidPage');
 
