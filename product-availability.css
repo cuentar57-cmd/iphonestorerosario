@@ -1,0 +1,6 @@
+.prod-card.on-order .price { font-size: 1.25rem; }
+.prod-card.on-order .usd-price { font-weight: 400; line-height: 1.45; }
+.order-phone-icon { width: 68px; height: 106px; fill: none; stroke: var(--violet); stroke-width: 1.8; }
+.detail-image-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.detail-image-placeholder .order-phone-icon { width: 110px; height: 170px; }
+.installments[hidden], #detailImage[hidden], .detail-image-placeholder[hidden] { display: none; }

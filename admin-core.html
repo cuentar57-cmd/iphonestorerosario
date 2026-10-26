@@ -436,6 +436,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
             <option value="">Todo el stock</option>
             <option value="disponible">Con stock</option>
             <option value="sin_stock">Sin stock</option>
+            <option value="unknown">A confirmar</option>
           </select>
         </div>
         <div style="display:flex;gap:7px;flex-wrap:wrap;">
@@ -518,6 +519,7 @@ td{padding:12px 14px;font-size:.85rem;vertical-align:middle;}
 
 
 <script src="product-brands.js?v=20261025a"></script>
+<script src="product-availability.js?v=20261026a"></script>
 <script>
 // ADMIN V3 SEGURO - login servidor + código por email
 
@@ -877,6 +879,7 @@ function rowToProduct(row){
     image:row.imagen||'',
     badge:row.badge||'',
     stock:Number(row.stock||0)>0,
+    stockKnown:row.stock!=null,
     active:row.activo!==false,
     description:row.descripcion||'',
     specs:row.specs&&typeof row.specs==='object'?row.specs:{},
@@ -884,6 +887,7 @@ function rowToProduct(row){
   };
 }
 function productToRow(p){
+  const onOrder=ISRCatalogAvailability.isOnOrder(p);
   return {
     source_id:p.id||'',
     nombre:p.name||'',
@@ -894,9 +898,9 @@ function productToRow(p){
     condicion:p.condition||'',
     bateria:p.battery||'',
     color:p.color||'',
-    precio_usd:Number(p.priceUsd||p.usd||p.price||0),
-    price:Number(p.priceUsd||p.usd||p.price||0),
-    stock:p.stock===false?0:1,
+    precio_usd:onOrder?null:Number(p.priceUsd||p.usd||p.price||0),
+    price:onOrder?null:Number(p.priceUsd||p.usd||p.price||0),
+    stock:onOrder&&p.stockKnown===false?null:p.stock===false?0:1,
     imagen:p.image||'',
     badge:p.badge||'',
     descripcion:p.description||'',
@@ -953,7 +957,7 @@ function moneyARS(n){ return '$'+Math.round(n).toLocaleString('es-AR'); }
 // ══════════════════════════════════════════════════════════════
 function updateStats(){
   const total=products.length, sellados=products.filter(p=>p.category==='sellado').length,
-        usados=products.filter(p=>p.category==='usado').length, sinStock=products.filter(p=>!p.stock).length;
+        usados=products.filter(p=>p.category==='usado').length, sinStock=products.filter(p=>!p.stock&&p.stockKnown!==false).length;
   document.getElementById('statsGrid').innerHTML=`
     <div class="stat-card" style="animation-delay:.0s"><div class="stat-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><div class="stat-value">${total}</div><div class="stat-label">Productos</div></div>
     <div class="stat-card" style="animation-delay:.08s"><div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div><div class="stat-value">${sellados}</div><div class="stat-label">Sellados</div></div>
@@ -974,7 +978,7 @@ function renderTable(){
   let filtered=products.filter(p=>{
     const mq=!q||p.name.toLowerCase().includes(q)||(p.storage||'').toLowerCase().includes(q);
     const mc=!cat||p.category===cat;
-    const ms=!stock||(stock==='disponible'?p.stock:!p.stock);
+    const ms=!stock||(stock==='unknown'?p.stockKnown===false:stock==='disponible'?p.stock&&p.stockKnown!==false:!p.stock&&p.stockKnown!==false);
     const mb=!brand||ISRCatalogBrands.detectBrand(p)===brand;
     return mq&&mc&&ms&&mb;
   });
@@ -994,9 +998,9 @@ function renderTable(){
         </div>
       </td>
       <td><span class="badge ${cC[p.category]||'badge-used'}">${cL[p.category]||p.category}</span></td>
-      <td><div class="price-cell">USD ${p.priceUsd||0}</div></td>
-      <td><div class="usd-cell">${moneyARS(arsPrice(p.priceUsd||0))}</div></td>
-      <td><span class="badge ${p.stock?'badge-new':'badge-nostock'}">${p.stock?'✓ Stock':'Sin Stock'}</span></td>
+      <td><div class="price-cell">${ISRCatalogAvailability.isOnOrder(p)?'Por encargue':'USD '+(p.priceUsd||0)}</div></td>
+      <td><div class="usd-cell">${ISRCatalogAvailability.isOnOrder(p)?'Sin precio':moneyARS(arsPrice(p.priceUsd||0))}</div></td>
+      <td><span class="badge ${p.stock?'badge-new':'badge-nostock'}">${p.stockKnown===false?'A confirmar':p.stock?'✓ Stock':'Sin Stock'}</span></td>
       <td>
         <div class="actions">
           <button class="act-btn act-edit" onclick="editProduct('${p._dbId||p.id}')" title="Editar">
@@ -1059,6 +1063,7 @@ function buildExtraSpecs(specs){
 
 function buildFormHTML(p){
   p=p||{};
+  const onOrder=ISRCatalogAvailability.isOnOrder(p);
   const brand=ISRCatalogBrands.detectBrand(p);
   const escapedBrand=brand.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const cfg=loadCfg();
@@ -1104,18 +1109,26 @@ function buildFormHTML(p){
         <input class="form-input" id="fStorage" value="${p.storage||''}" placeholder="ej: 128 GB · Negro">
       </div>
       <div class="form-col">
+        <label class="form-label" for="fAvailability">Modalidad de venta</label>
+        <select class="form-select" id="fAvailability" onchange="updateOrderMode()">
+          <option value="priced" ${!onOrder?'selected':''}>Venta con precio</option>
+          <option value="order" ${onOrder?'selected':''}>Por encargue, sin precio</option>
+        </select>
+      </div>
+      <div class="form-col">
         <div class="form-label">Precio en USD</div>
-        <input class="form-input" id="fPriceUsd" type="number" value="${p.priceUsd||''}" placeholder="750" oninput="updateARS()">
+        <input class="form-input" id="fPriceUsd" type="number" value="${onOrder?'':p.priceUsd||''}" placeholder="750" oninput="updateARS()" ${onOrder?'disabled':''}>
       </div>
       <div class="form-col">
         <div class="form-label">Precio ARS estimado</div>
-        <input class="form-input" id="fPriceArs" readonly value="${p.priceUsd?moneyARS(arsPrice(p.priceUsd)):''}" style="opacity:.6;cursor:default;">
+        <input class="form-input" id="fPriceArs" readonly value="${onOrder?'Por encargue':p.priceUsd?moneyARS(arsPrice(p.priceUsd)):''}" style="opacity:.6;cursor:default;">
       </div>
       <div class="form-col">
         <div class="form-label">Stock</div>
         <select class="form-select" id="fStock">
-          <option value="true" ${p.stock!==false?'selected':''}>Con Stock</option>
-          <option value="false" ${p.stock===false?'selected':''}>Sin Stock</option>
+          <option value="true" ${p.stock!==false&&p.stockKnown!==false?'selected':''}>Con Stock</option>
+          <option value="false" ${p.stock===false&&p.stockKnown!==false?'selected':''}>Sin Stock</option>
+          <option value="unknown" ${p.stockKnown===false?'selected':''}>A confirmar</option>
         </select>
       </div>
       <div class="form-col">
@@ -1238,7 +1251,16 @@ function handleDrop(e){
 function updateARS(){
   const usd=parseFloat(document.getElementById('fPriceUsd')?.value)||0;
   const el=document.getElementById('fPriceArs');
-  if(el) el.value=usd?moneyARS(arsPrice(usd)):'';
+  const onOrder=document.getElementById('fAvailability')?.value==='order';
+  if(el) el.value=onOrder?'Por encargue':usd?moneyARS(arsPrice(usd)):'';
+}
+
+function updateOrderMode(){
+  const onOrder=document.getElementById('fAvailability').value==='order';
+  const input=document.getElementById('fPriceUsd');
+  input.disabled=onOrder;
+  if(onOrder) input.value='';
+  updateARS();
 }
 
 
@@ -1268,7 +1290,10 @@ function autoFillSpecs(){
 
 function collectFormData(){
   const name=(document.getElementById('fName').value||'').trim();
-  const priceUsd=parseFloat(document.getElementById('fPriceUsd').value)||0;
+  const onOrder=document.getElementById('fAvailability').value==='order';
+  const priceUsd=onOrder?null:parseFloat(document.getElementById('fPriceUsd').value)||0;
+  const current=editingId?products.find(p=>String(p._dbId||p.id)===String(editingId)):null;
+  const originalBadge=current?.badge||'';
   const extraRaw=(document.getElementById('sExtra').value||'').trim();
   const extraSpecs={};
   extraRaw.split('\n').forEach(line=>{const[k,...v]=line.split(':');if(k&&v.length) extraSpecs[k.trim()]=v.join(':').trim();});
@@ -1288,9 +1313,10 @@ function collectFormData(){
     name, category:document.getElementById('fCategory').value,
     brand:ISRCatalogBrands.detectBrand({name,brand:document.getElementById('fBrand').value}),
     storage:document.getElementById('fStorage').value.trim(),
-    priceUsd, usd:parseFloat(document.getElementById('fPriceUsd').value)||0,
-    price:parseFloat(document.getElementById('fPriceUsd').value)||0,
+    priceUsd, usd:priceUsd, price:priceUsd,
+    badge:onOrder?'Por encargue':ISRCatalogAvailability.isOnOrder({badge:originalBadge})?'':originalBadge,
     stock:document.getElementById('fStock').value==='true',
+    stockKnown:document.getElementById('fStock').value!=='unknown',
     active:true,
     image:document.getElementById('fImage').value.trim(),
     description:(document.getElementById('fDesc').value||'').trim(),
