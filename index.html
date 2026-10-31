@@ -1558,7 +1558,7 @@ const priceArs = arsPrice(usdValue);
     .map(([k,v])=>`<div class="spec-card"><span>${k}</span><strong>${v}</strong></div>`).join('');
   document.getElementById('detailBenefits').innerHTML = (p.benefits||[])
     .map(b=>`<li>${b}</li>`).join('');
-  const base = priceArs * 1.10;
+  const base = priceArs * 1.105 * 1.10;
   document.getElementById('installmentsBox').hidden = onOrder;
   document.getElementById('installmentsBox').innerHTML = onOrder ? '' : `
     <div class="installment-item">3 cuotas de ${money((base*1.21)/3)}</div>
