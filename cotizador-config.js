@@ -1,7 +1,8 @@
 window.ISR_TRADEIN_CONFIG = {
-  version: 2,
+  version: 3,
   whatsapp: '5493412521678',
   discountUsd: 100,
+  maxDiscountUsd: 140,
   models: [],
   conditions: {
     excellent: { label: 'Impecable', description: 'Sin marcas visibles en pantalla, bordes y tapa.' },

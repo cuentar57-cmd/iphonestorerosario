@@ -4,6 +4,8 @@
   const escape = value => String(value == null ? '' : value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
   const usd = value => 'USD ' + Number(value).toLocaleString('es-AR', { maximumFractionDigits: 2 });
   const ars = value => '$ ' + Math.round(value).toLocaleString('es-AR');
+  const usdRange = (min, max) => usd(min) + ' – ' + usd(max);
+  const arsRange = (min, max) => ars(min) + ' – ' + ars(max);
   function create(host, options) {
     const config = options.config;
     const blank = () => ({ model: '', capacity: '', condition: '', battery: '', batteryUnknown: false, repairs: '', unlocked: '', functional: '', box: false, cable: false });
@@ -33,8 +35,8 @@
       if (state.productId && !selected) html += '<p class="ti-note">El equipo elegido ya no está disponible. Elegí otro del catálogo.</p>';
       if (r && r.status === 'estimated') {
         const delta = E.difference(r, selected);
-        html += '<dl class="ti-summary-lines"><div><dt>Tomamos tu usado</dt><dd>' + usd(r.valueUsd) + '</dd></div></dl>';
-        if (delta && !delta.requiresReview) html += '<div class="ti-difference"><span>Diferencia estimada a pagar</span><strong>' + usd(delta.amountUsd) + '</strong>' + (getRate() ? '<small>' + ars(delta.amountUsd * getRate()) + ' de referencia</small>' : '') + '</div>';
+        html += '<dl class="ti-summary-lines"><div><dt>Tomamos tu usado</dt><dd>' + usdRange(r.minValueUsd, r.maxValueUsd) + '</dd></div></dl>';
+        if (delta && !delta.requiresReview) html += '<div class="ti-difference"><span>Diferencia estimada a pagar</span><strong>' + usdRange(delta.minAmountUsd, delta.maxAmountUsd) + '</strong>' + (getRate() ? '<small>' + arsRange(delta.minAmountUsd * getRate(), delta.maxAmountUsd * getRate()) + ' de referencia</small>' : '') + '</div>';
         if (delta && delta.requiresReview) html += '<p class="ti-note">Tu usado supera el precio de este equipo. Consultanos para confirmar las condiciones del canje.</p>';
       }
       html += '<div class="ti-summary-foot"><span class="ti-check">✓</span><p>El valor final se confirma después de revisar tu equipo.</p></div></aside>';
@@ -67,7 +69,7 @@
     function quoteDetails(r, rate) {
       let html = '';
       if (r.status === 'estimated') {
-        html += '<div class="ti-value-card"><span class="ti-eyebrow">VALOR ESTIMADO DE TU USADO' + '</span><strong class="ti-value">' + usd(r.valueUsd) + '</strong>' + (rate ? '<span class="ti-value-ars">' + ars(r.valueUsd * rate) + ' de referencia</span>' : '') + '<p>Una estimación inicial. La confirmamos al revisar tu equipo.</p></div><details class="ti-breakdown"><summary>Ver cómo se calculó</summary><p class="ti-reference">' + escape(r.reference.name + ' · ' + r.reference.storage + ' · ' + (r.reference.category === 'usado' ? 'Usado' : 'Sellado')) + '</p><dl><div><dt>Precio publicado</dt><dd>' + usd(r.baseUsd) + '</dd></div>' + r.adjustments.map(item => '<div><dt>' + escape(item.label) + '</dt><dd>' + (item.amountUsd > 0 ? '+' : item.amountUsd < 0 ? '−' : '') + usd(Math.abs(item.amountUsd)) + '</dd></div>').join('') + '</dl></details>';
+        html += '<div class="ti-value-card"><span class="ti-eyebrow">VALOR ESTIMADO DE TU USADO' + '</span><strong class="ti-value">' + usdRange(r.minValueUsd, r.maxValueUsd) + '</strong>' + (rate ? '<span class="ti-value-ars">' + arsRange(r.minValueUsd * rate, r.maxValueUsd * rate) + ' de referencia</span>' : '') + '<p>El valor final depende de la revisión del estado y la batería de tu equipo.</p></div>';
       } else {
         html += '<div class="ti-card ti-manual"><span class="ti-eyebrow">REVISIÓN PERSONALIZADA</span><h2>Lo vemos con vos.</h2><p>Para darte un valor responsable, necesitamos revisar estos puntos:</p><ul>' + (r.reasons || r.errors || []).map(reason => '<li>' + escape(reason) + '</li>').join('') + '</ul></div>';
       }

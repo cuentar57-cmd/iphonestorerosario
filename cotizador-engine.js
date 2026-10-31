@@ -62,11 +62,12 @@
     if (answers.batteryUnknown) reasons.push('Necesitamos comprobar la salud de la batería.');
     if (config.repairs[answers.repairs].manual) reasons.push('Los cambios de piezas se revisan de forma personalizada.');
     if (!reference) reasons.push('Ya no hay un precio publicado para este modelo y capacidad. Consultanos para cotizarlo.');
-    if (!positive(config.discountUsd)) reasons.push('Necesitamos confirmar las condiciones del canje.');
+    if (!positive(config.discountUsd) || !positive(config.maxDiscountUsd) || config.maxDiscountUsd < config.discountUsd) reasons.push('Necesitamos confirmar las condiciones del canje.');
     const valueUsd = reference && positive(config.discountUsd) ? cents(reference.priceUsd - config.discountUsd) : null;
-    if (reference && !positive(valueUsd)) reasons.push('El precio publicado de este equipo requiere una cotización personalizada.');
+    const minValueUsd = reference && positive(config.maxDiscountUsd) ? cents(reference.priceUsd - config.maxDiscountUsd) : null;
+    if (reference && (!positive(valueUsd) || !positive(minValueUsd))) reasons.push('El precio publicado de este equipo requiere una cotización personalizada.');
     if (reasons.length) return { status: 'manual', valueUsd: null, reference, adjustments: [], reasons };
-    return { status: 'estimated', valueUsd, baseUsd: reference.priceUsd, reference, adjustments: [{ label: 'Diferencia de toma', amountUsd: -config.discountUsd }], reasons: [] };
+    return { status: 'estimated', minValueUsd, maxValueUsd: valueUsd, valueUsd, baseUsd: reference.priceUsd, reference, adjustments: [], reasons: [] };
   }
   function eligibleProducts(products) {
     return pricedReferences(products).filter(product => product.stock === true);
@@ -74,7 +75,7 @@
   function difference(result, product) {
     if (!result || result.status !== 'estimated' || !product || !eligibleProducts([product]).length) return null;
     const delta = cents(product.priceUsd - result.valueUsd);
-    return { amountUsd: delta, requiresReview: delta < 0 };
+    return { amountUsd: delta, minAmountUsd: delta, maxAmountUsd: cents(product.priceUsd - result.minValueUsd), requiresReview: delta < 0 };
   }
   function message(answers, result, product, config, rate) {
     const model = modelFor(config, answers.model);
@@ -90,15 +91,13 @@
       'Accesorios: ' + ([answers.box ? 'caja' : '', answers.cable ? 'cable' : ''].filter(Boolean).join(' y ') || 'Solo equipo')
     ];
     if (result.status === 'estimated') {
-      parts.push('Valor estimado de toma: USD ' + result.valueUsd);
-      parts.push('Referencia publicada: ' + result.reference.name + ' · ' + result.reference.storage + ' · USD ' + result.baseUsd);
-      parts.push('Regla de toma: precio publicado menos USD ' + config.discountUsd + '.');
+      parts.push('Valor estimado de toma: entre USD ' + result.minValueUsd + ' y USD ' + result.maxValueUsd + ', sujeto a la revisión final del estado y la batería.');
     } else parts.push('Solicito cotización personalizada.', ...(result.reasons || result.errors || []));
     const delta = difference(result, product);
     if (product) parts.push('', 'ME INTERESA', product.name + ' · ' + (product.storage || ''), 'Precio de referencia: USD ' + product.priceUsd);
     if (delta && !delta.requiresReview) {
-      parts.push('Diferencia estimada: USD ' + delta.amountUsd);
-      if (positive(rate)) parts.push('Diferencia en pesos de referencia: $ ' + Math.round(delta.amountUsd * rate).toLocaleString('es-AR') + ' (tipo de cambio: $ ' + rate.toLocaleString('es-AR') + ' por USD).');
+      parts.push('Diferencia estimada: entre USD ' + delta.minAmountUsd + ' y USD ' + delta.maxAmountUsd);
+      if (positive(rate)) parts.push('Diferencia en pesos de referencia: entre $ ' + Math.round(delta.minAmountUsd * rate).toLocaleString('es-AR') + ' y $ ' + Math.round(delta.maxAmountUsd * rate).toLocaleString('es-AR') + ' (tipo de cambio: $ ' + rate.toLocaleString('es-AR') + ' por USD).');
     } else if (delta) parts.push('El valor de toma supera el precio elegido. Necesito confirmar las condiciones de la operación.');
     parts.push('', 'La disponibilidad, el valor de toma y el tipo de cambio se confirman con la tienda.');
     return parts.join('\n');
